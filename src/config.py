@@ -40,43 +40,33 @@ RANDOM_STATE = 42
 
 # data
 TEST_SIZE = 0.1
-MODALITY_KEYS_A = [
-    "CT1_1",
-    "FLAIR_1",
-    "T1_1",
-    "T2_1",
-    "CT1_2",
-    "FLAIR_2",
-    "T1_2",
-    "T2_2"
-]
-MODALITY_KEYS_B = [
-    "CT1_3",
-    "FLAIR_3",
-    "T1_3",
-    "T2_3"
-]
+MODALITIES = ["CT1", "FLAIR", "T1", "T2"]
+modality_keys_A = (
+    [modality + "_1" for modality in MODALITIES] +
+    [modality + "_2" for modality in MODALITIES]
+)
+modality_keys_B = [modality + "_3" for modality in MODALITIES]
 PATCH_SIZE = (96, 96, 96)
 
 # transforms
 base_transforms = monai.transforms.Compose([
     monai.transforms.LoadImaged(
-        keys=MODALITY_KEYS_A + MODALITY_KEYS_B + ["label"],
+        keys=modality_keys_A + modality_keys_B + ["label"],
         image_only=False,
         ensure_channel_first=True
     ),
     monai.transforms.ConcatItemsd(
-        keys=MODALITY_KEYS_A,
+        keys=modality_keys_A,
         name="images_A",
         dim=0
     ),
-    monai.transforms.DeleteItemsd(keys=MODALITY_KEYS_A),
+    monai.transforms.DeleteItemsd(keys=modality_keys_A),
     monai.transforms.ConcatItemsd(
-        keys=MODALITY_KEYS_B,
+        keys=modality_keys_B,
         name="images_B",
         dim=0
     ),
-    monai.transforms.DeleteItemsd(keys=MODALITY_KEYS_B),
+    monai.transforms.DeleteItemsd(keys=modality_keys_B),
     monai.transforms.CropForegroundd(
         keys=["images_A", "images_B", "label"],
         source_key="images_A",

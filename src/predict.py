@@ -74,5 +74,5 @@ for batch in dataloader:
     create_slice_plots(
         all_images,
         title=patient_name,
-        labels=config.MODALITY_KEYS_A + ["label", "pred"]
+        labels=config.modality_keys_A + ["label", "pred"]
     )

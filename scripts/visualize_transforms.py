@@ -15,23 +15,23 @@ monai.utils.set_determinism(config.RANDOM_STATE)
 
 transforms = monai.transforms.Compose([
     monai.transforms.LoadImaged(
-        keys=config.MODALITY_KEYS_A + config.MODALITY_KEYS_B + ["label"],
+        keys=config.modality_keys_A + config.modality_keys_B + ["label"],
         # image_only=True,
         image_only=False,
         ensure_channel_first=True
     ),
     monai.transforms.ConcatItemsd(
-        keys=config.MODALITY_KEYS_A,
+        keys=config.modality_keys_A,
         name="images_A",
         dim=0
     ),
-    monai.transforms.DeleteItemsd(keys=config.MODALITY_KEYS_A),
+    monai.transforms.DeleteItemsd(keys=config.modality_keys_A),
     monai.transforms.ConcatItemsd(
-        keys=config.MODALITY_KEYS_B,
+        keys=config.modality_keys_B,
         name="images_B",
         dim=0
     ),
-    monai.transforms.DeleteItemsd(keys=config.MODALITY_KEYS_B),
+    monai.transforms.DeleteItemsd(keys=config.modality_keys_B),
     monai.transforms.CropForegroundd(
         keys=["images_A", "images_B", "label"],
         source_key="images_A",
@@ -108,5 +108,5 @@ for batch in dataloader:
         all_images,
         title=patient_name,
         slice_dim=0,
-        labels=config.MODALITY_KEYS_A + config.MODALITY_KEYS_B + ["label"]
+        labels=config.modality_keys_A + config.modality_keys_B + ["label"]
     )
