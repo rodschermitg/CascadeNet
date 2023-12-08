@@ -98,24 +98,26 @@ def create_slice_plots(
     labels=None,
     num_slices=10
 ):
-    total_slices = images.shape[slice_dim+1]
+    total_slices = images[0].shape[slice_dim+1]
     slice_stride = total_slices // num_slices
-    num_plots = images.shape[0]
 
-    fig, ax = plt.subplots(num_slices, num_plots)
-    for row in range(num_slices):
-        for col in range(num_plots):
+    fig, ax = plt.subplots(num_slices, len(images))
+    for col, image in enumerate(images):
+        image = image.permute(1, 2, 3, 0)
+        for row in range(num_slices):
             ax[row, col].axis("off")
 
             slice_idx = (row + 1) * slice_stride
             slice_idx = min(slice_idx, total_slices-1)  # avoid IndexError
 
+            cmap = "gray" if image.shape[-1] == 1 else None
+
             if slice_dim == 0:
-                ax[row, col].imshow(images[col, slice_idx, :, :])
+                ax[row, col].imshow(image[slice_idx, :, :, :], cmap)
             elif slice_dim == 1:
-                ax[row, col].imshow(images[col, :, slice_idx, :])
+                ax[row, col].imshow(image[:, slice_idx, :, :], cmap)
             elif slice_dim == 2:
-                ax[row, col].imshow(images[col, :, :, slice_idx])
+                ax[row, col].imshow(image[:, :, slice_idx, :], cmap)
 
             if row == 0 and labels is not None:
                 ax[row, col].set_title(labels[col])

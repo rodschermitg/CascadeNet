@@ -4,7 +4,6 @@ import os
 
 import matplotlib
 import monai
-import torch
 
 from src import config
 from src.utils import create_slice_plots
@@ -93,11 +92,17 @@ dataloader = monai.data.DataLoader(dataset, batch_size=1)
 decode_onehot = monai.transforms.AsDiscrete(argmax=True, keepdim=True)
 
 for batch in dataloader:
-    all_images = torch.cat((
-        batch["images_A"].squeeze(0),
-        batch["images_B"].squeeze(0),
-        decode_onehot(batch["label"].squeeze(0))
-    ))
+    images_A = batch["images_A"].squeeze(0)
+    images_B = batch["images_B"].squeeze(0)
+    label_B = decode_onehot(batch["label"].squeeze(0))
+
+    images_A_list = [
+        images_A[channel][None] for channel in range(images_A.shape[0])
+    ]
+    images_B_list = [
+        monai.visualize.utils.blend_images(images_B[channel][None], label_B)
+        for channel in range(images_B.shape[0])
+    ]
 
     file_path = batch["label_meta_dict"]["filename_or_obj"][0]
     start_idx = file_path.find("Patient")
@@ -105,8 +110,8 @@ for batch in dataloader:
     patient_name = file_path[start_idx:end_idx]
 
     create_slice_plots(
-        all_images,
+        images_A_list + images_B_list,
         title=patient_name,
         slice_dim=0,
-        labels=config.modality_keys_A + config.modality_keys_B + ["label"]
+        labels=config.modality_keys_A + config.modality_keys_B
     )

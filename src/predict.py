@@ -60,11 +60,9 @@ for batch in dataloader:
             )
     pred = decode_onehot(pred.squeeze(0))
 
-    all_images = torch.cat((
-        images.squeeze(0),
-        label,
-        pred
-    )).cpu()
+    images_list = [
+        images[0, channel][None].cpu() for channel in range(images.shape[1])
+    ]
 
     file_path = batch["label_meta_dict"]["filename_or_obj"][0]
     start_idx = file_path.find("Patient")
@@ -72,7 +70,7 @@ for batch in dataloader:
     patient_name = file_path[start_idx:end_idx]
 
     create_slice_plots(
-        all_images,
+        images_list + [label.cpu()] + [pred.cpu()],
         title=patient_name,
         labels=config.modality_keys_A + ["label", "pred"]
     )
