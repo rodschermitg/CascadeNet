@@ -1,3 +1,5 @@
+import os
+
 import matplotlib
 import matplotlib.pyplot as plt
 
@@ -124,3 +126,11 @@ def create_slice_plots(
 
     fig.suptitle(title)
     plt.show()
+
+
+def get_patient_name(file_path):
+    start_idx = file_path.find("Patient")
+    end_idx = file_path.find(os.sep, start_idx)
+    patient_name = file_path[start_idx:end_idx]
+
+    return patient_name
