@@ -7,7 +7,7 @@ import torch
 
 import config
 from probabilistic_unet.model import ProbabilisticUnet
-from utils import create_slice_plots, get_patient_name
+import utils
 
 
 matplotlib.use("TkAgg")
@@ -64,11 +64,11 @@ for batch in dataloader:
         images[0, channel][None].cpu() for channel in range(images.shape[1])
     ]
 
-    patient_name = get_patient_name(
+    patient_name = utils.get_patient_name(
         batch["label_meta_dict"]["filename_or_obj"][0]
     )
 
-    create_slice_plots(
+    utils.create_slice_plots(
         images_list + [label.cpu()] + [pred.cpu()],
         title=patient_name,
         labels=config.modality_keys_A + ["label", "pred"]

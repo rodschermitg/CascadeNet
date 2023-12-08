@@ -6,7 +6,7 @@ import matplotlib
 import monai
 
 from src import config
-from src.utils import create_slice_plots, get_patient_name
+from src import utils
 
 
 matplotlib.use("TkAgg")
@@ -104,11 +104,11 @@ for batch in dataloader:
         for channel in range(images_B.shape[0])
     ]
 
-    patient_name = get_patient_name(
+    patient_name = utils.get_patient_name(
         batch["label_meta_dict"]["filename_or_obj"][0]
     )
 
-    create_slice_plots(
+    utils.create_slice_plots(
         images_A_list + images_B_list,
         title=patient_name,
         slice_dim=0,

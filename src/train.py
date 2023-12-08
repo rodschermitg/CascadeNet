@@ -9,7 +9,7 @@ import sklearn.model_selection
 
 import config
 from probabilistic_unet.model import ProbabilisticUnet
-from utils import concat_logs, create_log_plots
+import utils
 
 
 monai.utils.set_determinism(config.RANDOM_STATE)
@@ -290,10 +290,10 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
 
             scheduler.step(mean_val_loss_pred)
 
-            create_log_plots(
+            utils.create_log_plots(
                 y_list=[
-                    concat_logs(train_logs["mean_train_loss_pred"]),
-                    concat_logs(train_logs["mean_val_loss_pred"])
+                    utils.concat_logs(train_logs["mean_train_loss_pred"]),
+                    utils.concat_logs(train_logs["mean_val_loss_pred"])
                 ],
                 fold=fold,
                 epoch=epoch,
@@ -302,8 +302,10 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                 title="mean training/validation prediction loss per epoch",
                 y_label="Loss"
             )
-            create_log_plots(
-                y_list=[concat_logs(train_logs["mean_train_loss_cycle"])],
+            utils.create_log_plots(
+                y_list=[
+                    utils.concat_logs(train_logs["mean_train_loss_cycle"])
+                ],
                 fold=fold,
                 epoch=epoch,
                 labels=["train cycle loss"],
@@ -311,10 +313,10 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                 title="mean cycle loss per epoch",
                 y_label="Loss"
             )
-            create_log_plots(
+            utils.create_log_plots(
                 y_list=[
-                    concat_logs(train_logs["mean_train_loss_kl_A2B"]),
-                    concat_logs(train_logs["mean_train_loss_kl_B2A"])
+                    utils.concat_logs(train_logs["mean_train_loss_kl_A2B"]),
+                    utils.concat_logs(train_logs["mean_train_loss_kl_B2A"])
                 ],
                 fold=fold,
                 epoch=epoch,
@@ -323,11 +325,11 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                 title="mean training KL loss per epoch",
                 y_label="Loss"
             )
-            create_log_plots(
+            utils.create_log_plots(
                 y_list=[
-                    concat_logs(train_logs["mean_val_dice"]),
-                    concat_logs(train_logs["mean_val_precision"]),
-                    concat_logs(train_logs["mean_val_recall"])
+                    utils.concat_logs(train_logs["mean_val_dice"]),
+                    utils.concat_logs(train_logs["mean_val_precision"]),
+                    utils.concat_logs(train_logs["mean_val_recall"])
                 ],
                 fold=fold,
                 epoch=epoch,
