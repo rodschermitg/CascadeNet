@@ -4,6 +4,7 @@ import os
 
 import matplotlib
 import monai
+import torch
 
 from src import config
 from src import utils
@@ -89,12 +90,11 @@ with open(data_path, "r") as data_file:
     data = json.load(data_file)
 dataset = monai.data.Dataset(data=data["train"], transform=transforms)
 dataloader = monai.data.DataLoader(dataset, batch_size=1)
-decode_onehot = monai.transforms.AsDiscrete(argmax=True, keepdim=True)
 
 for batch in dataloader:
     images_A = batch["images_A"].squeeze(0)
     images_B = batch["images_B"].squeeze(0)
-    label_B = decode_onehot(batch["label"].squeeze(0))
+    label_B = torch.argmax(batch["label"], dim=1)  # decode one-hot labels
 
     images_A_list = [
         images_A[channel][None] for channel in range(images_A.shape[0])

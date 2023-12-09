@@ -33,8 +33,7 @@ dataset = monai.data.CacheDataset(
 net_A2B = ProbabilisticUnet(**config.MODEL_KWARGS_A2B).to(device)
 net_B2A = ProbabilisticUnet(**config.MODEL_KWARGS_B2A).to(device)
 
-encode_onehot = monai.transforms.AsDiscrete(argmax=True, to_onehot=2)
-decode_onehot = torch.argmax
+discretize = monai.transforms.AsDiscrete(argmax=True, to_onehot=2)
 
 optimizer = torch.optim.Adam(
     itertools.chain(net_A2B.parameters(), net_B2A.parameters()),
@@ -137,11 +136,11 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                 )
             train_loss_pred = loss_fn_pred(
                 train_pred_B,
-                decode_onehot(train_label_B, dim=1, keepdim=False)
+                torch.argmax(train_label_B, dim=1)  # decode one-hot labels
             )
 
-            mean = train_pred_B.mean(dim=(2, 3), keepdim=True)  # .detach()?
-            std = train_pred_B.std(dim=(2, 3), keepdim=True)  # .detach()?
+            mean = train_pred_B.mean(dim=(2, 3, 4), keepdim=True)  # .detach()?
+            std = train_pred_B.std(dim=(2, 3, 4), keepdim=True)  # .detach()?
             train_pred_B = (train_pred_B - mean) / std
 
             with torch.cuda.amp.autocast(enabled=False):
@@ -223,12 +222,14 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                         )
                     epoch_val_loss_pred += loss_fn_pred(
                         val_pred_B,
-                        decode_onehot(val_label_B, dim=1, keepdim=False)
+                        # decode one-hot labels
+                        torch.argmax(val_label_B, dim=1)
                     ).item()
 
-                    # postprocess val_preds/val_labels for metric functions
+                    # (discretize and) store batch elements in lists for
+                    # metric functions
                     val_pred_B = [
-                        encode_onehot(pred)
+                        discretize(pred)
                         for pred in monai.data.decollate_batch(val_pred_B)
                     ]
                     val_label_B = monai.data.decollate_batch(val_label_B)

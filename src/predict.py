@@ -23,7 +23,6 @@ checkpoint = torch.load(
 )
 model = ProbabilisticUnet(**config.MODEL_KWARGS_A2B).to(device)
 model.load_state_dict(checkpoint["net_A2B_state_dict"])
-decode_onehot = monai.transforms.AsDiscrete(argmax=True, keepdim=True)
 
 data_path = os.path.join(config.data_dir, config.DATA_FILENAME)
 with open(data_path, "r") as data_file:
@@ -48,7 +47,7 @@ model.eval()
 for batch in dataloader:
     images = batch["images_A"].to(device)
     label = batch["label"].to(device)
-    label = decode_onehot(label.squeeze(0))
+    label = torch.argmax(label, dim=1)  # decode one-hot labels
 
     with torch.no_grad():
         with torch.cuda.amp.autocast():
@@ -58,7 +57,7 @@ for batch in dataloader:
                 sw_batch_size=config.BATCH_SIZE,
                 predictor=model
             )
-    pred = decode_onehot(pred.squeeze(0))
+    pred = torch.argmax(pred, dim=1)  # discretize and decode one-hot labels
 
     images_list = [
         images[0, channel][None].cpu() for channel in range(images.shape[1])
