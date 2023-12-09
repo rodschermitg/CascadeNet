@@ -1,4 +1,4 @@
-"""run from project root: python3 -m scripts.temp"""
+"""run from project root: python3 -m scripts.visualize_output"""
 import json
 import os
 
