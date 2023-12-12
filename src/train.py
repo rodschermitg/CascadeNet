@@ -134,28 +134,27 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                     train_real_A,
                     train_label_B
                 )
-            train_loss_pred = loss_fn_pred(
-                train_pred_B,
-                torch.argmax(train_label_B, dim=1)  # decode one-hot labels
-            )
+                train_loss_pred = loss_fn_pred(
+                    train_pred_B,
+                    torch.argmax(train_label_B, dim=1)  # decode one-hot labels
+                )
 
-            mean = train_pred_B.mean(dim=(2, 3, 4), keepdim=True)  # .detach()?
-            std = train_pred_B.std(dim=(2, 3, 4), keepdim=True)  # .detach()?
-            train_pred_B = (train_pred_B - mean) / std
+                mean = train_pred_B.mean(dim=(2, 3, 4), keepdim=True)
+                std = train_pred_B.std(dim=(2, 3, 4), keepdim=True)
+                train_pred_B = (train_pred_B - mean) / std
 
-            with torch.cuda.amp.autocast(enabled=False):
                 train_rec_A, train_loss_kl_B2A = net_B2A(
                     torch.cat((train_pred_B, train_real_B), dim=1),
                     train_real_A
                 )
-            train_loss_cycle = loss_fn_cycle(train_real_A, train_rec_A)
+                train_loss_cycle = loss_fn_cycle(train_real_A, train_rec_A)
 
-            train_loss = (
-                train_loss_pred +
-                config.KL_WEIGHT*train_loss_kl_A2B +
-                config.KL_WEIGHT*train_loss_kl_B2A +
-                config.CYCLE_WEIGHT*train_loss_cycle
-            )
+                train_loss = (
+                    train_loss_pred +
+                    config.KL_WEIGHT*train_loss_kl_A2B +
+                    config.KL_WEIGHT*train_loss_kl_B2A +
+                    config.CYCLE_WEIGHT*train_loss_cycle
+                )
 
             optimizer.zero_grad(set_to_none=True)
             scaler.scale(train_loss).backward()
@@ -220,11 +219,11 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                             sw_batch_size=config.BATCH_SIZE,
                             predictor=net_A2B
                         )
-                    epoch_val_loss_pred += loss_fn_pred(
-                        val_pred_B,
-                        # decode one-hot labels
-                        torch.argmax(val_label_B, dim=1)
-                    ).item()
+                        epoch_val_loss_pred += loss_fn_pred(
+                            val_pred_B,
+                            # decode one-hot labels
+                            torch.argmax(val_label_B, dim=1)
+                        ).item()
 
                     # (discretize and) store batch elements in lists for
                     # metric functions
