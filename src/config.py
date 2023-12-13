@@ -19,6 +19,7 @@ MODEL_KWARGS_A2B = {
     "num_filters": [32, 64, 128, 512],
     "activation_layer": torch.nn.LogSoftmax(dim=1),
     "latent_dim": 2,
+    "save_decoder_features": False,
     "full_cov": True,
     "n_components": 9,
     "temperature": 0.28

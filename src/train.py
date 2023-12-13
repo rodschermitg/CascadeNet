@@ -149,12 +149,26 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                 )
                 train_loss_cycle = loss_fn_cycle(train_real_A, train_rec_A)
 
+                if net_A2B.unet.save_decoder_features:
+                    decoder_features = net_A2B.get_processed_decoder_features(
+                        config.PATCH_SIZE
+                    )
+                    train_loss_ds = sum([
+                        loss_fn_pred(
+                            feat,
+                            torch.argmax(train_label_B, dim=1)
+                        ) * (1/2)**d
+                        for d, feat in enumerate(decoder_features, 1)
+                    ])
+
                 train_loss = (
                     train_loss_pred +
                     config.KL_WEIGHT*train_loss_kl_A2B +
                     config.KL_WEIGHT*train_loss_kl_B2A +
                     config.CYCLE_WEIGHT*train_loss_cycle
                 )
+                if net_A2B.unet.save_decoder_features:
+                    train_loss += train_loss_ds
 
             optimizer.zero_grad(set_to_none=True)
             scaler.scale(train_loss).backward()
