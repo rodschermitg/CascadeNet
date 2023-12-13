@@ -6,8 +6,8 @@ import matplotlib
 import monai
 import torch
 
-from src import config
 from probabilistic_unet.model import ProbabilisticUnet
+from src import config
 from src import utils
 
 
@@ -70,7 +70,12 @@ for batch in dataloader:
         pred[0, channel][None].cpu() for channel in range(pred.shape[1])
     ]
 
+    patient_name = utils.get_patient_name(
+        batch["label_meta_dict"]["filename_or_obj"][0]
+    )
+
     utils.create_slice_plots(
         images_A_list + images_B_list + pred_list,
+        title=patient_name,
         labels=config.modality_keys_A + config.modality_keys_B + ["0", "1"]
     )
