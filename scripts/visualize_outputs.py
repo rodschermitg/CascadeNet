@@ -64,10 +64,8 @@ for batch in dataloader:
 
             mean = pred_B.mean(dim=(2, 3, 4), keepdim=True)
             std = pred_B.std(dim=(2, 3, 4), keepdim=True)
-            pred_B = (pred_B - mean) / std
-
             rec_A = monai.inferers.sliding_window_inference(
-                inputs=torch.cat((pred_B, real_B), dim=1),
+                inputs=torch.cat(((pred_B-mean)/std, real_B), dim=1),
                 roi_size=config.PATCH_SIZE,
                 sw_batch_size=config.BATCH_SIZE,
                 predictor=net_B2A
