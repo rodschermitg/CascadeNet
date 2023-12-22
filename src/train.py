@@ -46,8 +46,8 @@ scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
     verbose=True
 )
 
-loss_fn_cycle = torch.nn.L1Loss(reduction="mean")
 loss_fn_pred = torch.nn.NLLLoss(reduction="mean")
+loss_fn_cycle = torch.nn.L1Loss(reduction="mean")
 dice_fn = monai.metrics.DiceMetric()
 confusion_matrix_fn = monai.metrics.ConfusionMatrixMetric(
     metric_name=("precision", "recall")
@@ -72,6 +72,7 @@ train_logs = {
     "mean_train_loss_cycle": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_train_loss_kl_B2A": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_loss_pred": {f"fold{i}": [] for i in range(config.FOLDS)},
+    "mean_val_loss_cycle": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_dice": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_precision": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_recall": {f"fold{i}": [] for i in range(config.FOLDS)},
@@ -122,7 +123,6 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
         epoch_train_loss_kl_A2B = 0
         epoch_train_loss_cycle = 0
         epoch_train_loss_kl_B2A = 0
-        epoch_val_loss_pred = 0
 
         for iter, train_batch in enumerate(train_dataloader):
             train_real_A = train_batch["images_A"].to(device)
@@ -142,7 +142,6 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                 mean = train_pred_B.mean(dim=(2, 3, 4), keepdim=True)
                 std = train_pred_B.std(dim=(2, 3, 4), keepdim=True)
                 train_pred_B = (train_pred_B - mean) / std
-
                 train_rec_A, train_loss_kl_B2A = net_B2A(
                     torch.cat((train_pred_B, train_real_B), dim=1),
                     train_real_A
@@ -222,10 +221,17 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
 
         if (epoch + 1) % config.VAL_INTERVAL == 0:
             net_A2B.eval()
+            net_B2A.eval()
+
+            epoch_val_loss_pred = 0
+            epoch_val_loss_cycle = 0
+
             with torch.no_grad():
                 for val_batch in val_dataloader:
                     val_real_A = val_batch["images_A"].to(device)
+                    val_real_B = val_batch["images_B"].to(device)
                     val_label_B = val_batch["label"].to(device)
+
                     with torch.cuda.amp.autocast():
                         val_pred_B = monai.inferers.sliding_window_inference(
                             inputs=val_real_A,
@@ -237,6 +243,22 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                             val_pred_B,
                             # decode one-hot labels
                             torch.argmax(val_label_B, dim=1)
+                        ).item()
+
+                        mean = val_pred_B.mean(dim=(2, 3, 4), keepdim=True)
+                        std = val_pred_B.std(dim=(2, 3, 4), keepdim=True)
+                        val_rec_A = monai.inferers.sliding_window_inference(
+                            inputs=torch.cat(
+                                ((val_pred_B-mean)/std, val_real_B),
+                                dim=1
+                            ),
+                            roi_size=config.PATCH_SIZE,
+                            sw_batch_size=config.BATCH_SIZE,
+                            predictor=net_B2A
+                        )
+                        epoch_val_loss_cycle += loss_fn_cycle(
+                            val_real_A,
+                            val_rec_A
                         ).item()
 
                     # (discretize and) store batch elements in lists for
@@ -251,6 +273,7 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                     confusion_matrix_fn(val_pred_B, val_label_B)
 
             mean_val_loss_pred = epoch_val_loss_pred / len(val_dataloader)
+            mean_val_loss_cycle = epoch_val_loss_cycle / len(val_dataloader)
             mean_val_dice = dice_fn.aggregate().item()
             mean_val_precision = confusion_matrix_fn.aggregate()[0].item()
             mean_val_recall = confusion_matrix_fn.aggregate()[1].item()
@@ -259,6 +282,9 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
 
             train_logs["mean_val_loss_pred"][f"fold{fold}"].append(
                 mean_val_loss_pred
+            )
+            train_logs["mean_val_loss_cycle"][f"fold{fold}"].append(
+                mean_val_loss_cycle
             )
             train_logs["mean_val_dice"][f"fold{fold}"].append(mean_val_dice)
             train_logs["mean_val_precision"][f"fold{fold}"].append(
@@ -269,6 +295,7 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
             )
 
             print(f"Mean val prediction loss: {mean_val_loss_pred:.4f}")
+            print(f"Mean val cycle loss: {mean_val_loss_cycle:.4f}")
             print(f"Mean val dice: {mean_val_dice:.4f}")
             print(f"Mean val precision: {mean_val_precision:.4f}")
             print(f"Mean val recall: {mean_val_recall:.4f}")
@@ -318,11 +345,12 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
             )
             utils.create_log_plots(
                 y_list=[
-                    utils.concat_logs(train_logs["mean_train_loss_cycle"])
+                    utils.concat_logs(train_logs["mean_train_loss_cycle"]),
+                    utils.concat_logs(train_logs["mean_val_loss_cycle"])
                 ],
                 fold=fold,
                 epoch=epoch,
-                labels=["train cycle loss"],
+                labels=["train cycle loss", "val cycle loss"],
                 output_path=config.cycle_loss_plot_path,
                 title="mean cycle loss per epoch",
                 y_label="Loss"
@@ -390,9 +418,4 @@ with open(config.train_logs_path, "w") as train_logs_file:
 # - review lr scheduling
 # - review kl loss function
 # - review val metrics
-# - switch to PersistentDataset?
-# - increase batch_size/patch_size?
-# - catch ValueError exception?
-
-# QUESTIONS
-# - should the cycle loss be included for eval
+# - increase patch_size?
