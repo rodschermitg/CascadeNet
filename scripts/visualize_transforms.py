@@ -13,76 +13,13 @@ from src import utils
 matplotlib.use("TkAgg")
 monai.utils.set_determinism(config.RANDOM_STATE)
 
+# set prob = 1.0 for all non-deterministic transforms to visualize
+for transform in config.train_transforms.transforms:
+    if hasattr(transform, "prob"):
+        transform.prob = 1.0
 transforms = monai.transforms.Compose([
-    monai.transforms.LoadImaged(
-        keys=config.modality_keys_A + config.modality_keys_B + ["label"],
-        # image_only=True,
-        image_only=False,
-        ensure_channel_first=True
-    ),
-    monai.transforms.ConcatItemsd(
-        keys=config.modality_keys_A,
-        name="images_A",
-        dim=0
-    ),
-    monai.transforms.DeleteItemsd(keys=config.modality_keys_A),
-    monai.transforms.ConcatItemsd(
-        keys=config.modality_keys_B,
-        name="images_B",
-        dim=0
-    ),
-    monai.transforms.DeleteItemsd(keys=config.modality_keys_B),
-    monai.transforms.CropForegroundd(
-        keys=["images_A", "images_B", "label"],
-        source_key="images_A",
-    ),
-    monai.transforms.ThresholdIntensityd(
-        keys="label",
-        threshold=1,
-        above=False,
-        cval=1
-    ),
-    monai.transforms.AsDiscreted(keys="label", to_onehot=2),
-    # monai.transforms.Orientationd(
-    #     keys=["images_A", "images_B", "label"],
-    #     axcodes="SPL",
-    # ),
-    monai.transforms.RandAffined(
-        keys=["images_A", "images_B", "label"],
-        # prob=0.1,
-        prob=1.0,
-        rotate_range=0.1,
-        scale_range=0.1,
-        mode=("bilinear", "bilinear", "nearest")
-    ),
-    monai.transforms.RandCropByPosNegLabeld(
-        keys=["images_A", "images_B", "label"],
-        label_key="label",
-        spatial_size=config.PATCH_SIZE,
-        pos=1,
-        neg=1,
-        num_samples=1,
-    ),
-    # images_A and images_B have different number of channels, which leads to
-    # an error when processed together by RandGaussianNoised
-    monai.transforms.RandGaussianNoised(
-        keys=["images_A"],
-        # prob=0.1,
-        prob=1.0,
-        mean=0.0,
-        std=0.1
-    ),
-    monai.transforms.RandGaussianNoised(
-        keys=["images_B"],
-        # prob=0.1,
-        prob=1.0,
-        mean=0.0,
-        std=0.1
-    ),
-    monai.transforms.NormalizeIntensityd(
-        keys=["images_A", "images_B"],
-        channel_wise=True
-    )
+    config.base_transforms,
+    config.train_transforms
 ])
 
 data_path = os.path.join(config.data_dir, config.DATA_FILENAME)
