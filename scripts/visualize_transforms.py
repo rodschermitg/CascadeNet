@@ -29,16 +29,17 @@ dataset = monai.data.Dataset(data=data["train"], transform=transforms)
 dataloader = monai.data.DataLoader(dataset, batch_size=1)
 
 for batch in dataloader:
-    images_A = batch["images_A"].squeeze(0)
-    images_B = batch["images_B"].squeeze(0)
-    label_B = torch.argmax(batch["label"], dim=1)  # decode one-hot labels
+    images_A = batch["images_A"]
+    images_B = batch["images_B"]
+    label_B = batch["label"]
+    label_B = torch.argmax(label_B, dim=1)  # decode one-hot labels
 
     images_A_list = [
-        images_A[channel][None] for channel in range(images_A.shape[0])
+        images_A[:, channel] for channel in range(2*config.num_modalities)
     ]
     images_B_list = [
-        monai.visualize.utils.blend_images(images_B[channel][None], label_B)
-        for channel in range(images_B.shape[0])
+        monai.visualize.utils.blend_images(images_B[:, channel], label_B)
+        for channel in range(config.num_modalities)
     ]
 
     patient_name = utils.get_patient_name(

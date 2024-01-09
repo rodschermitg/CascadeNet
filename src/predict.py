@@ -57,7 +57,7 @@ for batch in dataloader:
                 sw_batch_size=config.BATCH_SIZE,
                 predictor=model
             )
-    pred = torch.argmax(pred, dim=1)  # discretize and decode one-hot labels
+    pred = torch.argmax(pred, dim=1)
 
     images_list = [
         images[0, channel][None].cpu() for channel in range(images.shape[1])

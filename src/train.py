@@ -130,6 +130,7 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
             train_label_B = train_batch["label"].to(device)
 
             with torch.cuda.amp.autocast(enabled=False):
+                # net_A2B
                 train_pred_B, train_loss_kl_A2B = net_A2B(
                     train_real_A,
                     train_label_B
@@ -138,15 +139,6 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                     train_pred_B,
                     torch.argmax(train_label_B, dim=1)  # decode one-hot labels
                 )
-
-                mean = train_pred_B.mean(dim=(2, 3, 4), keepdim=True)
-                std = train_pred_B.std(dim=(2, 3, 4), keepdim=True)
-                train_pred_B = (train_pred_B - mean) / std
-                train_rec_A, train_loss_kl_B2A = net_B2A(
-                    torch.cat((train_pred_B, train_real_B), dim=1),
-                    train_real_A
-                )
-                train_loss_cycle = loss_fn_cycle(train_real_A, train_rec_A)
 
                 if net_A2B.unet.save_decoder_features:
                     decoder_features = net_A2B.get_processed_decoder_features(
@@ -160,14 +152,26 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                         for d, feat in enumerate(decoder_features, 1)
                     ])
 
-                train_loss = (
-                    train_loss_pred +
-                    config.KL_WEIGHT*train_loss_kl_A2B +
-                    config.KL_WEIGHT*train_loss_kl_B2A +
-                    config.CYCLE_WEIGHT*train_loss_cycle
+                # net_B2A
+                mean = train_pred_B.mean(dim=(2, 3, 4), keepdim=True)
+                std = train_pred_B.std(dim=(2, 3, 4), keepdim=True)
+                train_pred_B = (train_pred_B - mean) / std
+
+                train_rec_A, train_loss_kl_B2A = net_B2A(
+                    torch.cat((train_pred_B, train_real_B), dim=1),
+                    train_real_A
                 )
-                if net_A2B.unet.save_decoder_features:
-                    train_loss += train_loss_ds
+
+                train_loss_cycle = loss_fn_cycle(train_real_A, train_rec_A)
+
+            train_loss = (
+                train_loss_pred +
+                config.KL_WEIGHT*train_loss_kl_A2B +
+                config.KL_WEIGHT*train_loss_kl_B2A +
+                config.CYCLE_WEIGHT*train_loss_cycle
+            )
+            if net_A2B.unet.save_decoder_features:
+                train_loss += train_loss_ds
 
             optimizer.zero_grad(set_to_none=True)
             scaler.scale(train_loss).backward()
@@ -233,6 +237,7 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                     val_label_B = val_batch["label"].to(device)
 
                     with torch.cuda.amp.autocast():
+                        # net_A2B
                         val_pred_B = monai.inferers.sliding_window_inference(
                             inputs=val_real_A,
                             roi_size=config.PATCH_SIZE,
@@ -241,12 +246,13 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                         )
                         epoch_val_loss_pred += loss_fn_pred(
                             val_pred_B,
-                            # decode one-hot labels
                             torch.argmax(val_label_B, dim=1)
                         ).item()
 
+                        # net_B2A
                         mean = val_pred_B.mean(dim=(2, 3, 4), keepdim=True)
                         std = val_pred_B.std(dim=(2, 3, 4), keepdim=True)
+
                         val_rec_A = monai.inferers.sliding_window_inference(
                             inputs=torch.cat(
                                 ((val_pred_B-mean)/std, val_real_B),
@@ -256,13 +262,13 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                             sw_batch_size=config.BATCH_SIZE,
                             predictor=net_B2A
                         )
+
                         epoch_val_loss_cycle += loss_fn_cycle(
                             val_real_A,
                             val_rec_A
                         ).item()
 
-                    # (discretize and) store batch elements in lists for
-                    # metric functions
+                    # store discretized batches in lists for metric functions
                     val_pred_B = [
                         discretize(pred)
                         for pred in monai.data.decollate_batch(val_pred_B)
@@ -277,6 +283,7 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
             mean_val_dice = dice_fn.aggregate().item()
             mean_val_precision = confusion_matrix_fn.aggregate()[0].item()
             mean_val_recall = confusion_matrix_fn.aggregate()[1].item()
+
             dice_fn.reset()
             confusion_matrix_fn.reset()
 
