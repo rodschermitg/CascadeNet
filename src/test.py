@@ -51,7 +51,7 @@ recall_list = []
 
 model.eval()
 for batch in dataloader:
-    images = batch["images"].to(device)
+    images = batch["images_A"].to(device)
     label = batch["label"].to(device)
 
     patient_name = utils.get_patient_name(
