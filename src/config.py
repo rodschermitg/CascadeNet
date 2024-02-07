@@ -18,13 +18,15 @@ RANDOM_STATE = 42
 TEST_SIZE = 0.1
 PATCH_SIZE = (96, 96, 96)
 NUM_CLASSES = 2
+TIMESTEPS = ["1", "2", "3"]
+num_timesteps = len(TIMESTEPS)
 MODALITIES = ["CT1", "FLAIR", "T1", "T2"]
 num_modalities = len(MODALITIES)
 modality_keys_A = (
-    [modality + "_1" for modality in MODALITIES] +
-    [modality + "_2" for modality in MODALITIES]
+    [f"{modality}_{TIMESTEPS[0]}" for modality in MODALITIES] +
+    [f"{modality}_{TIMESTEPS[1]}" for modality in MODALITIES]
 )
-modality_keys_B = [modality + "_3" for modality in MODALITIES]
+modality_keys_B = [f"{modality}_{TIMESTEPS[2]}" for modality in MODALITIES]
 
 # transforms
 base_transforms = monai.transforms.Compose([
@@ -115,7 +117,7 @@ MODEL_KWARGS_A2B = {
     "full_cov": True,
     "n_components": 9,
     "temperature": 0.28
- }
+}
 MODEL_KWARGS_B2A = {
     "input_channels": num_modalities + NUM_CLASSES,
     "label_channels": 2 * num_modalities,
