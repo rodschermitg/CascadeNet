@@ -5,51 +5,34 @@ import os
 from src import config
 
 
-def fill_data_dict(data_dict, train=True, num_images=3):
-    data_dir = config.train_data_dir if train else config.test_data_dir
-    MODALITIES = ["ct1", "flair", "t1", "t2"]
-
-    for patient_dir in sorted(os.listdir(data_dir)):
-        patient_dict = {}
-        week_dirs = sorted(os.listdir(os.path.join(data_dir, patient_dir)))
-
-        # fill image paths
-        for image_idx in range(num_images):
-            image_dir = os.path.join(
-                data_dir,
-                patient_dir,
-                week_dirs[image_idx],
-                "DeepBraTumIA-segmentation",
-                "atlas",
-                "skull_strip"
-            )
-            for modality in MODALITIES:
-                patient_dict[f"{modality}_{image_idx+1}"] = os.path.join(
-                    image_dir,
-                    f"{modality}_skull_strip.nii.gz"
-                )
-
-        # fill label path
-        label_path = os.path.join(
-            data_dir,
-            patient_dir,
-            week_dirs[-1],
-            "DeepBraTumIA-segmentation",
-            "atlas",
-            "segmentation",
-            "seg_mask.nii.gz"
-        )
-        patient_dict["label"] = label_path
-
-        data_dict["train" if train else "test"].append(patient_dict)
-
-    return data_dict
-
-
+base_keys = config.MODALITIES + ["label"]
 data_dict = {"train": [], "test": []}
 
-data_dict = fill_data_dict(data_dict, train=True)
-data_dict = fill_data_dict(data_dict, train=False)
+for dataset_key in data_dict.keys():
+    if dataset_key == "train":
+        dataset_dir = config.train_data_dir
+    else:
+        dataset_dir = config.test_data_dir
+
+    for patient_dir in sorted(os.listdir(dataset_dir)):
+        patient_dict = {}
+        week_dirs = sorted(os.listdir(os.path.join(dataset_dir, patient_dir)))
+
+        for timestep_idx, timestep in enumerate(config.TIMESTEPS):
+            image_dir = os.path.join(
+                dataset_dir, patient_dir, week_dirs[timestep_idx]
+            )
+            for base_key in base_keys:
+                if base_key == "label" and timestep == config.TIMESTEPS[-1]:
+                    image_path = os.path.join(image_dir, "seg_mask.nii.gz")
+                    patient_dict["label"] = image_path
+                elif base_key in config.MODALITIES:
+                    image_path = os.path.join(
+                        image_dir, f"{base_key.lower()}_skull_strip.nii.gz"
+                    )
+                    patient_dict[f"{base_key}_{timestep}"] = image_path
+
+        data_dict[dataset_key].append(patient_dict)
 
 with open(os.path.join(config.data_dir, config.DATA_FILENAME), "w") as file:
     json.dump(data_dict, file, indent=4)
