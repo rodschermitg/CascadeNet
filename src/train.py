@@ -48,8 +48,9 @@ scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
 
 loss_fn_pred = torch.nn.NLLLoss(reduction="mean")
 loss_fn_cycle = torch.nn.L1Loss(reduction="mean")
-dice_fn = monai.metrics.DiceMetric()
+dice_fn = monai.metrics.DiceMetric(include_background=False)
 confusion_matrix_fn = monai.metrics.ConfusionMatrixMetric(
+    include_background=False,
     metric_name=("precision", "recall")
 )
 
@@ -423,5 +424,4 @@ with open(config.train_logs_path, "w") as train_logs_file:
 # TODO
 # - add hyperparameter optimization?
 # - review kl loss function
-# - review val metrics
 # - increase patch_size?
