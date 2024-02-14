@@ -38,11 +38,11 @@ discretize = monai.transforms.AsDiscrete(argmax=True, to_onehot=2)
 optimizer = torch.optim.Adam(
     itertools.chain(net_A2B.parameters(), net_B2A.parameters()),
     lr=config.LR,
-    betas=(0.5, 0.999)  # remove?
 )
 scaler = torch.cuda.amp.GradScaler(enabled=False)
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
     optimizer=optimizer,
+    min_lr=config.LR/10,
     verbose=True
 )
 
@@ -422,7 +422,6 @@ with open(config.train_logs_path, "w") as train_logs_file:
 
 # TODO
 # - add hyperparameter optimization?
-# - review lr scheduling
 # - review kl loss function
 # - review val metrics
 # - increase patch_size?
