@@ -28,7 +28,11 @@ model_list = [
 for model, checkpoint in zip(model_list, checkpoint_list):
     model.load_state_dict(checkpoint["net_A2B_state_dict"])
     model.eval()
-discretize = monai.transforms.AsDiscrete(argmax=True, to_onehot=2)
+
+discretize = monai.transforms.AsDiscrete(
+    argmax=True,
+    to_onehot=config.NUM_CLASSES
+)
 
 data_path = os.path.join(config.data_dir, config.DATA_FILENAME)
 with open(data_path, "r") as data_file:

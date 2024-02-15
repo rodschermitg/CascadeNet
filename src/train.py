@@ -33,7 +33,10 @@ dataset = monai.data.CacheDataset(
 net_A2B = ProbabilisticUnet(**config.MODEL_KWARGS_A2B).to(device)
 net_B2A = ProbabilisticUnet(**config.MODEL_KWARGS_B2A).to(device)
 
-discretize = monai.transforms.AsDiscrete(argmax=True, to_onehot=2)
+discretize = monai.transforms.AsDiscrete(
+    argmax=True,
+    to_onehot=config.NUM_CLASSES
+)
 
 optimizer = torch.optim.Adam(
     itertools.chain(net_A2B.parameters(), net_B2A.parameters()),
