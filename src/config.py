@@ -132,8 +132,7 @@ MODEL_KWARGS_B2A = {
     "latent_size": 3,
     "temperature": 0.28,
     "task_kwargs": {
-        "output_activation_op": torch.nn.LogSoftmax,
-        "output_activation_kwargs": {"dim": 1},
+        "output_activation_op": torch.nn.Tanh,
         "activation_kwargs": {"inplace": True}
     },
     "prior_kwargs": {
@@ -154,7 +153,7 @@ EPOCHS = 250
 BATCH_SIZE = 1
 VAL_INTERVAL = 5
 DISPLAY_INTERVAL = 5
-CYCLE_WEIGHT = 0.2
+CYCLE_WEIGHT = 1
 KL_WEIGHT = 1
 SAVE_MODEL_EACH_FOLD = True
 
