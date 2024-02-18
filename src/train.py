@@ -4,11 +4,11 @@ import os
 import time
 
 import monai
-import torch
 import sklearn.model_selection
+import torch
 
 import config
-from probabilistic_unet.model import ProbabilisticUnet
+import models
 import utils
 
 
@@ -30,8 +30,12 @@ dataset = monai.data.CacheDataset(
     num_workers=num_workers
 )
 
-net_A2B = ProbabilisticUnet(**config.MODEL_KWARGS_A2B).to(device)
-net_B2A = ProbabilisticUnet(**config.MODEL_KWARGS_B2A).to(device)
+net_A2B = models.ProbabilisticSegmentationNet(**config.MODEL_KWARGS_A2B).to(device)
+net_A2B.init_weights(torch.nn.init.kaiming_uniform_, 0)
+net_A2B.init_bias(torch.nn.init.constant_, 0)
+net_B2A = models.ProbabilisticSegmentationNet(**config.MODEL_KWARGS_B2A).to(device)
+net_B2A.init_weights(torch.nn.init.kaiming_uniform_, 0)
+net_B2A.init_bias(torch.nn.init.constant_, 0)
 
 discretize = monai.transforms.AsDiscrete(
     argmax=True,
@@ -40,7 +44,7 @@ discretize = monai.transforms.AsDiscrete(
 
 optimizer = torch.optim.Adam(
     itertools.chain(net_A2B.parameters(), net_B2A.parameters()),
-    lr=config.LR,
+    lr=config.LR
 )
 scaler = torch.cuda.amp.GradScaler(enabled=False)
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
@@ -144,17 +148,17 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                     torch.argmax(train_label_B, dim=1)  # decode one-hot labels
                 )
 
-                if net_A2B.unet.save_decoder_features:
-                    decoder_features = net_A2B.get_processed_decoder_features(
-                        config.PATCH_SIZE
-                    )
-                    train_loss_ds = sum([
-                        loss_fn_pred(
-                            feat,
-                            torch.argmax(train_label_B, dim=1)
-                        ) * (1/2)**d
-                        for d, feat in enumerate(decoder_features, 1)
-                    ])
+                # if net_A2B.unet.save_decoder_features:
+                #     decoder_features = net_A2B.get_processed_decoder_features(
+                #         config.PATCH_SIZE
+                #     )
+                #     train_loss_ds = sum([
+                #         loss_fn_pred(
+                #             feat,
+                #             torch.argmax(train_label_B, dim=1)
+                #         ) * (1/2)**d
+                #         for d, feat in enumerate(decoder_features, 1)
+                #     ])
 
                 # net_B2A
                 mean = train_pred_B.mean(dim=(2, 3, 4), keepdim=True)
@@ -174,8 +178,8 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                 config.KL_WEIGHT*train_loss_kl_B2A +
                 config.CYCLE_WEIGHT*train_loss_cycle
             )
-            if net_A2B.unet.save_decoder_features:
-                train_loss += train_loss_ds
+            # if net_A2B.unet.save_decoder_features:
+            #     train_loss += train_loss_ds
 
             optimizer.zero_grad(set_to_none=True)
             scaler.scale(train_loss).backward()
@@ -426,5 +430,4 @@ with open(config.train_logs_path, "w") as train_logs_file:
 
 # TODO
 # - add hyperparameter optimization?
-# - review kl loss function
 # - increase patch_size?

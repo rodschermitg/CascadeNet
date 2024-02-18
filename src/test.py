@@ -5,7 +5,7 @@ import monai
 import torch
 
 import config
-from probabilistic_unet.model import ProbabilisticUnet
+import models
 import utils
 
 
@@ -22,7 +22,7 @@ checkpoint_list = [
     for fold in range(config.FOLDS)
 ]
 model_list = [
-    ProbabilisticUnet(**config.MODEL_KWARGS_A2B).to(device)
+    models.ProbabilisticSegmentationNet(**config.MODEL_KWARGS_A2B).to(device)
     for _ in range(config.FOLDS)
 ]
 for model, checkpoint in zip(model_list, checkpoint_list):

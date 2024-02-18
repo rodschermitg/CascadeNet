@@ -107,28 +107,44 @@ eval_transforms = monai.transforms.Compose([
 
 # model
 MODEL_KWARGS_A2B = {
-    "input_channels": 2 * num_modalities,
-    "label_channels": NUM_CLASSES,
-    "num_classes": NUM_CLASSES,
-    "num_filters": [32, 64, 128, 512],
-    "activation_layer": torch.nn.LogSoftmax(dim=1),
-    "latent_dim": 2,
-    "save_decoder_features": False,
-    "full_cov": True,
-    "n_components": 9,
-    "temperature": 0.28
+    "in_channels": 2 * num_modalities,
+    "out_channels": NUM_CLASSES,
+    "latent_size": 3,
+    "temperature": 0.28,
+    "task_kwargs": {
+        "output_activation_op": torch.nn.LogSoftmax,
+        "output_activation_kwargs": {"dim": 1},
+        "activation_kwargs": {"inplace": True}
+    },
+    "prior_kwargs": {
+        "encoder_kwargs": {"norm_depth": "full"},
+        "n_components": 9
+
+    },
+    "posterior_kwargs": {
+        "encoder_kwargs": {"norm_depth": "full"},
+        "n_components": 9
+    }
 }
 MODEL_KWARGS_B2A = {
-    "input_channels": num_modalities + NUM_CLASSES,
-    "label_channels": 2 * num_modalities,
-    "num_classes": 2 * num_modalities,
-    "num_filters": [32, 64, 128, 512],
-    "activation_layer": torch.nn.Tanh(),
-    "latent_dim": 2,
-    "save_decoder_features": False,
-    "full_cov": True,
-    "n_components": 9,
-    "temperature": 0.28
+    "in_channels": num_modalities + NUM_CLASSES,
+    "out_channels": 2 * num_modalities,
+    "latent_size": 3,
+    "temperature": 0.28,
+    "task_kwargs": {
+        "output_activation_op": torch.nn.LogSoftmax,
+        "output_activation_kwargs": {"dim": 1},
+        "activation_kwargs": {"inplace": True}
+    },
+    "prior_kwargs": {
+        "encoder_kwargs": {"norm_depth": "full"},
+        "n_components": 9
+
+    },
+    "posterior_kwargs": {
+        "encoder_kwargs": {"norm_depth": "full"},
+        "n_components": 9
+    }
 }
 
 # train
@@ -138,7 +154,7 @@ EPOCHS = 250
 BATCH_SIZE = 1
 VAL_INTERVAL = 5
 DISPLAY_INTERVAL = 5
-CYCLE_WEIGHT = 1
+CYCLE_WEIGHT = 0.2
 KL_WEIGHT = 1
 SAVE_MODEL_EACH_FOLD = True
 

@@ -5,8 +5,8 @@ import os
 import monai
 import torch
 
-from probabilistic_unet.model import ProbabilisticUnet
 from src import config
+from src import models
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -22,7 +22,7 @@ checkpoint_list = [
     for fold in range(config.FOLDS)
 ]
 model_list = [
-    ProbabilisticUnet(**config.MODEL_KWARGS_A2B).to(device)
+    models.ProbabilisticSegmentationNet(**config.MODEL_KWARGS_A2B).to(device)
     for _ in range(config.FOLDS)
 ]
 for model, checkpoint in zip(model_list, checkpoint_list):
@@ -68,7 +68,7 @@ for fold in range(config.FOLDS):
     )
 
     for batch in dataloader:
-        images = batch["images"].to(device)
+        images = batch["images_A"].to(device)
         label = batch["label"].to(device)
 
         with torch.no_grad():
