@@ -33,4 +33,5 @@ def perform_train_test_split():
 
 if __name__ == "__main__":
     reset()
-    perform_train_test_split()
+    if config. TEST_SIZE > 0:
+        perform_train_test_split()

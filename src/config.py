@@ -15,7 +15,7 @@ DATA_FILENAME = "dataset.json"
 RANDOM_STATE = 42
 
 # data
-TEST_SIZE = 0.1
+TEST_SIZE = 0.0
 PATCH_SIZE = (96, 96, 96)
 NUM_CLASSES = 2
 TIMESTEPS = ["1", "2", "3"]

@@ -76,6 +76,21 @@
             "label": "data/processed/patients/train/Patient-005/week-015/seg_mask.nii.gz"
         },
         {
+            "CT1_1": "data/processed/patients/train/Patient-006/week-000/ct1_skull_strip.nii.gz",
+            "FLAIR_1": "data/processed/patients/train/Patient-006/week-000/flair_skull_strip.nii.gz",
+            "T1_1": "data/processed/patients/train/Patient-006/week-000/t1_skull_strip.nii.gz",
+            "T2_1": "data/processed/patients/train/Patient-006/week-000/t2_skull_strip.nii.gz",
+            "CT1_2": "data/processed/patients/train/Patient-006/week-067/ct1_skull_strip.nii.gz",
+            "FLAIR_2": "data/processed/patients/train/Patient-006/week-067/flair_skull_strip.nii.gz",
+            "T1_2": "data/processed/patients/train/Patient-006/week-067/t1_skull_strip.nii.gz",
+            "T2_2": "data/processed/patients/train/Patient-006/week-067/t2_skull_strip.nii.gz",
+            "CT1_3": "data/processed/patients/train/Patient-006/week-135/ct1_skull_strip.nii.gz",
+            "FLAIR_3": "data/processed/patients/train/Patient-006/week-135/flair_skull_strip.nii.gz",
+            "T1_3": "data/processed/patients/train/Patient-006/week-135/t1_skull_strip.nii.gz",
+            "T2_3": "data/processed/patients/train/Patient-006/week-135/t2_skull_strip.nii.gz",
+            "label": "data/processed/patients/train/Patient-006/week-135/seg_mask.nii.gz"
+        },
+        {
             "CT1_1": "data/processed/patients/train/Patient-007/week-000/ct1_skull_strip.nii.gz",
             "FLAIR_1": "data/processed/patients/train/Patient-007/week-000/flair_skull_strip.nii.gz",
             "T1_1": "data/processed/patients/train/Patient-007/week-000/t1_skull_strip.nii.gz",
@@ -496,6 +511,21 @@
             "label": "data/processed/patients/train/Patient-037/week-037/seg_mask.nii.gz"
         },
         {
+            "CT1_1": "data/processed/patients/train/Patient-038/week-000/ct1_skull_strip.nii.gz",
+            "FLAIR_1": "data/processed/patients/train/Patient-038/week-000/flair_skull_strip.nii.gz",
+            "T1_1": "data/processed/patients/train/Patient-038/week-000/t1_skull_strip.nii.gz",
+            "T2_1": "data/processed/patients/train/Patient-038/week-000/t2_skull_strip.nii.gz",
+            "CT1_2": "data/processed/patients/train/Patient-038/week-002/ct1_skull_strip.nii.gz",
+            "FLAIR_2": "data/processed/patients/train/Patient-038/week-002/flair_skull_strip.nii.gz",
+            "T1_2": "data/processed/patients/train/Patient-038/week-002/t1_skull_strip.nii.gz",
+            "T2_2": "data/processed/patients/train/Patient-038/week-002/t2_skull_strip.nii.gz",
+            "CT1_3": "data/processed/patients/train/Patient-038/week-023/ct1_skull_strip.nii.gz",
+            "FLAIR_3": "data/processed/patients/train/Patient-038/week-023/flair_skull_strip.nii.gz",
+            "T1_3": "data/processed/patients/train/Patient-038/week-023/t1_skull_strip.nii.gz",
+            "T2_3": "data/processed/patients/train/Patient-038/week-023/t2_skull_strip.nii.gz",
+            "label": "data/processed/patients/train/Patient-038/week-023/seg_mask.nii.gz"
+        },
+        {
             "CT1_1": "data/processed/patients/train/Patient-039/week-000-1/ct1_skull_strip.nii.gz",
             "FLAIR_1": "data/processed/patients/train/Patient-039/week-000-1/flair_skull_strip.nii.gz",
             "T1_1": "data/processed/patients/train/Patient-039/week-000-1/t1_skull_strip.nii.gz",
@@ -601,6 +631,21 @@
             "label": "data/processed/patients/train/Patient-046/week-064/seg_mask.nii.gz"
         },
         {
+            "CT1_1": "data/processed/patients/train/Patient-048/week-000-2/ct1_skull_strip.nii.gz",
+            "FLAIR_1": "data/processed/patients/train/Patient-048/week-000-2/flair_skull_strip.nii.gz",
+            "T1_1": "data/processed/patients/train/Patient-048/week-000-2/t1_skull_strip.nii.gz",
+            "T2_1": "data/processed/patients/train/Patient-048/week-000-2/t2_skull_strip.nii.gz",
+            "CT1_2": "data/processed/patients/train/Patient-048/week-023/ct1_skull_strip.nii.gz",
+            "FLAIR_2": "data/processed/patients/train/Patient-048/week-023/flair_skull_strip.nii.gz",
+            "T1_2": "data/processed/patients/train/Patient-048/week-023/t1_skull_strip.nii.gz",
+            "T2_2": "data/processed/patients/train/Patient-048/week-023/t2_skull_strip.nii.gz",
+            "CT1_3": "data/processed/patients/train/Patient-048/week-049/ct1_skull_strip.nii.gz",
+            "FLAIR_3": "data/processed/patients/train/Patient-048/week-049/flair_skull_strip.nii.gz",
+            "T1_3": "data/processed/patients/train/Patient-048/week-049/t1_skull_strip.nii.gz",
+            "T2_3": "data/processed/patients/train/Patient-048/week-049/t2_skull_strip.nii.gz",
+            "label": "data/processed/patients/train/Patient-048/week-049/seg_mask.nii.gz"
+        },
+        {
             "CT1_1": "data/processed/patients/train/Patient-049/week-000/ct1_skull_strip.nii.gz",
             "FLAIR_1": "data/processed/patients/train/Patient-049/week-000/flair_skull_strip.nii.gz",
             "T1_1": "data/processed/patients/train/Patient-049/week-000/t1_skull_strip.nii.gz",
@@ -614,6 +659,21 @@
             "T1_3": "data/processed/patients/train/Patient-049/week-046/t1_skull_strip.nii.gz",
             "T2_3": "data/processed/patients/train/Patient-049/week-046/t2_skull_strip.nii.gz",
             "label": "data/processed/patients/train/Patient-049/week-046/seg_mask.nii.gz"
+        },
+        {
+            "CT1_1": "data/processed/patients/train/Patient-050/week-001/ct1_skull_strip.nii.gz",
+            "FLAIR_1": "data/processed/patients/train/Patient-050/week-001/flair_skull_strip.nii.gz",
+            "T1_1": "data/processed/patients/train/Patient-050/week-001/t1_skull_strip.nii.gz",
+            "T2_1": "data/processed/patients/train/Patient-050/week-001/t2_skull_strip.nii.gz",
+            "CT1_2": "data/processed/patients/train/Patient-050/week-048/ct1_skull_strip.nii.gz",
+            "FLAIR_2": "data/processed/patients/train/Patient-050/week-048/flair_skull_strip.nii.gz",
+            "T1_2": "data/processed/patients/train/Patient-050/week-048/t1_skull_strip.nii.gz",
+            "T2_2": "data/processed/patients/train/Patient-050/week-048/t2_skull_strip.nii.gz",
+            "CT1_3": "data/processed/patients/train/Patient-050/week-061/ct1_skull_strip.nii.gz",
+            "FLAIR_3": "data/processed/patients/train/Patient-050/week-061/flair_skull_strip.nii.gz",
+            "T1_3": "data/processed/patients/train/Patient-050/week-061/t1_skull_strip.nii.gz",
+            "T2_3": "data/processed/patients/train/Patient-050/week-061/t2_skull_strip.nii.gz",
+            "label": "data/processed/patients/train/Patient-050/week-061/seg_mask.nii.gz"
         },
         {
             "CT1_1": "data/processed/patients/train/Patient-051/week-000-1/ct1_skull_strip.nii.gz",
@@ -644,6 +704,21 @@
             "T1_3": "data/processed/patients/train/Patient-052/week-168/t1_skull_strip.nii.gz",
             "T2_3": "data/processed/patients/train/Patient-052/week-168/t2_skull_strip.nii.gz",
             "label": "data/processed/patients/train/Patient-052/week-168/seg_mask.nii.gz"
+        },
+        {
+            "CT1_1": "data/processed/patients/train/Patient-054/week-002/ct1_skull_strip.nii.gz",
+            "FLAIR_1": "data/processed/patients/train/Patient-054/week-002/flair_skull_strip.nii.gz",
+            "T1_1": "data/processed/patients/train/Patient-054/week-002/t1_skull_strip.nii.gz",
+            "T2_1": "data/processed/patients/train/Patient-054/week-002/t2_skull_strip.nii.gz",
+            "CT1_2": "data/processed/patients/train/Patient-054/week-036/ct1_skull_strip.nii.gz",
+            "FLAIR_2": "data/processed/patients/train/Patient-054/week-036/flair_skull_strip.nii.gz",
+            "T1_2": "data/processed/patients/train/Patient-054/week-036/t1_skull_strip.nii.gz",
+            "T2_2": "data/processed/patients/train/Patient-054/week-036/t2_skull_strip.nii.gz",
+            "CT1_3": "data/processed/patients/train/Patient-054/week-077/ct1_skull_strip.nii.gz",
+            "FLAIR_3": "data/processed/patients/train/Patient-054/week-077/flair_skull_strip.nii.gz",
+            "T1_3": "data/processed/patients/train/Patient-054/week-077/t1_skull_strip.nii.gz",
+            "T2_3": "data/processed/patients/train/Patient-054/week-077/t2_skull_strip.nii.gz",
+            "label": "data/processed/patients/train/Patient-054/week-077/seg_mask.nii.gz"
         },
         {
             "CT1_1": "data/processed/patients/train/Patient-055/week-000-2/ct1_skull_strip.nii.gz",
@@ -749,6 +824,21 @@
             "T1_3": "data/processed/patients/train/Patient-063/week-168/t1_skull_strip.nii.gz",
             "T2_3": "data/processed/patients/train/Patient-063/week-168/t2_skull_strip.nii.gz",
             "label": "data/processed/patients/train/Patient-063/week-168/seg_mask.nii.gz"
+        },
+        {
+            "CT1_1": "data/processed/patients/train/Patient-064/week-002/ct1_skull_strip.nii.gz",
+            "FLAIR_1": "data/processed/patients/train/Patient-064/week-002/flair_skull_strip.nii.gz",
+            "T1_1": "data/processed/patients/train/Patient-064/week-002/t1_skull_strip.nii.gz",
+            "T2_1": "data/processed/patients/train/Patient-064/week-002/t2_skull_strip.nii.gz",
+            "CT1_2": "data/processed/patients/train/Patient-064/week-033/ct1_skull_strip.nii.gz",
+            "FLAIR_2": "data/processed/patients/train/Patient-064/week-033/flair_skull_strip.nii.gz",
+            "T1_2": "data/processed/patients/train/Patient-064/week-033/t1_skull_strip.nii.gz",
+            "T2_2": "data/processed/patients/train/Patient-064/week-033/t2_skull_strip.nii.gz",
+            "CT1_3": "data/processed/patients/train/Patient-064/week-062/ct1_skull_strip.nii.gz",
+            "FLAIR_3": "data/processed/patients/train/Patient-064/week-062/flair_skull_strip.nii.gz",
+            "T1_3": "data/processed/patients/train/Patient-064/week-062/t1_skull_strip.nii.gz",
+            "T2_3": "data/processed/patients/train/Patient-064/week-062/t2_skull_strip.nii.gz",
+            "label": "data/processed/patients/train/Patient-064/week-062/seg_mask.nii.gz"
         },
         {
             "CT1_1": "data/processed/patients/train/Patient-065/week-000-2/ct1_skull_strip.nii.gz",
@@ -886,6 +976,21 @@
             "label": "data/processed/patients/train/Patient-074/week-039/seg_mask.nii.gz"
         },
         {
+            "CT1_1": "data/processed/patients/train/Patient-075/week-000/ct1_skull_strip.nii.gz",
+            "FLAIR_1": "data/processed/patients/train/Patient-075/week-000/flair_skull_strip.nii.gz",
+            "T1_1": "data/processed/patients/train/Patient-075/week-000/t1_skull_strip.nii.gz",
+            "T2_1": "data/processed/patients/train/Patient-075/week-000/t2_skull_strip.nii.gz",
+            "CT1_2": "data/processed/patients/train/Patient-075/week-020/ct1_skull_strip.nii.gz",
+            "FLAIR_2": "data/processed/patients/train/Patient-075/week-020/flair_skull_strip.nii.gz",
+            "T1_2": "data/processed/patients/train/Patient-075/week-020/t1_skull_strip.nii.gz",
+            "T2_2": "data/processed/patients/train/Patient-075/week-020/t2_skull_strip.nii.gz",
+            "CT1_3": "data/processed/patients/train/Patient-075/week-044/ct1_skull_strip.nii.gz",
+            "FLAIR_3": "data/processed/patients/train/Patient-075/week-044/flair_skull_strip.nii.gz",
+            "T1_3": "data/processed/patients/train/Patient-075/week-044/t1_skull_strip.nii.gz",
+            "T2_3": "data/processed/patients/train/Patient-075/week-044/t2_skull_strip.nii.gz",
+            "label": "data/processed/patients/train/Patient-075/week-044/seg_mask.nii.gz"
+        },
+        {
             "CT1_1": "data/processed/patients/train/Patient-077/week-000/ct1_skull_strip.nii.gz",
             "FLAIR_1": "data/processed/patients/train/Patient-077/week-000/flair_skull_strip.nii.gz",
             "T1_1": "data/processed/patients/train/Patient-077/week-000/t1_skull_strip.nii.gz",
@@ -899,6 +1004,21 @@
             "T1_3": "data/processed/patients/train/Patient-077/week-083/t1_skull_strip.nii.gz",
             "T2_3": "data/processed/patients/train/Patient-077/week-083/t2_skull_strip.nii.gz",
             "label": "data/processed/patients/train/Patient-077/week-083/seg_mask.nii.gz"
+        },
+        {
+            "CT1_1": "data/processed/patients/train/Patient-078/week-000/ct1_skull_strip.nii.gz",
+            "FLAIR_1": "data/processed/patients/train/Patient-078/week-000/flair_skull_strip.nii.gz",
+            "T1_1": "data/processed/patients/train/Patient-078/week-000/t1_skull_strip.nii.gz",
+            "T2_1": "data/processed/patients/train/Patient-078/week-000/t2_skull_strip.nii.gz",
+            "CT1_2": "data/processed/patients/train/Patient-078/week-062/ct1_skull_strip.nii.gz",
+            "FLAIR_2": "data/processed/patients/train/Patient-078/week-062/flair_skull_strip.nii.gz",
+            "T1_2": "data/processed/patients/train/Patient-078/week-062/t1_skull_strip.nii.gz",
+            "T2_2": "data/processed/patients/train/Patient-078/week-062/t2_skull_strip.nii.gz",
+            "CT1_3": "data/processed/patients/train/Patient-078/week-119/ct1_skull_strip.nii.gz",
+            "FLAIR_3": "data/processed/patients/train/Patient-078/week-119/flair_skull_strip.nii.gz",
+            "T1_3": "data/processed/patients/train/Patient-078/week-119/t1_skull_strip.nii.gz",
+            "T2_3": "data/processed/patients/train/Patient-078/week-119/t2_skull_strip.nii.gz",
+            "label": "data/processed/patients/train/Patient-078/week-119/seg_mask.nii.gz"
         },
         {
             "CT1_1": "data/processed/patients/train/Patient-080/week-000/ct1_skull_strip.nii.gz",
@@ -1036,126 +1156,5 @@
             "label": "data/processed/patients/train/Patient-091/week-043/seg_mask.nii.gz"
         }
     ],
-    "test": [
-        {
-            "CT1_1": "data/processed/patients/test/Patient-006/week-000/ct1_skull_strip.nii.gz",
-            "FLAIR_1": "data/processed/patients/test/Patient-006/week-000/flair_skull_strip.nii.gz",
-            "T1_1": "data/processed/patients/test/Patient-006/week-000/t1_skull_strip.nii.gz",
-            "T2_1": "data/processed/patients/test/Patient-006/week-000/t2_skull_strip.nii.gz",
-            "CT1_2": "data/processed/patients/test/Patient-006/week-067/ct1_skull_strip.nii.gz",
-            "FLAIR_2": "data/processed/patients/test/Patient-006/week-067/flair_skull_strip.nii.gz",
-            "T1_2": "data/processed/patients/test/Patient-006/week-067/t1_skull_strip.nii.gz",
-            "T2_2": "data/processed/patients/test/Patient-006/week-067/t2_skull_strip.nii.gz",
-            "CT1_3": "data/processed/patients/test/Patient-006/week-135/ct1_skull_strip.nii.gz",
-            "FLAIR_3": "data/processed/patients/test/Patient-006/week-135/flair_skull_strip.nii.gz",
-            "T1_3": "data/processed/patients/test/Patient-006/week-135/t1_skull_strip.nii.gz",
-            "T2_3": "data/processed/patients/test/Patient-006/week-135/t2_skull_strip.nii.gz",
-            "label": "data/processed/patients/test/Patient-006/week-135/seg_mask.nii.gz"
-        },
-        {
-            "CT1_1": "data/processed/patients/test/Patient-038/week-000/ct1_skull_strip.nii.gz",
-            "FLAIR_1": "data/processed/patients/test/Patient-038/week-000/flair_skull_strip.nii.gz",
-            "T1_1": "data/processed/patients/test/Patient-038/week-000/t1_skull_strip.nii.gz",
-            "T2_1": "data/processed/patients/test/Patient-038/week-000/t2_skull_strip.nii.gz",
-            "CT1_2": "data/processed/patients/test/Patient-038/week-002/ct1_skull_strip.nii.gz",
-            "FLAIR_2": "data/processed/patients/test/Patient-038/week-002/flair_skull_strip.nii.gz",
-            "T1_2": "data/processed/patients/test/Patient-038/week-002/t1_skull_strip.nii.gz",
-            "T2_2": "data/processed/patients/test/Patient-038/week-002/t2_skull_strip.nii.gz",
-            "CT1_3": "data/processed/patients/test/Patient-038/week-023/ct1_skull_strip.nii.gz",
-            "FLAIR_3": "data/processed/patients/test/Patient-038/week-023/flair_skull_strip.nii.gz",
-            "T1_3": "data/processed/patients/test/Patient-038/week-023/t1_skull_strip.nii.gz",
-            "T2_3": "data/processed/patients/test/Patient-038/week-023/t2_skull_strip.nii.gz",
-            "label": "data/processed/patients/test/Patient-038/week-023/seg_mask.nii.gz"
-        },
-        {
-            "CT1_1": "data/processed/patients/test/Patient-048/week-000-2/ct1_skull_strip.nii.gz",
-            "FLAIR_1": "data/processed/patients/test/Patient-048/week-000-2/flair_skull_strip.nii.gz",
-            "T1_1": "data/processed/patients/test/Patient-048/week-000-2/t1_skull_strip.nii.gz",
-            "T2_1": "data/processed/patients/test/Patient-048/week-000-2/t2_skull_strip.nii.gz",
-            "CT1_2": "data/processed/patients/test/Patient-048/week-023/ct1_skull_strip.nii.gz",
-            "FLAIR_2": "data/processed/patients/test/Patient-048/week-023/flair_skull_strip.nii.gz",
-            "T1_2": "data/processed/patients/test/Patient-048/week-023/t1_skull_strip.nii.gz",
-            "T2_2": "data/processed/patients/test/Patient-048/week-023/t2_skull_strip.nii.gz",
-            "CT1_3": "data/processed/patients/test/Patient-048/week-049/ct1_skull_strip.nii.gz",
-            "FLAIR_3": "data/processed/patients/test/Patient-048/week-049/flair_skull_strip.nii.gz",
-            "T1_3": "data/processed/patients/test/Patient-048/week-049/t1_skull_strip.nii.gz",
-            "T2_3": "data/processed/patients/test/Patient-048/week-049/t2_skull_strip.nii.gz",
-            "label": "data/processed/patients/test/Patient-048/week-049/seg_mask.nii.gz"
-        },
-        {
-            "CT1_1": "data/processed/patients/test/Patient-050/week-001/ct1_skull_strip.nii.gz",
-            "FLAIR_1": "data/processed/patients/test/Patient-050/week-001/flair_skull_strip.nii.gz",
-            "T1_1": "data/processed/patients/test/Patient-050/week-001/t1_skull_strip.nii.gz",
-            "T2_1": "data/processed/patients/test/Patient-050/week-001/t2_skull_strip.nii.gz",
-            "CT1_2": "data/processed/patients/test/Patient-050/week-048/ct1_skull_strip.nii.gz",
-            "FLAIR_2": "data/processed/patients/test/Patient-050/week-048/flair_skull_strip.nii.gz",
-            "T1_2": "data/processed/patients/test/Patient-050/week-048/t1_skull_strip.nii.gz",
-            "T2_2": "data/processed/patients/test/Patient-050/week-048/t2_skull_strip.nii.gz",
-            "CT1_3": "data/processed/patients/test/Patient-050/week-061/ct1_skull_strip.nii.gz",
-            "FLAIR_3": "data/processed/patients/test/Patient-050/week-061/flair_skull_strip.nii.gz",
-            "T1_3": "data/processed/patients/test/Patient-050/week-061/t1_skull_strip.nii.gz",
-            "T2_3": "data/processed/patients/test/Patient-050/week-061/t2_skull_strip.nii.gz",
-            "label": "data/processed/patients/test/Patient-050/week-061/seg_mask.nii.gz"
-        },
-        {
-            "CT1_1": "data/processed/patients/test/Patient-054/week-002/ct1_skull_strip.nii.gz",
-            "FLAIR_1": "data/processed/patients/test/Patient-054/week-002/flair_skull_strip.nii.gz",
-            "T1_1": "data/processed/patients/test/Patient-054/week-002/t1_skull_strip.nii.gz",
-            "T2_1": "data/processed/patients/test/Patient-054/week-002/t2_skull_strip.nii.gz",
-            "CT1_2": "data/processed/patients/test/Patient-054/week-036/ct1_skull_strip.nii.gz",
-            "FLAIR_2": "data/processed/patients/test/Patient-054/week-036/flair_skull_strip.nii.gz",
-            "T1_2": "data/processed/patients/test/Patient-054/week-036/t1_skull_strip.nii.gz",
-            "T2_2": "data/processed/patients/test/Patient-054/week-036/t2_skull_strip.nii.gz",
-            "CT1_3": "data/processed/patients/test/Patient-054/week-077/ct1_skull_strip.nii.gz",
-            "FLAIR_3": "data/processed/patients/test/Patient-054/week-077/flair_skull_strip.nii.gz",
-            "T1_3": "data/processed/patients/test/Patient-054/week-077/t1_skull_strip.nii.gz",
-            "T2_3": "data/processed/patients/test/Patient-054/week-077/t2_skull_strip.nii.gz",
-            "label": "data/processed/patients/test/Patient-054/week-077/seg_mask.nii.gz"
-        },
-        {
-            "CT1_1": "data/processed/patients/test/Patient-064/week-002/ct1_skull_strip.nii.gz",
-            "FLAIR_1": "data/processed/patients/test/Patient-064/week-002/flair_skull_strip.nii.gz",
-            "T1_1": "data/processed/patients/test/Patient-064/week-002/t1_skull_strip.nii.gz",
-            "T2_1": "data/processed/patients/test/Patient-064/week-002/t2_skull_strip.nii.gz",
-            "CT1_2": "data/processed/patients/test/Patient-064/week-033/ct1_skull_strip.nii.gz",
-            "FLAIR_2": "data/processed/patients/test/Patient-064/week-033/flair_skull_strip.nii.gz",
-            "T1_2": "data/processed/patients/test/Patient-064/week-033/t1_skull_strip.nii.gz",
-            "T2_2": "data/processed/patients/test/Patient-064/week-033/t2_skull_strip.nii.gz",
-            "CT1_3": "data/processed/patients/test/Patient-064/week-062/ct1_skull_strip.nii.gz",
-            "FLAIR_3": "data/processed/patients/test/Patient-064/week-062/flair_skull_strip.nii.gz",
-            "T1_3": "data/processed/patients/test/Patient-064/week-062/t1_skull_strip.nii.gz",
-            "T2_3": "data/processed/patients/test/Patient-064/week-062/t2_skull_strip.nii.gz",
-            "label": "data/processed/patients/test/Patient-064/week-062/seg_mask.nii.gz"
-        },
-        {
-            "CT1_1": "data/processed/patients/test/Patient-075/week-000/ct1_skull_strip.nii.gz",
-            "FLAIR_1": "data/processed/patients/test/Patient-075/week-000/flair_skull_strip.nii.gz",
-            "T1_1": "data/processed/patients/test/Patient-075/week-000/t1_skull_strip.nii.gz",
-            "T2_1": "data/processed/patients/test/Patient-075/week-000/t2_skull_strip.nii.gz",
-            "CT1_2": "data/processed/patients/test/Patient-075/week-020/ct1_skull_strip.nii.gz",
-            "FLAIR_2": "data/processed/patients/test/Patient-075/week-020/flair_skull_strip.nii.gz",
-            "T1_2": "data/processed/patients/test/Patient-075/week-020/t1_skull_strip.nii.gz",
-            "T2_2": "data/processed/patients/test/Patient-075/week-020/t2_skull_strip.nii.gz",
-            "CT1_3": "data/processed/patients/test/Patient-075/week-044/ct1_skull_strip.nii.gz",
-            "FLAIR_3": "data/processed/patients/test/Patient-075/week-044/flair_skull_strip.nii.gz",
-            "T1_3": "data/processed/patients/test/Patient-075/week-044/t1_skull_strip.nii.gz",
-            "T2_3": "data/processed/patients/test/Patient-075/week-044/t2_skull_strip.nii.gz",
-            "label": "data/processed/patients/test/Patient-075/week-044/seg_mask.nii.gz"
-        },
-        {
-            "CT1_1": "data/processed/patients/test/Patient-078/week-000/ct1_skull_strip.nii.gz",
-            "FLAIR_1": "data/processed/patients/test/Patient-078/week-000/flair_skull_strip.nii.gz",
-            "T1_1": "data/processed/patients/test/Patient-078/week-000/t1_skull_strip.nii.gz",
-            "T2_1": "data/processed/patients/test/Patient-078/week-000/t2_skull_strip.nii.gz",
-            "CT1_2": "data/processed/patients/test/Patient-078/week-062/ct1_skull_strip.nii.gz",
-            "FLAIR_2": "data/processed/patients/test/Patient-078/week-062/flair_skull_strip.nii.gz",
-            "T1_2": "data/processed/patients/test/Patient-078/week-062/t1_skull_strip.nii.gz",
-            "T2_2": "data/processed/patients/test/Patient-078/week-062/t2_skull_strip.nii.gz",
-            "CT1_3": "data/processed/patients/test/Patient-078/week-119/ct1_skull_strip.nii.gz",
-            "FLAIR_3": "data/processed/patients/test/Patient-078/week-119/flair_skull_strip.nii.gz",
-            "T1_3": "data/processed/patients/test/Patient-078/week-119/t1_skull_strip.nii.gz",
-            "T2_3": "data/processed/patients/test/Patient-078/week-119/t2_skull_strip.nii.gz",
-            "label": "data/processed/patients/test/Patient-078/week-119/seg_mask.nii.gz"
-        }
-    ]
+    "test": []
 }
