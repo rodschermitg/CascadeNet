@@ -53,7 +53,11 @@ scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
     verbose=True
 )
 
-loss_fn_pred = torch.nn.NLLLoss(reduction="mean")
+loss_fn_pred = monai.losses.DiceCELoss(
+    include_background=False,
+    softmax=True,
+    reduction="mean"
+)
 loss_fn_cycle = torch.nn.L1Loss(reduction="mean")
 dice_fn = monai.metrics.DiceMetric(include_background=False)
 confusion_matrix_fn = monai.metrics.ConfusionMatrixMetric(
@@ -145,7 +149,7 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                 )
                 train_loss_pred = loss_fn_pred(
                     train_pred_B,
-                    torch.argmax(train_label_B, dim=1)  # decode one-hot labels
+                    train_label_B
                 )
 
                 # if net_A2B.unet.save_decoder_features:
@@ -155,12 +159,13 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                 #     train_loss_ds = sum([
                 #         loss_fn_pred(
                 #             feat,
-                #             torch.argmax(train_label_B, dim=1)
+                #             train_label_B
                 #         ) * (1/2)**d
                 #         for d, feat in enumerate(decoder_features, 1)
                 #     ])
 
                 # net_B2A
+                train_pred_B = torch.nn.functional.softmax(train_pred_B, dim=1)
                 mean = train_pred_B.mean(dim=(2, 3, 4), keepdim=True)
                 std = train_pred_B.std(dim=(2, 3, 4), keepdim=True)
                 train_pred_B = (train_pred_B - mean) / std
@@ -254,10 +259,14 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                         )
                         epoch_val_loss_pred += loss_fn_pred(
                             val_pred_B,
-                            torch.argmax(val_label_B, dim=1)
+                            val_label_B
                         ).item()
 
                         # net_B2A
+                        val_pred_B = torch.nn.functional.softmax(
+                            val_pred_B,
+                            dim=1
+                        )
                         mean = val_pred_B.mean(dim=(2, 3, 4), keepdim=True)
                         std = val_pred_B.std(dim=(2, 3, 4), keepdim=True)
 
@@ -431,3 +440,4 @@ with open(config.train_logs_path, "w") as train_logs_file:
 # TODO
 # - add hyperparameter optimization?
 # - increase patch_size?
+# - when passing pred from net_A2B to net_B2A, should net_A2B have LogSoftmax or Softmax as head?

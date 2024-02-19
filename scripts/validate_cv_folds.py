@@ -80,6 +80,7 @@ for fold in range(config.FOLDS):
                     predictor=model_list[fold]
                 )
 
+        preds = torch.nn.functional.softmax(preds, dim=1)
         # store discretized batches in lists for metric functions
         preds = [
             discretize(pred) for pred in monai.data.decollate_batch(preds)

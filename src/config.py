@@ -112,14 +112,11 @@ MODEL_KWARGS_A2B = {
     "latent_size": 3,
     "temperature": 0.28,
     "task_kwargs": {
-        "output_activation_op": torch.nn.LogSoftmax,
-        "output_activation_kwargs": {"dim": 1},
         "activation_kwargs": {"inplace": True}
     },
     "prior_kwargs": {
         "encoder_kwargs": {"norm_depth": "full"},
         "n_components": 9
-
     },
     "posterior_kwargs": {
         "encoder_kwargs": {"norm_depth": "full"},
@@ -138,7 +135,6 @@ MODEL_KWARGS_B2A = {
     "prior_kwargs": {
         "encoder_kwargs": {"norm_depth": "full"},
         "n_components": 9
-
     },
     "posterior_kwargs": {
         "encoder_kwargs": {"norm_depth": "full"},

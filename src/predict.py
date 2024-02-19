@@ -67,6 +67,7 @@ for batch in dataloader:
                 )
                 for model in model_list
             ]
+    preds = [torch.nn.functional.softmax(pred, dim=1) for pred in preds]
     preds = torch.cat(preds, dim=0)
     pred = torch.mean(preds, dim=0, keepdim=True)
     pred = torch.argmax(pred, dim=1)
