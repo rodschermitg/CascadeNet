@@ -356,56 +356,37 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
             scheduler.step(mean_val_loss_pred)
 
             utils.create_log_plots(
-                y_list=[
-                    utils.concat_logs(train_logs["mean_train_loss_pred"]),
-                    utils.concat_logs(train_logs["mean_val_loss_pred"])
-                ],
-                fold=fold,
-                epoch=epoch,
-                labels=["train prediction loss", "val prediction loss"],
+                train_logs=train_logs,
+                train_crit_keys=["mean_train_loss_pred"],
+                val_crit_keys=["mean_val_loss_pred"],
                 output_path=config.pred_loss_plot_path,
-                title="mean training/validation prediction loss per epoch",
-                y_label="Loss"
+                y_labels=["pred loss"],
             )
             utils.create_log_plots(
-                y_list=[
-                    utils.concat_logs(train_logs["mean_train_loss_cycle"]),
-                    utils.concat_logs(train_logs["mean_val_loss_cycle"])
-                ],
-                fold=fold,
-                epoch=epoch,
-                labels=["train cycle loss", "val cycle loss"],
+                train_logs=train_logs,
+                train_crit_keys=["mean_train_loss_cycle"],
+                val_crit_keys=["mean_val_loss_cycle"],
                 output_path=config.cycle_loss_plot_path,
-                title="mean cycle loss per epoch",
-                y_label="Loss"
+                y_labels=["cycle loss"],
             )
             utils.create_log_plots(
-                y_list=[
-                    utils.concat_logs(train_logs["mean_train_loss_kl_A2B"]),
-                    utils.concat_logs(train_logs["mean_train_loss_kl_B2A"])
+                train_logs=train_logs,
+                train_crit_keys=[
+                    "mean_train_loss_kl_A2B",
+                    "mean_train_loss_kl_B2A"
                 ],
-                fold=fold,
-                epoch=epoch,
-                labels=["train KL loss (net_A2B)", "train KL loss (net_B2A)"],
                 output_path=config.kl_loss_plot_path,
-                title="mean training KL loss per epoch",
-                y_label="Loss"
+                y_labels=["KL loss (net_A2B)", "KL loss (net_B2A)"],
             )
             utils.create_log_plots(
-                y_list=[
-                    utils.concat_logs(train_logs["mean_val_dice"]),
-                    utils.concat_logs(train_logs["mean_val_precision"]),
-                    utils.concat_logs(train_logs["mean_val_recall"])
+                train_logs=train_logs,
+                val_crit_keys=[
+                    "mean_val_dice",
+                    "mean_val_precision",
+                    "mean_val_recall"
                 ],
-                fold=fold,
-                epoch=epoch,
-                labels=["val dice", "val precision", "val recall"],
                 output_path=config.val_metric_plot_path,
-                best_fold=best_fold,
-                best_epoch=best_epoch,
-                best_dice=best_dice,
-                title="mean validation metrics per epoch",
-                y_label="Metric"
+                y_labels=["dice", "precision", "recall"],
             )
 
             with open(config.train_logs_path, "w") as train_logs_file:

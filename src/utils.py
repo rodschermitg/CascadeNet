@@ -9,86 +9,86 @@ except ModuleNotFoundError:
     from src import config
 
 
-def concat_logs(dict_):
-    """
-    Loss/metric values in train_logs are stored in separate lists for each
-    fold. Use this function to concat all lists in the train_logs dict
-    into a single list.
-    """
-    return [value for logs in dict_.values() for value in logs]
-
-
 def create_log_plots(
-    y_list,
-    fold,
-    epoch,
-    labels,
+    train_logs,
     output_path,
-    best_fold=None,
-    best_epoch=None,
-    best_dice=None,
-    title=None,
-    y_label=None,
-    log_y_scale=False
+    train_crit_keys=[],
+    val_crit_keys=[],
+    y_labels=None
 ):
-    """
-    Creates and saves plots to log training progress.
+    if isinstance(train_crit_keys, str):
+        train_crit_keys = [train_crit_keys]
+    if isinstance(val_crit_keys, str):
+        val_crit_keys = [val_crit_keys]
 
-    Args:
-        y_list (list of lists): Contains lists of y-axis values for each line
-            plot.
-        fold (int): Current fold.
-        epoch (int): Current epoch.
-        labels (list of str): List of labels for each line plot.
-        output_path (str): File path to save the generated plot.
-        best_fold (int, optional): Best fold corresponding to best_dice value.
-        best_epoch (int, optional): Best epoch corresponding to best_dice
-            value.
-        best_dice (float, optional): Best dice value.
-        title (str, optional): Title of the plot.
-        y_label (str, optional): Label for the y-axis.
-        log_y_scale (bool, optional): Set to 'True' to enable logarithmic scale
-            on y-axis.
-    """
+    rows = len(train_crit_keys) if train_crit_keys else len(val_crit_keys)
+    if train_crit_keys and val_crit_keys:
+        assert len(train_crit_keys) == len(val_crit_keys)
+        cols = 2
+    else:
+        cols = 1
+
+    if y_labels:
+        assert rows == len(y_labels)
 
     matplotlib.use("Agg")
     plt.style.use("ggplot")
-    plt.figure()
-    for y, label in zip(y_list, labels):
-        # length of y varies depending on whether it contains train or val data
-        if len(y) == fold*config.EPOCHS+epoch+1:  # train
-            x = list(range(0, len(y)))
-        else:  # val
-            x = list(range(
-                config.VAL_INTERVAL-1,
-                len(y)*config.VAL_INTERVAL,
-                config.VAL_INTERVAL
-            ))
-        plt.plot(x, y, label=label)
 
-    if all((best_fold, best_epoch, best_dice)):
-        plt.plot(
-            best_fold*config.EPOCHS+best_epoch,
-            best_dice,
-            "x",
-            markersize=10,
-            markeredgewidth=3
-        )
+    fig, ax = plt.subplots(rows, cols, sharex=True, sharey=True)
 
-    # add vertical lines representing each fold
-    for fold_line in range(
-        config.EPOCHS-1,
-        (fold+1)*config.EPOCHS-1,
-        config.EPOCHS
-    ):
-        plt.axvline(x=fold_line, linestyle="dotted", color="grey")
+    for row in range(rows):
+        for fold in range(config.FOLDS):
+            if len(train_crit_keys) == 0 and len(val_crit_keys) == 1:
+                val_ax = ax
+            elif len(train_crit_keys) == 1 and len(val_crit_keys) == 0:
+                train_ax = ax
+            elif len(train_crit_keys) == 0 and len(val_crit_keys) != 0:
+                val_ax = ax[row]
+            elif len(train_crit_keys) != 0 and len(val_crit_keys) == 0:
+                train_ax = ax[row]
+            elif len(train_crit_keys) == 1 and len(val_crit_keys) == 1:
+                train_ax = ax[0]
+                val_ax = ax[1]
+            else:
+                train_ax = ax[row, 0]
+                val_ax = ax[row, 1]
 
-    plt.title(title)
-    plt.xlabel("Epoch")
-    plt.ylabel(y_label)
-    if log_y_scale:
-        plt.yscale("log")
-    plt.legend(loc="upper left")
+            if train_crit_keys:
+                train_y_values = train_logs[train_crit_keys[row]][
+                    f"fold{fold}"
+                ]
+                train_x_values = list(range(len(train_y_values)))
+                train_ax.plot(train_x_values, train_y_values)
+            if val_crit_keys:
+                val_y_values = train_logs[val_crit_keys[row]][f"fold{fold}"]
+                val_x_values = list(range(
+                    config.VAL_INTERVAL-1,
+                    config.VAL_INTERVAL*len(val_y_values),
+                    config.VAL_INTERVAL)
+                )
+                val_ax.plot(val_x_values, val_y_values)
+
+            if y_labels and train_crit_keys:
+                train_ax.set_ylabel(y_labels[row])
+            elif y_labels and val_crit_keys:
+                val_ax.set_ylabel(y_labels[row])
+
+            if row == 0 and train_crit_keys:
+                train_ax.set_title("train")
+            if row == 0 and val_crit_keys:
+                val_ax.set_title("val")
+
+            if row == rows - 1 and train_crit_keys:
+                train_ax.set_xlabel("epoch")
+            if row == rows - 1 and val_crit_keys:
+                val_ax.set_xlabel("epoch")
+
+            fig.legend(
+                [f"fold{fold}" for fold in range(config.FOLDS)],
+                loc="lower right"
+            )
+
+    plt.subplots_adjust(right=0.85)
     plt.savefig(output_path)
     plt.close()
 
