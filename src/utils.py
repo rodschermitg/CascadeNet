@@ -103,6 +103,8 @@ def create_slice_plots(
     total_slices = images[0].shape[slice_dim+1]
     slice_stride = total_slices // num_slices
 
+    vmin, vmax = get_vmin_vmax(images)
+
     fig, ax = plt.subplots(num_slices, len(images))
     for col, image in enumerate(images):
         image = image.permute(1, 2, 3, 0)
@@ -115,11 +117,26 @@ def create_slice_plots(
             cmap = "gray" if image.shape[-1] == 1 else None
 
             if slice_dim == 0:
-                ax[row, col].imshow(image[slice_idx, :, :, :], cmap)
+                ax[row, col].imshow(
+                    image[slice_idx, :, :, :],
+                    cmap,
+                    vmin=vmin,
+                    vmax=vmax
+                )
             elif slice_dim == 1:
-                ax[row, col].imshow(image[:, slice_idx, :, :], cmap)
+                ax[row, col].imshow(
+                    image[:, slice_idx, :, :],
+                    cmap,
+                    vmin=vmin,
+                    vmax=vmax
+                )
             elif slice_dim == 2:
-                ax[row, col].imshow(image[:, :, slice_idx, :], cmap)
+                ax[row, col].imshow(
+                    image[:, :, slice_idx, :],
+                    cmap,
+                    vmin=vmin,
+                    vmax=vmax
+                )
 
             if row == 0 and labels is not None:
                 ax[row, col].set_title(labels[col])
@@ -134,3 +151,14 @@ def get_patient_name(file_path):
     patient_name = file_path[start_idx:end_idx]
 
     return patient_name
+
+
+def get_vmin_vmax(images):
+    vmin = float("inf")
+    vmax = 0
+    for image in images:
+        if image.min() < vmin:
+            vmin = image.min()
+        if image.max() > vmax:
+            vmax = image.max()
+    return (vmin, vmax)
