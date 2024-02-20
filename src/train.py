@@ -44,7 +44,8 @@ discretize = monai.transforms.AsDiscrete(
 
 optimizer = torch.optim.Adam(
     itertools.chain(net_A2B.parameters(), net_B2A.parameters()),
-    lr=config.LR
+    lr=config.LR,
+    weight_decay=config.WEIGHT_DECAY
 )
 scaler = torch.cuda.amp.GradScaler(enabled=False)
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
