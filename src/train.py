@@ -237,7 +237,7 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
         print(f"Mean train cycle loss: {mean_train_loss_cycle:.4f}")
         print(f"Mean train KL loss (net_B2A): {mean_train_loss_kl_B2A:.4f}")
 
-        if (epoch + 1) % config.VAL_INTERVAL == 0:
+        if epoch == 0 or (epoch + 1) % config.VAL_INTERVAL == 0:
             net_A2B.eval()
             net_B2A.eval()
 

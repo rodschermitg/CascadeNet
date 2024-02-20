@@ -62,7 +62,7 @@ def create_log_plots(
             if val_crit_keys:
                 val_y_values = train_logs[val_crit_keys[row]][f"fold{fold}"]
                 val_x_values = list(range(
-                    config.VAL_INTERVAL-1,
+                    0,
                     config.VAL_INTERVAL*len(val_y_values),
                     config.VAL_INTERVAL)
                 )
