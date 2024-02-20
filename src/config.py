@@ -47,10 +47,6 @@ base_transforms = monai.transforms.Compose([
         dim=0
     ),
     monai.transforms.DeleteItemsd(keys=modality_keys_B),
-    monai.transforms.CropForegroundd(
-        keys=["images_A", "images_B", "label"],
-        source_key="images_A",
-    ),
     monai.transforms.ThresholdIntensityd(
         keys="label",
         threshold=1,
@@ -66,9 +62,9 @@ base_transforms = monai.transforms.Compose([
 train_transforms = monai.transforms.Compose([
     monai.transforms.RandAffined(
         keys=["images_A", "images_B", "label"],
-        prob=0.1,
-        rotate_range=0.1,
-        scale_range=0.1,
+        prob=0.5,
+        rotate_range=0.2,
+        scale_range=0.2,
         mode=("bilinear", "bilinear", "nearest")
     ),
     monai.transforms.RandCropByPosNegLabeld(
@@ -83,15 +79,15 @@ train_transforms = monai.transforms.Compose([
     # an error when processed together by RandGaussianNoised
     monai.transforms.RandGaussianNoised(
         keys=["images_A"],
-        prob=0.1,
-        mean=0.0,
-        std=0.1
+        prob=0.5,
+        mean=0,
+        std=20
     ),
     monai.transforms.RandGaussianNoised(
         keys=["images_B"],
-        prob=0.1,
-        mean=0.0,
-        std=0.1
+        prob=0.5,
+        mean=0,
+        std=20
     ),
     monai.transforms.NormalizeIntensityd(
         keys=["images_A", "images_B"],
