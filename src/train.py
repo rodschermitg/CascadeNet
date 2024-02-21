@@ -30,28 +30,9 @@ dataset = monai.data.CacheDataset(
     num_workers=num_workers
 )
 
-net_A2B = models.ProbabilisticSegmentationNet(**config.MODEL_KWARGS_A2B).to(device)
-net_A2B.init_weights(torch.nn.init.kaiming_uniform_, 0)
-net_A2B.init_bias(torch.nn.init.constant_, 0)
-net_B2A = models.ProbabilisticSegmentationNet(**config.MODEL_KWARGS_B2A).to(device)
-net_B2A.init_weights(torch.nn.init.kaiming_uniform_, 0)
-net_B2A.init_bias(torch.nn.init.constant_, 0)
-
 discretize = monai.transforms.AsDiscrete(
     argmax=True,
     to_onehot=config.NUM_CLASSES
-)
-
-optimizer = torch.optim.Adam(
-    itertools.chain(net_A2B.parameters(), net_B2A.parameters()),
-    lr=config.LR,
-    weight_decay=config.WEIGHT_DECAY
-)
-scaler = torch.cuda.amp.GradScaler(enabled=False)
-scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer=optimizer,
-    min_lr=config.LR/10,
-    verbose=True
 )
 
 loss_fn_pred = monai.losses.DiceCELoss(
@@ -103,6 +84,28 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
         "val_indices": val_indices.tolist()
     }
 
+    net_A2B = models.ProbabilisticSegmentationNet(
+        **config.MODEL_KWARGS_A2B
+    ).to(device)
+    net_A2B.init_weights(torch.nn.init.kaiming_uniform_, 0)
+    net_A2B.init_bias(torch.nn.init.constant_, 0)
+    net_B2A = models.ProbabilisticSegmentationNet(
+        **config.MODEL_KWARGS_B2A
+    ).to(device)
+    net_B2A.init_weights(torch.nn.init.kaiming_uniform_, 0)
+    net_B2A.init_bias(torch.nn.init.constant_, 0)
+
+    optimizer = torch.optim.Adam(
+        itertools.chain(net_A2B.parameters(), net_B2A.parameters()),
+        lr=config.LR,
+        weight_decay=config.WEIGHT_DECAY
+    )
+    scaler = torch.cuda.amp.GradScaler(enabled=False)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer=optimizer,
+        verbose=True
+    )
+
     train_data = torch.utils.data.Subset(dataset, train_indices)
     val_data = torch.utils.data.Subset(dataset, val_indices)
 
@@ -148,20 +151,14 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                     train_real_A,
                     train_label_B
                 )
-                train_loss_pred = loss_fn_pred(
-                    train_pred_B,
-                    train_label_B
-                )
+                train_loss_pred = loss_fn_pred(train_pred_B, train_label_B)
 
                 # if net_A2B.unet.save_decoder_features:
                 #     decoder_features = net_A2B.get_processed_decoder_features(
                 #         config.PATCH_SIZE
                 #     )
                 #     train_loss_ds = sum([
-                #         loss_fn_pred(
-                #             feat,
-                #             train_label_B
-                #         ) * (1/2)**d
+                #         loss_fn_pred(feat, train_label_B) * (1/2)**d
                 #         for d, feat in enumerate(decoder_features, 1)
                 #     ])
 
@@ -361,7 +358,7 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                 train_crit_keys=["mean_train_loss_pred"],
                 val_crit_keys=["mean_val_loss_pred"],
                 output_path=config.pred_loss_plot_path,
-                y_labels=["pred loss"],
+                y_labels=["prediction loss"],
             )
             utils.create_log_plots(
                 train_logs=train_logs,
@@ -423,3 +420,4 @@ with open(config.train_logs_path, "w") as train_logs_file:
 # - add hyperparameter optimization?
 # - increase patch_size?
 # - when passing pred from net_A2B to net_B2A, should net_A2B have LogSoftmax or Softmax as head?
+# - compare rec range with image range
