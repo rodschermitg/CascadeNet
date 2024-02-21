@@ -95,6 +95,10 @@ train_transforms = monai.transforms.Compose([
     )
 ])
 eval_transforms = monai.transforms.Compose([
+    monai.transforms.CropForegroundd(
+        keys=["images_A", "images_B", "label"],
+        source_key="images_A",
+    ),
     monai.transforms.NormalizeIntensityd(
         keys=["images_A", "images_B"],
         channel_wise=True
