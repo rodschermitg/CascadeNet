@@ -65,6 +65,9 @@ train_logs = {
     "mean_train_loss_kl_AB2C": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_train_loss_cycle": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_train_loss_kl_C2AB": {f"fold{i}": [] for i in range(config.FOLDS)},
+    "mean_train_dice": {f"fold{i}": [] for i in range(config.FOLDS)},
+    "mean_train_precision": {f"fold{i}": [] for i in range(config.FOLDS)},
+    "mean_train_recall": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_loss_pred": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_loss_cycle": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_dice": {f"fold{i}": [] for i in range(config.FOLDS)},
@@ -184,6 +187,17 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
             # if net_AB2C.unet.save_decoder_features:
             #     train_loss += train_loss_ds
 
+            # store discretized batches in lists for metric functions
+            train_pred_C = [
+                discretize(pred)
+                for pred in monai.data.decollate_batch(train_pred_C)
+            ]
+            train_label_C = monai.data.decollate_batch(train_label_C)
+
+            # metric results are stored internally
+            dice_fn(train_pred_C, train_label_C)
+            confusion_matrix_fn(train_pred_C, train_label_C)
+
             optimizer.zero_grad(set_to_none=True)
             scaler.scale(train_loss).backward()
             scaler.step(optimizer)
@@ -215,6 +229,12 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
         mean_train_loss_kl_C2AB = (
             epoch_train_loss_kl_C2AB / len(train_dataloader)
         )
+        mean_train_dice = dice_fn.aggregate().item()
+        mean_train_precision = confusion_matrix_fn.aggregate()[0].item()
+        mean_train_recall = confusion_matrix_fn.aggregate()[1].item()
+
+        dice_fn.reset()
+        confusion_matrix_fn.reset()
 
         train_logs["mean_train_loss_pred"][f"fold{fold}"].append(
             mean_train_loss_pred
@@ -228,11 +248,21 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
         train_logs["mean_train_loss_kl_C2AB"][f"fold{fold}"].append(
             mean_train_loss_kl_C2AB
         )
+        train_logs["mean_train_dice"][f"fold{fold}"].append(mean_train_dice)
+        train_logs["mean_train_precision"][f"fold{fold}"].append(
+            mean_train_precision
+        )
+        train_logs["mean_train_recall"][f"fold{fold}"].append(
+            mean_train_recall
+        )
 
         print(f"Mean train prediction loss: {mean_train_loss_pred:.4f}")
         print(f"Mean train KL loss (net_AB2C): {mean_train_loss_kl_AB2C:.4f}")
         print(f"Mean train cycle loss: {mean_train_loss_cycle:.4f}")
         print(f"Mean train KL loss (net_C2AB): {mean_train_loss_kl_C2AB:.4f}")
+        print(f"Mean train dice: {mean_train_dice:.4f}")
+        print(f"Mean train precision: {mean_train_precision:.4f}")
+        print(f"Mean train recall: {mean_train_recall:.4f}")
 
         if epoch == 0 or (epoch + 1) % config.VAL_INTERVAL == 0:
             net_AB2C.eval()
@@ -283,13 +313,12 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                             val_rec_AB
                         ).item()
 
-                    # store discretized batches in lists for metric functions
                     val_pred_C = [
                         discretize(pred)
                         for pred in monai.data.decollate_batch(val_pred_C)
                     ]
                     val_label_C = monai.data.decollate_batch(val_label_C)
-                    # metric results are stored internally
+
                     dice_fn(val_pred_C, val_label_C)
                     confusion_matrix_fn(val_pred_C, val_label_C)
 
@@ -378,12 +407,17 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
             )
             utils.create_log_plots(
                 train_logs=train_logs,
+                train_crit_keys=[
+                    "mean_train_dice",
+                    "mean_train_precision",
+                    "mean_train_recall"
+                ],
                 val_crit_keys=[
                     "mean_val_dice",
                     "mean_val_precision",
                     "mean_val_recall"
                 ],
-                output_path=config.val_metric_plot_path,
+                output_path=config.metric_plot_path,
                 y_labels=["dice", "precision", "recall"],
             )
 
@@ -420,4 +454,4 @@ with open(config.train_logs_path, "w") as train_logs_file:
 # - add hyperparameter optimization?
 # - increase patch_size?
 # - when passing pred from net_AB2C to net_C2AB, should net_AB2C have LogSoftmax or Softmax as head?
-# - compare rec range with image range
+# - compare rec range with image range -> substitute Tanh head with someting else?
