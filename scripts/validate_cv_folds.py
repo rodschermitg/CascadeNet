@@ -22,11 +22,11 @@ checkpoint_list = [
     for fold in range(config.FOLDS)
 ]
 model_list = [
-    models.ProbabilisticSegmentationNet(**config.MODEL_KWARGS_A2B).to(device)
+    models.ProbabilisticSegmentationNet(**config.MODEL_KWARGS_AB2C).to(device)
     for _ in range(config.FOLDS)
 ]
 for model, checkpoint in zip(model_list, checkpoint_list):
-    model.load_state_dict(checkpoint["net_A2B_state_dict"])
+    model.load_state_dict(checkpoint["net_AB2C_state_dict"])
     model.eval()
 
 discretize = monai.transforms.AsDiscrete(
@@ -68,8 +68,8 @@ for fold in range(config.FOLDS):
     )
 
     for batch in dataloader:
-        images = batch["images_A"].to(device)
-        label = batch["label"].to(device)
+        images = batch["images_AB"].to(device)
+        label = batch["label_C"].to(device)
 
         with torch.no_grad():
             with torch.cuda.amp.autocast():
@@ -79,7 +79,6 @@ for fold in range(config.FOLDS):
                     sw_batch_size=config.BATCH_SIZE,
                     predictor=model_list[fold]
                 )
-
         preds = torch.nn.functional.softmax(preds, dim=1)
         # store discretized batches in lists for metric functions
         preds = [

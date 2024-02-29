@@ -700,5 +700,5 @@ class ProbabilisticSegmentationNet(ConvModule):
 
 
 if __name__ == "__main__":
-    model = ProbabilisticSegmentationNet(**config.MODEL_KWARGS_A2B)
+    model = ProbabilisticSegmentationNet(**config.MODEL_KWARGS_AB2C)
     print(model)

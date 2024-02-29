@@ -18,96 +18,96 @@ RANDOM_STATE = 42
 TEST_SIZE = 0.1
 PATCH_SIZE = (96, 96, 96)
 NUM_CLASSES = 2
-TIMESTEPS = ["1", "2", "3"]
+TIMESTEPS = ["A", "B", "C"]
 num_timesteps = len(TIMESTEPS)
-MODALITIES = ["CT1", "FLAIR", "T1", "T2"]
-num_modalities = len(MODALITIES)
-modality_keys_A = (
-    [f"{modality}_{TIMESTEPS[0]}" for modality in MODALITIES] +
-    [f"{modality}_{TIMESTEPS[1]}" for modality in MODALITIES]
+SEQUENCES = ["CT1", "FLAIR", "T1", "T2"]
+num_sequences = len(SEQUENCES)
+sequence_keys_AB = (
+    [f"{sequence}_{TIMESTEPS[0]}" for sequence in SEQUENCES] +
+    [f"{sequence}_{TIMESTEPS[1]}" for sequence in SEQUENCES]
 )
-modality_keys_B = [f"{modality}_{TIMESTEPS[2]}" for modality in MODALITIES]
+sequence_keys_C = [f"{sequence}_{TIMESTEPS[2]}" for sequence in SEQUENCES]
 
 # transforms
 base_transforms = monai.transforms.Compose([
     monai.transforms.LoadImaged(
-        keys=modality_keys_A + modality_keys_B + ["label"],
+        keys=sequence_keys_AB + sequence_keys_C + ["label_C"],
         image_only=False,
         ensure_channel_first=True
     ),
     monai.transforms.ConcatItemsd(
-        keys=modality_keys_A,
-        name="images_A",
+        keys=sequence_keys_AB,
+        name="images_AB",
         dim=0
     ),
-    monai.transforms.DeleteItemsd(keys=modality_keys_A),
+    monai.transforms.DeleteItemsd(keys=sequence_keys_AB),
     monai.transforms.ConcatItemsd(
-        keys=modality_keys_B,
-        name="images_B",
+        keys=sequence_keys_C,
+        name="images_C",
         dim=0
     ),
-    monai.transforms.DeleteItemsd(keys=modality_keys_B),
+    monai.transforms.DeleteItemsd(keys=sequence_keys_C),
     monai.transforms.ThresholdIntensityd(
-        keys="label",
+        keys="label_C",
         threshold=1,
         above=False,
         cval=1
     ),
-    monai.transforms.AsDiscreted(keys="label", to_onehot=NUM_CLASSES),
+    monai.transforms.AsDiscreted(keys="label_C", to_onehot=NUM_CLASSES),
     # monai.transforms.Orientationd(
-    #     keys=["images_A", "images_B", "label"],
+    #     keys=["images_AB", "images_C", "label_C"],
     #     axcodes="SPL",
     # ),
 ])
 train_transforms = monai.transforms.Compose([
     monai.transforms.RandAffined(
-        keys=["images_A", "images_B", "label"],
+        keys=["images_AB", "images_C", "label_C"],
         prob=0.5,
         rotate_range=0.2,
         scale_range=0.2,
         mode=("bilinear", "bilinear", "nearest")
     ),
     monai.transforms.RandCropByPosNegLabeld(
-        keys=["images_A", "images_B", "label"],
-        label_key="label",
+        keys=["images_AB", "images_C", "label_C"],
+        label_key="label_C",
         spatial_size=PATCH_SIZE,
         pos=1,
         neg=1,
         num_samples=1,
     ),
-    # images_A and images_B have different number of channels, which leads to
+    # images_AB and images_C have different number of channels, which leads to
     # an error when processed together by RandGaussianNoised
     monai.transforms.RandGaussianNoised(
-        keys=["images_A"],
+        keys="images_AB",
         prob=0.5,
         mean=0,
         std=20
     ),
     monai.transforms.RandGaussianNoised(
-        keys=["images_B"],
+        keys="images_C",
         prob=0.5,
         mean=0,
         std=20
     ),
     monai.transforms.NormalizeIntensityd(
-        keys=["images_A", "images_B"],
+        keys=["images_AB", "images_C"],
         channel_wise=True
     )
 ])
 eval_transforms = monai.transforms.Compose([
     monai.transforms.CropForegroundd(
-        keys=["images_A", "images_B", "label"],
-        source_key="images_A",
+        keys=["images_AB", "images_C", "label_C"],
+        source_key="images_AB",
     ),
     monai.transforms.NormalizeIntensityd(
-        keys=["images_A", "images_B"],
+        keys=["images_AB", "images_C"],
         channel_wise=True
     )
 ])
 
 # model
-MODEL_KWARGS_A2B = {
-    "in_channels": 2 * num_modalities,
+MODEL_KWARGS_AB2C = {
+    "in_channels": 2 * num_sequences,
     "out_channels": NUM_CLASSES,
     "latent_size": 3,
     "temperature": 0.28,
@@ -123,9 +123,9 @@ MODEL_KWARGS_A2B = {
         "n_components": 9
     }
 }
-MODEL_KWARGS_B2A = {
-    "in_channels": num_modalities + NUM_CLASSES,
-    "out_channels": 2 * num_modalities,
+MODEL_KWARGS_C2AB = {
+    "in_channels": num_sequences + NUM_CLASSES,
+    "out_channels": 2 * num_sequences,
     "latent_size": 3,
     "temperature": 0.28,
     "task_kwargs": {

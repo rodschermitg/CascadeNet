@@ -62,9 +62,9 @@ train_logs = {
     "total_train_time": -1,
     "fold_indices": {f"fold{i}": {} for i in range(config.FOLDS)},
     "mean_train_loss_pred": {f"fold{i}": [] for i in range(config.FOLDS)},
-    "mean_train_loss_kl_A2B": {f"fold{i}": [] for i in range(config.FOLDS)},
+    "mean_train_loss_kl_AB2C": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_train_loss_cycle": {f"fold{i}": [] for i in range(config.FOLDS)},
-    "mean_train_loss_kl_B2A": {f"fold{i}": [] for i in range(config.FOLDS)},
+    "mean_train_loss_kl_C2AB": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_loss_pred": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_loss_cycle": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_dice": {f"fold{i}": [] for i in range(config.FOLDS)},
@@ -84,19 +84,19 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
         "val_indices": val_indices.tolist()
     }
 
-    net_A2B = models.ProbabilisticSegmentationNet(
-        **config.MODEL_KWARGS_A2B
+    net_AB2C = models.ProbabilisticSegmentationNet(
+        **config.MODEL_KWARGS_AB2C
     ).to(device)
-    net_A2B.init_weights(torch.nn.init.kaiming_uniform_, 0)
-    net_A2B.init_bias(torch.nn.init.constant_, 0)
-    net_B2A = models.ProbabilisticSegmentationNet(
-        **config.MODEL_KWARGS_B2A
+    net_AB2C.init_weights(torch.nn.init.kaiming_uniform_, 0)
+    net_AB2C.init_bias(torch.nn.init.constant_, 0)
+    net_C2AB = models.ProbabilisticSegmentationNet(
+        **config.MODEL_KWARGS_C2AB
     ).to(device)
-    net_B2A.init_weights(torch.nn.init.kaiming_uniform_, 0)
-    net_B2A.init_bias(torch.nn.init.constant_, 0)
+    net_C2AB.init_weights(torch.nn.init.kaiming_uniform_, 0)
+    net_C2AB.init_bias(torch.nn.init.constant_, 0)
 
     optimizer = torch.optim.Adam(
-        itertools.chain(net_A2B.parameters(), net_B2A.parameters()),
+        itertools.chain(net_AB2C.parameters(), net_C2AB.parameters()),
         lr=config.LR,
         weight_decay=config.WEIGHT_DECAY
     )
@@ -132,56 +132,56 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
     )
 
     for epoch in range(config.EPOCHS):
-        net_A2B.train()
-        net_B2A.train()
+        net_AB2C.train()
+        net_C2AB.train()
 
         epoch_train_loss_pred = 0
-        epoch_train_loss_kl_A2B = 0
+        epoch_train_loss_kl_AB2C = 0
         epoch_train_loss_cycle = 0
-        epoch_train_loss_kl_B2A = 0
+        epoch_train_loss_kl_C2AB = 0
 
         for iter, train_batch in enumerate(train_dataloader):
-            train_real_A = train_batch["images_A"].to(device)
-            train_real_B = train_batch["images_B"].to(device)
-            train_label_B = train_batch["label"].to(device)
+            train_real_AB = train_batch["images_AB"].to(device)
+            train_real_C = train_batch["images_C"].to(device)
+            train_label_C = train_batch["label_C"].to(device)
 
             with torch.cuda.amp.autocast(enabled=False):
-                # net_A2B
-                train_pred_B, train_loss_kl_A2B = net_A2B(
-                    train_real_A,
-                    train_label_B
+                # net_AB2C
+                train_pred_C, train_loss_kl_AB2C = net_AB2C(
+                    train_real_AB,
+                    train_label_C
                 )
-                train_loss_pred = loss_fn_pred(train_pred_B, train_label_B)
+                train_loss_pred = loss_fn_pred(train_pred_C, train_label_C)
 
-                # if net_A2B.unet.save_decoder_features:
-                #     decoder_features = net_A2B.get_processed_decoder_features(
+                # if net_AB2C.unet.save_decoder_features:
+                #     decoder_features = net_AB2C.get_processed_decoder_features(
                 #         config.PATCH_SIZE
                 #     )
                 #     train_loss_ds = sum([
-                #         loss_fn_pred(feat, train_label_B) * (1/2)**d
+                #         loss_fn_pred(feat, train_label_C) * (1/2)**d
                 #         for d, feat in enumerate(decoder_features, 1)
                 #     ])
 
-                # net_B2A
-                train_pred_B = torch.nn.functional.softmax(train_pred_B, dim=1)
-                mean = train_pred_B.mean(dim=(2, 3, 4), keepdim=True)
-                std = train_pred_B.std(dim=(2, 3, 4), keepdim=True)
-                train_pred_B = (train_pred_B - mean) / std
+                # net_C2AB
+                train_pred_C = torch.nn.functional.softmax(train_pred_C, dim=1)
+                mean = train_pred_C.mean(dim=(2, 3, 4), keepdim=True)
+                std = train_pred_C.std(dim=(2, 3, 4), keepdim=True)
+                train_pred_C = (train_pred_C - mean) / std
 
-                train_rec_A, train_loss_kl_B2A = net_B2A(
-                    torch.cat((train_pred_B, train_real_B), dim=1),
-                    train_real_A
+                train_rec_AB, train_loss_kl_C2AB = net_C2AB(
+                    torch.cat((train_pred_C, train_real_C), dim=1),
+                    train_real_AB
                 )
 
-                train_loss_cycle = loss_fn_cycle(train_real_A, train_rec_A)
+                train_loss_cycle = loss_fn_cycle(train_real_AB, train_rec_AB)
 
             train_loss = (
                 train_loss_pred +
-                config.KL_WEIGHT*train_loss_kl_A2B +
-                config.KL_WEIGHT*train_loss_kl_B2A +
+                config.KL_WEIGHT*train_loss_kl_AB2C +
+                config.KL_WEIGHT*train_loss_kl_C2AB +
                 config.CYCLE_WEIGHT*train_loss_cycle
             )
-            # if net_A2B.unet.save_decoder_features:
+            # if net_AB2C.unet.save_decoder_features:
             #     train_loss += train_loss_ds
 
             optimizer.zero_grad(set_to_none=True)
@@ -190,9 +190,9 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
             scaler.update()
 
             epoch_train_loss_pred += train_loss_pred.item()
-            epoch_train_loss_kl_A2B += train_loss_kl_A2B.item()
+            epoch_train_loss_kl_AB2C += train_loss_kl_AB2C.item()
             epoch_train_loss_cycle += train_loss_cycle.item()
-            epoch_train_loss_kl_B2A += train_loss_kl_B2A.item()
+            epoch_train_loss_kl_C2AB += train_loss_kl_C2AB.item()
 
             if iter == 0:
                 print("")
@@ -202,96 +202,96 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                     f"Epoch [{epoch+1:3}/{config.EPOCHS}], "
                     f"Iter [{iter+1:2}/{len(train_dataloader)}], "
                     f"Prediction loss: {train_loss_pred.item():.4f}, "
-                    f"KL loss (net_A2B): {train_loss_kl_A2B.item():.4f}, "
+                    f"KL loss (net_AB2C): {train_loss_kl_AB2C.item():.4f}, "
                     f"Cycle loss: {train_loss_cycle.item():.4f}, "
-                    f"KL loss (net_B2A): {train_loss_kl_B2A.item():.4f}"
+                    f"KL loss (net_C2AB): {train_loss_kl_C2AB.item():.4f}"
                 )
 
         mean_train_loss_pred = epoch_train_loss_pred / len(train_dataloader)
-        mean_train_loss_kl_A2B = (
-            epoch_train_loss_kl_A2B / len(train_dataloader)
+        mean_train_loss_kl_AB2C = (
+            epoch_train_loss_kl_AB2C / len(train_dataloader)
         )
         mean_train_loss_cycle = epoch_train_loss_cycle / len(train_dataloader)
-        mean_train_loss_kl_B2A = (
-            epoch_train_loss_kl_B2A / len(train_dataloader)
+        mean_train_loss_kl_C2AB = (
+            epoch_train_loss_kl_C2AB / len(train_dataloader)
         )
 
         train_logs["mean_train_loss_pred"][f"fold{fold}"].append(
             mean_train_loss_pred
         )
-        train_logs["mean_train_loss_kl_A2B"][f"fold{fold}"].append(
-            mean_train_loss_kl_A2B
+        train_logs["mean_train_loss_kl_AB2C"][f"fold{fold}"].append(
+            mean_train_loss_kl_AB2C
         )
         train_logs["mean_train_loss_cycle"][f"fold{fold}"].append(
             mean_train_loss_cycle
         )
-        train_logs["mean_train_loss_kl_B2A"][f"fold{fold}"].append(
-            mean_train_loss_kl_B2A
+        train_logs["mean_train_loss_kl_C2AB"][f"fold{fold}"].append(
+            mean_train_loss_kl_C2AB
         )
 
         print(f"Mean train prediction loss: {mean_train_loss_pred:.4f}")
-        print(f"Mean train KL loss (net_A2B): {mean_train_loss_kl_A2B:.4f}")
+        print(f"Mean train KL loss (net_AB2C): {mean_train_loss_kl_AB2C:.4f}")
         print(f"Mean train cycle loss: {mean_train_loss_cycle:.4f}")
-        print(f"Mean train KL loss (net_B2A): {mean_train_loss_kl_B2A:.4f}")
+        print(f"Mean train KL loss (net_C2AB): {mean_train_loss_kl_C2AB:.4f}")
 
         if epoch == 0 or (epoch + 1) % config.VAL_INTERVAL == 0:
-            net_A2B.eval()
-            net_B2A.eval()
+            net_AB2C.eval()
+            net_C2AB.eval()
 
             epoch_val_loss_pred = 0
             epoch_val_loss_cycle = 0
 
             with torch.no_grad():
                 for val_batch in val_dataloader:
-                    val_real_A = val_batch["images_A"].to(device)
-                    val_real_B = val_batch["images_B"].to(device)
-                    val_label_B = val_batch["label"].to(device)
+                    val_real_AB = val_batch["images_AB"].to(device)
+                    val_real_C = val_batch["images_C"].to(device)
+                    val_label_C = val_batch["label_C"].to(device)
 
                     with torch.cuda.amp.autocast():
-                        # net_A2B
-                        val_pred_B = monai.inferers.sliding_window_inference(
-                            inputs=val_real_A,
+                        # net_AB2C
+                        val_pred_C = monai.inferers.sliding_window_inference(
+                            inputs=val_real_AB,
                             roi_size=config.PATCH_SIZE,
                             sw_batch_size=config.BATCH_SIZE,
-                            predictor=net_A2B
+                            predictor=net_AB2C
                         )
                         epoch_val_loss_pred += loss_fn_pred(
-                            val_pred_B,
-                            val_label_B
+                            val_pred_C,
+                            val_label_C
                         ).item()
 
-                        # net_B2A
-                        val_pred_B = torch.nn.functional.softmax(
-                            val_pred_B,
+                        # net_C2AB
+                        val_pred_C = torch.nn.functional.softmax(
+                            val_pred_C,
                             dim=1
                         )
-                        mean = val_pred_B.mean(dim=(2, 3, 4), keepdim=True)
-                        std = val_pred_B.std(dim=(2, 3, 4), keepdim=True)
+                        mean = val_pred_C.mean(dim=(2, 3, 4), keepdim=True)
+                        std = val_pred_C.std(dim=(2, 3, 4), keepdim=True)
 
-                        val_rec_A = monai.inferers.sliding_window_inference(
+                        val_rec_AB = monai.inferers.sliding_window_inference(
                             inputs=torch.cat(
-                                ((val_pred_B-mean)/std, val_real_B),
+                                ((val_pred_C-mean)/std, val_real_C),
                                 dim=1
                             ),
                             roi_size=config.PATCH_SIZE,
                             sw_batch_size=config.BATCH_SIZE,
-                            predictor=net_B2A
+                            predictor=net_C2AB
                         )
 
                         epoch_val_loss_cycle += loss_fn_cycle(
-                            val_real_A,
-                            val_rec_A
+                            val_real_AB,
+                            val_rec_AB
                         ).item()
 
                     # store discretized batches in lists for metric functions
-                    val_pred_B = [
+                    val_pred_C = [
                         discretize(pred)
-                        for pred in monai.data.decollate_batch(val_pred_B)
+                        for pred in monai.data.decollate_batch(val_pred_C)
                     ]
-                    val_label_B = monai.data.decollate_batch(val_label_B)
+                    val_label_C = monai.data.decollate_batch(val_label_C)
                     # metric results are stored internally
-                    dice_fn(val_pred_B, val_label_B)
-                    confusion_matrix_fn(val_pred_B, val_label_B)
+                    dice_fn(val_pred_C, val_label_C)
+                    confusion_matrix_fn(val_pred_C, val_label_C)
 
             mean_val_loss_pred = epoch_val_loss_pred / len(val_dataloader)
             mean_val_loss_cycle = epoch_val_loss_cycle / len(val_dataloader)
@@ -335,8 +335,8 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
 
                 torch.save(
                     {
-                        "net_A2B_state_dict": net_A2B.state_dict(),
-                        "net_B2A_state_dict": net_B2A.state_dict(),
+                        "net_AB2C_state_dict": net_AB2C.state_dict(),
+                        "net_C2AB_state_dict": net_C2AB.state_dict(),
                         "optimizer_state_dict": optimizer.state_dict(),
                         "scaler_state_dict": scaler.state_dict(),
                         "scheduler_state_dict": scheduler.state_dict(),
@@ -370,11 +370,11 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
             utils.create_log_plots(
                 train_logs=train_logs,
                 train_crit_keys=[
-                    "mean_train_loss_kl_A2B",
-                    "mean_train_loss_kl_B2A"
+                    "mean_train_loss_kl_AB2C",
+                    "mean_train_loss_kl_C2AB"
                 ],
                 output_path=config.kl_loss_plot_path,
-                y_labels=["KL loss (net_A2B)", "KL loss (net_B2A)"],
+                y_labels=["KL loss (net_AB2C)", "KL loss (net_C2AB)"],
             )
             utils.create_log_plots(
                 train_logs=train_logs,
@@ -394,8 +394,8 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
         print(f"Fold {fold+1} completed, serializing model to disk")
         torch.save(
             {
-                "net_A2B_state_dict": net_A2B.state_dict(),
-                "net_B2A_state_dict": net_B2A.state_dict(),
+                "net_AB2C_state_dict": net_AB2C.state_dict(),
+                "net_C2AB_state_dict": net_C2AB.state_dict(),
                 "optimizer_state_dict": optimizer.state_dict(),
                 "scaler_state_dict": scaler.state_dict(),
                 "scheduler_state_dict": scheduler.state_dict(),
@@ -419,5 +419,5 @@ with open(config.train_logs_path, "w") as train_logs_file:
 # TODO
 # - add hyperparameter optimization?
 # - increase patch_size?
-# - when passing pred from net_A2B to net_B2A, should net_A2B have LogSoftmax or Softmax as head?
+# - when passing pred from net_AB2C to net_C2AB, should net_AB2C have LogSoftmax or Softmax as head?
 # - compare rec range with image range

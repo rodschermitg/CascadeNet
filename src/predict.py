@@ -25,11 +25,11 @@ checkpoint_list = [
     for fold in range(config.FOLDS)
 ]
 model_list = [
-    models.ProbabilisticSegmentationNet(**config.MODEL_KWARGS_A2B).to(device)
+    models.ProbabilisticSegmentationNet(**config.MODEL_KWARGS_AB2C).to(device)
     for _ in range(config.FOLDS)
 ]
 for model, checkpoint in zip(model_list, checkpoint_list):
-    model.load_state_dict(checkpoint["net_A2B_state_dict"])
+    model.load_state_dict(checkpoint["net_AB2C_state_dict"])
     model.eval()
 
 data_path = os.path.join(config.data_dir, config.DATA_FILENAME)
@@ -52,8 +52,8 @@ dataloader = monai.data.DataLoader(
 )
 
 for batch in dataloader:
-    images = batch["images_A"].to(device)
-    label = batch["label"].to(device)
+    images = batch["images_AB"].to(device)
+    label = batch["label_C"].to(device)
     label = torch.argmax(label, dim=1)  # decode one-hot labels
 
     with torch.no_grad():
@@ -77,11 +77,11 @@ for batch in dataloader:
     ]
 
     patient_name = utils.get_patient_name(
-        batch["label_meta_dict"]["filename_or_obj"][0]
+        batch["label_C_meta_dict"]["filename_or_obj"][0]
     )
 
     utils.create_slice_plots(
         images_list + [label.cpu()] + [pred.cpu()],
         title=patient_name,
-        labels=config.modality_keys_A + ["label", "pred"]
+        labels=config.sequence_keys_AB + ["label", "pred"]
     )

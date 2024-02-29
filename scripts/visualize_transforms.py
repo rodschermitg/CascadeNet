@@ -29,26 +29,26 @@ dataset = monai.data.Dataset(data=data["train"], transform=transforms)
 dataloader = monai.data.DataLoader(dataset, batch_size=1)
 
 for batch in dataloader:
-    images_A = batch["images_A"]
-    images_B = batch["images_B"]
-    label_B = batch["label"]
-    label_B = torch.argmax(label_B, dim=1)  # decode one-hot labels
+    images_AB = batch["images_AB"]
+    images_C = batch["images_C"]
+    label = batch["label_C"]
+    label = torch.argmax(label, dim=1)  # decode one-hot labels
 
-    images_A_list = [
-        images_A[:, channel] for channel in range(2*config.num_modalities)
+    images_AB_list = [
+        images_AB[:, channel] for channel in range(2*config.num_sequences)
     ]
-    images_B_list = [
-        monai.visualize.utils.blend_images(images_B[:, channel], label_B)
-        for channel in range(config.num_modalities)
+    images_C_list = [
+        monai.visualize.utils.blend_images(images_C[:, channel], label)
+        for channel in range(config.num_sequences)
     ]
 
     patient_name = utils.get_patient_name(
-        batch["label_meta_dict"]["filename_or_obj"][0]
+        batch["label_C_meta_dict"]["filename_or_obj"][0]
     )
 
     utils.create_slice_plots(
-        images_A_list + images_B_list,
+        images_AB_list + images_C_list,
         title=patient_name,
         slice_dim=0,
-        labels=config.modality_keys_A + config.modality_keys_B
+        labels=config.sequence_keys_AB + config.sequence_keys_C + ["label"]
     )
