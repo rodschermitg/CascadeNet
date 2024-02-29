@@ -59,6 +59,15 @@ confusion_matrix_fn = monai.metrics.ConfusionMatrixMetric(
 precision_list = []
 recall_list = []
 
+cv_fold_logs = {
+    "mean_dice": {f"fold{i}": None for i in range(config.FOLDS)},
+    "mean_precision": {f"fold{i}": None for i in range(config.FOLDS)},
+    "mean_recall": {f"fold{i}": None for i in range(config.FOLDS)},
+    "std_dice": {f"fold{i}": None for i in range(config.FOLDS)},
+    "std_precision": {f"fold{i}": None for i in range(config.FOLDS)},
+    "std_recall": {f"fold{i}": None for i in range(config.FOLDS)},
+}
+
 for fold in range(config.FOLDS):
     val_indices = train_logs["fold_indices"][f"fold{fold}"]["val_indices"]
     val_data = torch.utils.data.Subset(dataset, val_indices)
@@ -105,6 +114,13 @@ for fold in range(config.FOLDS):
     ).item()
     std_recall = torch.std(torch.tensor(recall_list), correction=0).item()
 
+    cv_fold_logs["mean_dice"][f"fold{fold}"] = mean_dice
+    cv_fold_logs["mean_precision"][f"fold{fold}"] = mean_precision
+    cv_fold_logs["mean_recall"][f"fold{fold}"] = mean_recall
+    cv_fold_logs["std_dice"][f"fold{fold}"] = std_dice
+    cv_fold_logs["std_precision"][f"fold{fold}"] = std_precision
+    cv_fold_logs["std_recall"][f"fold{fold}"] = std_recall
+
     print(f"\nfold {fold}:")
     print(f"\tmean dice: {mean_dice:.4f}, std dice: {std_dice:.4f}")
     print(
@@ -112,3 +128,6 @@ for fold in range(config.FOLDS):
         f"std precision: {std_precision:.4f}"
     )
     print(f"\tmean recall: {mean_recall:.4f}, std recall: {std_recall:.4f}")
+
+with open(config.cv_fold_logs_path, "w") as cv_fold_logs_file:
+    json.dump(cv_fold_logs, cv_fold_logs_file, indent=4)

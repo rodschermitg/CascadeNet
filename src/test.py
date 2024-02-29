@@ -63,6 +63,12 @@ confusion_matrix_fn = monai.metrics.ConfusionMatrixMetric(
 precision_list = []
 recall_list = []
 
+test_logs = {
+    "individual": {},
+    "mean": {},
+    "std": {}
+}
+
 for batch in dataloader:
     images = batch["images_AB"].to(device)
     label = batch["label_C"].to(device)
@@ -99,6 +105,15 @@ for batch in dataloader:
     recall_list.append(confusion_matrix_fn.aggregate()[1].item())
     confusion_matrix_fn.reset()
 
+    test_logs["individual"].update({patient_name: {}})
+    test_logs["individual"][patient_name].update(
+        {"dice": dice_fn.get_buffer()[-1].item()}
+    )
+    test_logs["individual"][patient_name].update(
+        {"precision": precision_list[-1]}
+    )
+    test_logs["individual"][patient_name].update({"recall": recall_list[-1]})
+
     print(f"{patient_name}:")
     print(f"\tdice: {dice_fn.get_buffer()[-1].item():.4f}")
     print(f"\tprecision: {precision_list[-1]:.4f}")
@@ -111,8 +126,18 @@ std_dice = torch.std(dice_fn.get_buffer(), correction=0).item()
 std_precision = torch.std(torch.tensor(precision_list), correction=0).item()
 std_recall = torch.std(torch.tensor(recall_list), correction=0).item()
 
+test_logs["mean"].update({"dice": mean_dice})
+test_logs["mean"].update({"precision": mean_dice})
+test_logs["mean"].update({"recall": mean_dice})
+test_logs["std"].update({"dice": std_dice})
+test_logs["std"].update({"precision": std_precision})
+test_logs["std"].update({"recall": std_recall})
+
 print(f"\nmean dice: {mean_dice:.4f}, std dice: {std_dice:.4f}")
 print(
     f"mean precision: {mean_precision:.4f}, std precision: {std_precision:.4f}"
 )
 print(f"mean recall: {mean_recall:.4f}, std recall: {std_recall:.4f}")
+
+with open(config.test_logs_path, "w") as test_logs_file:
+    json.dump(test_logs, test_logs_file, indent=4)
