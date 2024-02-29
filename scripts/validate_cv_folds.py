@@ -9,6 +9,8 @@ from src import config
 from src import models
 
 
+monai.utils.set_determinism(config.RANDOM_STATE)
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 num_workers = 4 if device.type == "cuda" else 0
 pin_memory = True if device.type == "cuda" else False
@@ -73,22 +75,20 @@ for fold in range(config.FOLDS):
 
         with torch.no_grad():
             with torch.cuda.amp.autocast():
-                preds = monai.inferers.sliding_window_inference(
+                pred = monai.inferers.sliding_window_inference(
                     inputs=images,
                     roi_size=config.PATCH_SIZE,
                     sw_batch_size=config.BATCH_SIZE,
                     predictor=model_list[fold]
                 )
-        preds = torch.nn.functional.softmax(preds, dim=1)
+        pred = torch.nn.functional.softmax(pred, dim=1)
         # store discretized batches in lists for metric functions
-        preds = [
-            discretize(pred) for pred in monai.data.decollate_batch(preds)
-        ]
+        pred = [discretize(p) for p in monai.data.decollate_batch(pred)]
         label = monai.data.decollate_batch(label)
 
         # metric results are stored internally
-        dice_fn(preds, label)
-        confusion_matrix_fn(preds, label)
+        dice_fn(pred, label)
+        confusion_matrix_fn(pred, label)
 
         # store precision and recall in separate lists for later calculations
         precision_list.append(confusion_matrix_fn.aggregate()[0].item())
@@ -96,11 +96,14 @@ for fold in range(config.FOLDS):
         confusion_matrix_fn.reset()
 
     mean_dice = torch.mean(dice_fn.get_buffer()).item()
+    mean_precision = torch.mean(torch.tensor(precision_list)).item()
+    mean_recall = torch.mean(torch.tensor(recall_list)).item()
     std_dice = torch.std(dice_fn.get_buffer(), correction=0).item()
-    mean_precision = torch.mean(torch.tensor(precision_list))
-    std_precision = torch.std(torch.tensor(precision_list), correction=0)
-    mean_recall = torch.mean(torch.tensor(recall_list))
-    std_recall = torch.std(torch.tensor(recall_list), correction=0)
+    std_precision = torch.std(
+        torch.tensor(precision_list),
+        correction=0
+    ).item()
+    std_recall = torch.std(torch.tensor(recall_list), correction=0).item()
 
     print(f"\nfold {fold}:")
     print(f"\tmean dice: {mean_dice:.4f}, std dice: {std_dice:.4f}")

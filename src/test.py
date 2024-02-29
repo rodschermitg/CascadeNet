@@ -9,6 +9,8 @@ import models
 import utils
 
 
+monai.utils.set_determinism(config.RANDOM_STATE)
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 num_workers = 4 if device.type == "cuda" else 0
 pin_memory = True if device.type == "cuda" else False
@@ -44,7 +46,7 @@ dataset = monai.data.Dataset(
         config.eval_transforms
     ])
 )
-print(f"Using {len(dataset)} test samples")
+print(f"Using {len(dataset)} test samples\n")
 
 dataloader = monai.data.DataLoader(
     dataset=dataset,
@@ -103,11 +105,11 @@ for batch in dataloader:
     print(f"\trecall: {recall_list[-1]:.4f}")
 
 mean_dice = torch.mean(dice_fn.get_buffer()).item()
-std_dice = torch.std(dice_fn.get_buffer(), correction=0).item()
 mean_precision = torch.mean(torch.tensor(precision_list))
-std_precision = torch.std(torch.tensor(precision_list), correction=0)
 mean_recall = torch.mean(torch.tensor(recall_list))
-std_recall = torch.std(torch.tensor(recall_list), correction=0)
+std_dice = torch.std(dice_fn.get_buffer(), correction=0).item()
+std_precision = torch.std(torch.tensor(precision_list), correction=0).item()
+std_recall = torch.std(torch.tensor(recall_list), correction=0).item()
 
 print(f"\nmean dice: {mean_dice:.4f}, std dice: {std_dice:.4f}")
 print(

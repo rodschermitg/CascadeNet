@@ -11,6 +11,7 @@ import utils
 
 
 matplotlib.use("TkAgg")
+monai.utils.set_determinism(config.RANDOM_STATE)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 num_workers = 4 if device.type == "cuda" else 0
