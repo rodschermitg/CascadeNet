@@ -56,78 +56,170 @@ confusion_matrix_fn = monai.metrics.ConfusionMatrixMetric(
     metric_name=("precision", "recall"),
     include_background=False
 )
-precision_list = []
-recall_list = []
+train_precision_list = []
+train_recall_list = []
+val_precision_list = []
+val_recall_list = []
 
 cv_fold_logs = {
-    "mean_dice": {f"fold{i}": None for i in range(config.FOLDS)},
-    "mean_precision": {f"fold{i}": None for i in range(config.FOLDS)},
-    "mean_recall": {f"fold{i}": None for i in range(config.FOLDS)},
-    "std_dice": {f"fold{i}": None for i in range(config.FOLDS)},
-    "std_precision": {f"fold{i}": None for i in range(config.FOLDS)},
-    "std_recall": {f"fold{i}": None for i in range(config.FOLDS)},
+    "mean_train_dice": {f"fold{i}": None for i in range(config.FOLDS)},
+    "mean_train_precision": {f"fold{i}": None for i in range(config.FOLDS)},
+    "mean_train_recall": {f"fold{i}": None for i in range(config.FOLDS)},
+    "std_train_dice": {f"fold{i}": None for i in range(config.FOLDS)},
+    "std_train_precision": {f"fold{i}": None for i in range(config.FOLDS)},
+    "std_train_recall": {f"fold{i}": None for i in range(config.FOLDS)},
+    "mean_val_dice": {f"fold{i}": None for i in range(config.FOLDS)},
+    "mean_val_precision": {f"fold{i}": None for i in range(config.FOLDS)},
+    "mean_val_recall": {f"fold{i}": None for i in range(config.FOLDS)},
+    "std_val_dice": {f"fold{i}": None for i in range(config.FOLDS)},
+    "std_val_precision": {f"fold{i}": None for i in range(config.FOLDS)},
+    "std_val_recall": {f"fold{i}": None for i in range(config.FOLDS)}
 }
 
 for fold in range(config.FOLDS):
+    train_indices = train_logs["fold_indices"][f"fold{fold}"]["train_indices"]
+    train_data = torch.utils.data.Subset(dataset, train_indices)
+    train_dataloader = monai.data.DataLoader(
+        dataset=train_data,
+        batch_size=1,
+        num_workers=num_workers,
+        pin_memory=pin_memory
+    )
+
+    for train_batch in train_dataloader:
+        train_images = train_batch["images_AB"].to(device)
+        train_label = train_batch["label_C"].to(device)
+
+        with torch.no_grad():
+            with torch.cuda.amp.autocast():
+                train_pred = monai.inferers.sliding_window_inference(
+                    inputs=train_images,
+                    roi_size=config.PATCH_SIZE,
+                    sw_batch_size=config.BATCH_SIZE,
+                    predictor=model_list[fold]
+                )
+        train_pred = torch.nn.functional.softmax(train_pred, dim=1)
+        # store discretized batches in lists for metric functions
+        train_pred = [
+            discretize(pred) for pred in monai.data.decollate_batch(train_pred)
+        ]
+        train_label = monai.data.decollate_batch(train_label)
+
+        # metric results are stored internally
+        dice_fn(train_pred, train_label)
+        confusion_matrix_fn(train_pred, train_label)
+
+        # store precision and recall in separate lists for later calculations
+        train_precision_list.append(confusion_matrix_fn.aggregate()[0].item())
+        train_recall_list.append(confusion_matrix_fn.aggregate()[1].item())
+        confusion_matrix_fn.reset()
+
+    mean_train_dice = torch.mean(dice_fn.get_buffer()).item()
+    mean_train_precision = torch.mean(
+        torch.tensor(train_precision_list)
+    ).item()
+    mean_train_recall = torch.mean(torch.tensor(train_recall_list)).item()
+    std_train_dice = torch.std(dice_fn.get_buffer(), correction=0).item()
+    std_train_precision = torch.std(
+        torch.tensor(train_precision_list),
+        correction=0
+    ).item()
+    std_train_recall = torch.std(
+        torch.tensor(train_recall_list),
+        correction=0
+    ).item()
+
+    dice_fn.reset()
+
+    cv_fold_logs["mean_train_dice"][f"fold{fold}"] = mean_train_dice
+    cv_fold_logs["mean_train_precision"][f"fold{fold}"] = mean_train_precision
+    cv_fold_logs["mean_train_recall"][f"fold{fold}"] = mean_train_recall
+    cv_fold_logs["std_train_dice"][f"fold{fold}"] = std_train_dice
+    cv_fold_logs["std_train_precision"][f"fold{fold}"] = std_train_precision
+    cv_fold_logs["std_train_recall"][f"fold{fold}"] = std_train_recall
+
+    print(f"\nfold {fold}:")
+    print(
+        f"\tmean train dice: {mean_train_dice:.4f}, "
+        f"std train dice: {std_train_dice:.4f}"
+    )
+    print(
+        f"\tmean train precision: {mean_train_precision:.4f}, "
+        f"std train precision: {std_train_precision:.4f}"
+    )
+    print(
+        f"\tmean train recall: {mean_train_recall:.4f}, "
+        f"std train recall: {std_train_recall:.4f}"
+    )
+
     val_indices = train_logs["fold_indices"][f"fold{fold}"]["val_indices"]
     val_data = torch.utils.data.Subset(dataset, val_indices)
-    dataloader = monai.data.DataLoader(
+    val_dataloader = monai.data.DataLoader(
         dataset=val_data,
         batch_size=1,
         num_workers=num_workers,
         pin_memory=pin_memory
     )
 
-    for batch in dataloader:
-        images = batch["images_AB"].to(device)
-        label = batch["label_C"].to(device)
+    for val_batch in val_dataloader:
+        val_images = val_batch["images_AB"].to(device)
+        val_label = val_batch["label_C"].to(device)
 
         with torch.no_grad():
             with torch.cuda.amp.autocast():
-                pred = monai.inferers.sliding_window_inference(
-                    inputs=images,
+                val_pred = monai.inferers.sliding_window_inference(
+                    inputs=val_images,
                     roi_size=config.PATCH_SIZE,
                     sw_batch_size=config.BATCH_SIZE,
                     predictor=model_list[fold]
                 )
-        pred = torch.nn.functional.softmax(pred, dim=1)
-        # store discretized batches in lists for metric functions
-        pred = [discretize(p) for p in monai.data.decollate_batch(pred)]
-        label = monai.data.decollate_batch(label)
+        val_pred = torch.nn.functional.softmax(val_pred, dim=1)
+        val_pred = [
+            discretize(pred) for pred in monai.data.decollate_batch(val_pred)
+        ]
+        val_label = monai.data.decollate_batch(val_label)
 
-        # metric results are stored internally
-        dice_fn(pred, label)
-        confusion_matrix_fn(pred, label)
+        dice_fn(val_pred, val_label)
+        confusion_matrix_fn(val_pred, val_label)
 
-        # store precision and recall in separate lists for later calculations
-        precision_list.append(confusion_matrix_fn.aggregate()[0].item())
-        recall_list.append(confusion_matrix_fn.aggregate()[1].item())
+        val_precision_list.append(confusion_matrix_fn.aggregate()[0].item())
+        val_recall_list.append(confusion_matrix_fn.aggregate()[1].item())
         confusion_matrix_fn.reset()
 
-    mean_dice = torch.mean(dice_fn.get_buffer()).item()
-    mean_precision = torch.mean(torch.tensor(precision_list)).item()
-    mean_recall = torch.mean(torch.tensor(recall_list)).item()
-    std_dice = torch.std(dice_fn.get_buffer(), correction=0).item()
-    std_precision = torch.std(
-        torch.tensor(precision_list),
+    mean_val_dice = torch.mean(dice_fn.get_buffer()).item()
+    mean_val_precision = torch.mean(torch.tensor(val_precision_list)).item()
+    mean_val_recall = torch.mean(torch.tensor(val_recall_list)).item()
+    std_val_dice = torch.std(dice_fn.get_buffer(), correction=0).item()
+    std_val_precision = torch.std(
+        torch.tensor(val_precision_list),
         correction=0
     ).item()
-    std_recall = torch.std(torch.tensor(recall_list), correction=0).item()
+    std_val_recall = torch.std(
+        torch.tensor(val_recall_list),
+        correction=0
+    ).item()
 
-    cv_fold_logs["mean_dice"][f"fold{fold}"] = mean_dice
-    cv_fold_logs["mean_precision"][f"fold{fold}"] = mean_precision
-    cv_fold_logs["mean_recall"][f"fold{fold}"] = mean_recall
-    cv_fold_logs["std_dice"][f"fold{fold}"] = std_dice
-    cv_fold_logs["std_precision"][f"fold{fold}"] = std_precision
-    cv_fold_logs["std_recall"][f"fold{fold}"] = std_recall
+    dice_fn.reset()
 
-    print(f"\nfold {fold}:")
-    print(f"\tmean dice: {mean_dice:.4f}, std dice: {std_dice:.4f}")
+    cv_fold_logs["mean_val_dice"][f"fold{fold}"] = mean_val_dice
+    cv_fold_logs["mean_val_precision"][f"fold{fold}"] = mean_val_precision
+    cv_fold_logs["mean_val_recall"][f"fold{fold}"] = mean_val_recall
+    cv_fold_logs["std_val_dice"][f"fold{fold}"] = std_val_dice
+    cv_fold_logs["std_val_precision"][f"fold{fold}"] = std_val_precision
+    cv_fold_logs["std_val_recall"][f"fold{fold}"] = std_val_recall
+
     print(
-        f"\tmean precision: {mean_precision:.4f}, "
-        f"std precision: {std_precision:.4f}"
+        f"\tmean val dice: {mean_val_dice:.4f}, "
+        f"std val dice: {std_val_dice:.4f}"
     )
-    print(f"\tmean recall: {mean_recall:.4f}, std recall: {std_recall:.4f}")
+    print(
+        f"\tmean val precision: {mean_val_precision:.4f}, "
+        f"std val precision: {std_val_precision:.4f}"
+    )
+    print(
+        f"\tmean val recall: {mean_val_recall:.4f}, "
+        f"std val recall: {std_val_recall:.4f}"
+    )
 
 with open(config.cv_fold_logs_path, "w") as cv_fold_logs_file:
     json.dump(cv_fold_logs, cv_fold_logs_file, indent=4)
