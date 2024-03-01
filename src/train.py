@@ -59,7 +59,7 @@ best_epoch = -1
 best_dice = -1
 
 train_logs = {
-    "total_train_time": -1,
+    "total_train_time": None,
     "fold_indices": {f"fold{i}": {} for i in range(config.FOLDS)},
     "mean_train_loss_pred": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_train_loss_kl_AB2C": {f"fold{i}": [] for i in range(config.FOLDS)},
@@ -112,7 +112,12 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
     train_data = torch.utils.data.Subset(dataset, train_indices)
     val_data = torch.utils.data.Subset(dataset, val_indices)
 
-    train_data = monai.data.Dataset(train_data, config.train_transforms)
+    train_data = monai.data.CacheDataset(
+        train_data,
+        config.train_transforms,
+        num_workers=num_workers,
+        progress=False
+    )
     val_data = monai.data.CacheDataset(
         val_data,
         config.eval_transforms,
