@@ -20,7 +20,7 @@ print(f"Using {device} device")
 
 checkpoint_list = [
     torch.load(
-        os.path.join(config.model_dir, f"{config.MODEL_NAME}_fold{fold}.tar"),
+        os.path.join(config.MODEL_DIR, f"{config.MODEL_NAME}_fold{fold}.tar"),
         map_location=device
     )
     for fold in range(config.FOLDS)

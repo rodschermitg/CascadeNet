@@ -22,11 +22,9 @@ print(f"Using {device} device")
 data_path = os.path.join(config.data_dir, config.DATA_FILENAME)
 with open(data_path, "r") as data_file:
     data = json.load(data_file)
-# entire dataset is first stored into CacheDataset and later extracted into
-# separate Subsets during cross validation
 dataset = monai.data.CacheDataset(
-    data=data["train"],
-    transform=config.base_transforms,
+    data["train"],
+    config.base_transforms,
     num_workers=num_workers
 )
 
@@ -54,10 +52,6 @@ k_fold = sklearn.model_selection.KFold(
 )
 fold_indices = k_fold.split(dataset)
 
-best_fold = -1
-best_epoch = -1
-best_dice = -1
-
 train_logs = {
     "total_train_time": None,
     "fold_indices": {f"fold{i}": {} for i in range(config.FOLDS)},
@@ -73,9 +67,9 @@ train_logs = {
     "mean_val_dice": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_precision": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_recall": {f"fold{i}": [] for i in range(config.FOLDS)},
-    "best_fold": best_fold,
-    "best_epoch": best_epoch,
-    "best_dice": best_dice
+    "best_fold": None,
+    "best_epoch": None,
+    "best_dice": -1
 }
 
 print("Training network")
@@ -192,6 +186,16 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
             # if net_AB2C.unet.save_decoder_features:
             #     train_loss += train_loss_ds
 
+            optimizer.zero_grad(set_to_none=True)
+            scaler.scale(train_loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
+
+            epoch_train_loss_pred += train_loss_pred.item()
+            epoch_train_loss_kl_AB2C += train_loss_kl_AB2C.item()
+            epoch_train_loss_cycle += train_loss_cycle.item()
+            epoch_train_loss_kl_C2AB += train_loss_kl_C2AB.item()
+
             # store discretized batches in lists for metric functions
             train_pred_C = [
                 discretize(pred)
@@ -202,16 +206,6 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
             # metric results are stored internally
             dice_fn(train_pred_C, train_label_C)
             confusion_matrix_fn(train_pred_C, train_label_C)
-
-            optimizer.zero_grad(set_to_none=True)
-            scaler.scale(train_loss).backward()
-            scaler.step(optimizer)
-            scaler.update()
-
-            epoch_train_loss_pred += train_loss_pred.item()
-            epoch_train_loss_kl_AB2C += train_loss_kl_AB2C.item()
-            epoch_train_loss_cycle += train_loss_cycle.item()
-            epoch_train_loss_kl_C2AB += train_loss_kl_C2AB.item()
 
             if iter == 0:
                 print("")
@@ -356,16 +350,12 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
             print(f"Mean val precision: {mean_val_precision:.4f}")
             print(f"Mean val recall: {mean_val_recall:.4f}")
 
-            if mean_val_dice > best_dice:
+            if mean_val_dice > train_logs["best_dice"]:
                 print("New best dice, serializing model to disk")
 
-                best_fold = fold
-                best_epoch = epoch
-                best_dice = mean_val_dice
-
-                train_logs["best_fold"] = best_fold
-                train_logs["best_epoch"] = best_epoch
-                train_logs["best_dice"] = best_dice
+                train_logs["best_fold"] = fold
+                train_logs["best_epoch"] = epoch
+                train_logs["best_dice"] = mean_val_dice
 
                 torch.save(
                     {
@@ -374,15 +364,16 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                         "optimizer_state_dict": optimizer.state_dict(),
                         "scaler_state_dict": scaler.state_dict(),
                         "scheduler_state_dict": scheduler.state_dict(),
-                        "fold": best_fold,
-                        "epoch": best_epoch
+                        "fold": fold,
+                        "epoch": epoch
                     },
-                    os.path.join(config.model_dir, f"{config.MODEL_NAME}.tar")
+                    os.path.join(config.MODEL_DIR, f"{config.MODEL_NAME}.tar")
                 )
             else:
                 print(
-                    f"Current best dice: {best_dice:.4f} at fold "
-                    f"{best_fold+1}, epoch {best_epoch+1}"
+                    f"Current best dice: {train_logs['best_dice']:.4f} at fold"
+                    f" {train_logs['best_fold']+1}, epoch "
+                    f"{train_logs['best_epoch']+1}"
                 )
 
             scheduler.step(mean_val_loss_pred)
@@ -442,7 +433,7 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                 "epoch": epoch
             },
             os.path.join(
-                config.model_dir, f"{config.MODEL_NAME}_fold{fold}.tar"
+                config.MODEL_DIR, f"{config.MODEL_NAME}_fold{fold}.tar"
             )
         )
 
@@ -456,7 +447,5 @@ with open(config.train_logs_path, "w") as train_logs_file:
 
 
 # TODO
-# - add hyperparameter optimization?
-# - increase patch_size?
 # - when passing pred from net_AB2C to net_C2AB, should net_AB2C have LogSoftmax or Softmax as head?
 # - compare rec range with image range -> substitute Tanh head with someting else?

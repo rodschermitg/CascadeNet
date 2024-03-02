@@ -161,12 +161,13 @@ KL_WEIGHT = 1
 SAVE_MODEL_EACH_FOLD = True
 
 # output path
-model_dir = os.path.join("models")
-MODEL_NAME = "probunet_patients"
-train_logs_path = os.path.join("logs", "train_logs.json")
-pred_loss_plot_path = os.path.join("logs", "pred_loss_plot.png")
-cycle_loss_plot_path = os.path.join("logs", "cycle_loss_plot.png")
-kl_loss_plot_path = os.path.join("logs", "kl_loss_plot.png")
-metric_plot_path = os.path.join("logs", "metric_plot.png")
-cv_fold_logs_path = os.path.join("logs", "cv_fold_logs.json")
-test_logs_path = os.path.join("logs", "test_logs.json")
+MODEL_DIR = "models"
+MODEL_NAME = "cascade_net"
+LOGS_DIR = "logs"
+train_logs_path = os.path.join(LOGS_DIR, "train_logs.json")
+pred_loss_plot_path = os.path.join(LOGS_DIR, "pred_loss_plot.png")
+cycle_loss_plot_path = os.path.join(LOGS_DIR, "cycle_loss_plot.png")
+kl_loss_plot_path = os.path.join(LOGS_DIR, "kl_loss_plot.png")
+metric_plot_path = os.path.join(LOGS_DIR, "metric_plot.png")
+cv_fold_logs_path = os.path.join(LOGS_DIR, "cv_fold_logs.json")
+test_logs_path = os.path.join(LOGS_DIR, "test_logs.json")
