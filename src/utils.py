@@ -2,6 +2,7 @@ import os
 
 import matplotlib
 import matplotlib.pyplot as plt
+import torch
 
 try:
     import config
@@ -102,10 +103,11 @@ def create_slice_plots(
 ):
     total_slices = images[0].shape[slice_dim+1]
     slice_stride = total_slices // num_slices
+    num_images = len(images)
 
     vmin, vmax = get_vmin_vmax(images)
 
-    fig, ax = plt.subplots(num_slices, len(images))
+    fig, ax = plt.subplots(num_slices, num_images)
     for col, image in enumerate(images):
         image = image.permute(1, 2, 3, 0)
         for row in range(num_slices):
@@ -114,29 +116,19 @@ def create_slice_plots(
             slice_idx = (row + 1) * slice_stride
             slice_idx = min(slice_idx, total_slices-1)  # avoid IndexError
 
-            cmap = "gray" if image.shape[-1] == 1 else None
-
             if slice_dim == 0:
-                ax[row, col].imshow(
-                    image[slice_idx, :, :, :],
-                    cmap,
-                    vmin=vmin,
-                    vmax=vmax
-                )
+                image_slice = image[slice_idx, :, :, :]
             elif slice_dim == 1:
-                ax[row, col].imshow(
-                    image[:, slice_idx, :, :],
-                    cmap,
-                    vmin=vmin,
-                    vmax=vmax
-                )
+                image_slice = image[:, slice_idx, :, :]
             elif slice_dim == 2:
-                ax[row, col].imshow(
-                    image[:, :, slice_idx, :],
-                    cmap,
-                    vmin=vmin,
-                    vmax=vmax
-                )
+                image_slice = image[:, :, slice_idx, :]
+
+            ax[row, col].imshow(
+                image_slice,
+                cmap="gray" if image_slice.shape[-1] == 1 else None,
+                vmin=0 if is_binary(image_slice) else vmin,
+                vmax=1 if is_binary(image_slice) else vmax
+            )
 
             if row == 0 and labels is not None:
                 ax[row, col].set_title(labels[col])
@@ -162,3 +154,7 @@ def get_vmin_vmax(images):
         if image.max() > vmax:
             vmax = image.max()
     return (vmin, vmax)
+
+
+def is_binary(tensor):
+    return torch.all(torch.logical_or(tensor == 0, tensor == 1))
