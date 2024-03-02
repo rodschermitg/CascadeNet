@@ -19,7 +19,6 @@ TEST_SIZE = 0.1
 PATCH_SIZE = (96, 96, 96)
 NUM_CLASSES = 2
 TIMESTEPS = ["A", "B", "C"]
-num_timesteps = len(TIMESTEPS)
 SEQUENCES = ["CT1", "FLAIR", "T1", "T2"]
 num_sequences = len(SEQUENCES)
 sequence_keys_AB = (
