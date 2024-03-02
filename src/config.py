@@ -47,6 +47,15 @@ base_transforms = monai.transforms.Compose([
         dim=0
     ),
     monai.transforms.DeleteItemsd(keys=sequence_keys_C),
+    monai.transforms.CropForegroundd(
+        keys=["images_AB", "images_C", "label_C"],
+        source_key="images_AB",
+    ),
+    monai.transforms.Spacingd(
+        keys=["images_AB", "images_C", "label_C"],
+        pixdim=(1.0, 1.0, 1.0),
+        mode=("bilinear", "bilinear", "nearest"),
+    ),
     monai.transforms.ThresholdIntensityd(
         keys="label_C",
         threshold=1,
@@ -62,10 +71,11 @@ base_transforms = monai.transforms.Compose([
 train_transforms = monai.transforms.Compose([
     monai.transforms.RandAffined(
         keys=["images_AB", "images_C", "label_C"],
-        prob=0.5,
-        rotate_range=0.2,
-        scale_range=0.2,
-        mode=("bilinear", "bilinear", "nearest")
+        prob=1.0,
+        rotate_range=0.1,
+        scale_range=0.1,
+        mode=("bilinear", "bilinear", "nearest"),
+        padding_mode="zeros"
     ),
     monai.transforms.RandCropByPosNegLabeld(
         keys=["images_AB", "images_C", "label_C"],
@@ -79,13 +89,13 @@ train_transforms = monai.transforms.Compose([
     # an error when processed together by RandGaussianNoised
     monai.transforms.RandGaussianNoised(
         keys="images_AB",
-        prob=0.5,
+        prob=1.0,
         mean=0,
         std=20
     ),
     monai.transforms.RandGaussianNoised(
         keys="images_C",
-        prob=0.5,
+        prob=1.0,
         mean=0,
         std=20
     ),
@@ -95,10 +105,6 @@ train_transforms = monai.transforms.Compose([
     )
 ])
 eval_transforms = monai.transforms.Compose([
-    monai.transforms.CropForegroundd(
-        keys=["images_AB", "images_C", "label_C"],
-        source_key="images_AB",
-    ),
     monai.transforms.NormalizeIntensityd(
         keys=["images_AB", "images_C"],
         channel_wise=True
