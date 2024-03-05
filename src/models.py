@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 
 try:
-    import config
+    import config_base_model as config
 except ModuleNotFoundError:
-    from src import config
+    from src import config_base_model as config
 
 
 def match_to(x, ref, keep_axes=(1,)):

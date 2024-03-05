@@ -4,7 +4,7 @@ import shutil
 
 from sklearn.model_selection import train_test_split
 
-from src import config
+from src import config_base_model as config
 
 
 def reset():

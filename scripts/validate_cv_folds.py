@@ -5,7 +5,7 @@ import os
 import monai
 import torch
 
-from src import config
+from src import config_base_model as config
 from src import models
 
 
@@ -19,7 +19,7 @@ print(f"Using {device} device")
 model_list = []
 for fold in range(config.FOLDS):
     checkpoint_path = os.path.join(
-        config.CHECKPOINT_DIR,
+        config.checkpoint_dir,
         f"{config.MODEL_NAME}_fold{fold}.tar"
     )
     checkpoint = torch.load(checkpoint_path, map_location=device)

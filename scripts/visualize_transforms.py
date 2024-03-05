@@ -6,7 +6,7 @@ import matplotlib
 import monai
 import torch
 
-from src import config
+from src import config_base_model as config
 from src import utils
 
 

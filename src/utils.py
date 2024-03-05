@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import torch
 
 try:
-    import config
+    import config_base_model as config
 except ModuleNotFoundError:
     from src import config
 

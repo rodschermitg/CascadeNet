@@ -160,13 +160,13 @@ KL_WEIGHT = 1
 SAVE_MODEL_EACH_FOLD = True
 
 # output path
-CHECKPOINT_DIR = "checkpoints"
+checkpoint_dir = os.path.join("checkpoints", "base_model")
 MODEL_NAME = "cascade_net"
-LOGS_DIR = "logs"
-train_logs_path = os.path.join(LOGS_DIR, "train_logs.json")
-pred_loss_plot_path = os.path.join(LOGS_DIR, "pred_loss_plot.png")
-cycle_loss_plot_path = os.path.join(LOGS_DIR, "cycle_loss_plot.png")
-kl_loss_plot_path = os.path.join(LOGS_DIR, "kl_loss_plot.png")
-metric_plot_path = os.path.join(LOGS_DIR, "metric_plot.png")
-cv_fold_logs_path = os.path.join(LOGS_DIR, "cv_fold_logs.json")
-test_logs_path = os.path.join(LOGS_DIR, "test_logs.json")
+logs_dir = os.path.join("logs", "base_model")
+train_logs_path = os.path.join(logs_dir, "train_logs.json")
+pred_loss_plot_path = os.path.join(logs_dir, "pred_loss_plot.png")
+cycle_loss_plot_path = os.path.join(logs_dir, "cycle_loss_plot.png")
+kl_loss_plot_path = os.path.join(logs_dir, "kl_loss_plot.png")
+metric_plot_path = os.path.join(logs_dir, "metric_plot.png")
+cv_fold_logs_path = os.path.join(logs_dir, "cv_fold_logs.json")
+test_logs_path = os.path.join(logs_dir, "test_logs.json")

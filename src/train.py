@@ -7,7 +7,7 @@ import monai
 import sklearn.model_selection
 import torch
 
-import config
+import config_base_model as config
 import models
 import utils
 
@@ -368,7 +368,7 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                         "epoch": epoch
                     },
                     os.path.join(
-                        config.CHECKPOINT_DIR,
+                        config.checkpoint_dir,
                         f"{config.MODEL_NAME}.tar"
                     )
                 )
@@ -436,7 +436,7 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                 "epoch": epoch
             },
             os.path.join(
-                config.CHECKPOINT_DIR,
+                config.checkpoint_dir,
                 f"{config.MODEL_NAME}_fold{fold}.tar"
             )
         )
