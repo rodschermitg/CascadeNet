@@ -1,11 +1,6 @@
 import torch
 import torch.nn as nn
 
-try:
-    import config_base_model as config
-except ModuleNotFoundError:
-    from src import config_base_model as config
-
 
 def match_to(x, ref, keep_axes=(1,)):
     target_shape = list(ref.shape)
@@ -697,8 +692,3 @@ class ProbabilisticSegmentationNet(ConvModule):
             kl_div = torch.mean(monte_carlo_terms, dim=0)
 
         return kl_div
-
-
-if __name__ == "__main__":
-    model = ProbabilisticSegmentationNet(**config.MODEL_KWARGS_AB2C)
-    print(model)
