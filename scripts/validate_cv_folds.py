@@ -16,21 +16,19 @@ num_workers = 4 if device.type == "cuda" else 0
 pin_memory = True if device.type == "cuda" else False
 print(f"Using {device} device")
 
-checkpoint_path_list = [
-    os.path.join(config.CHECKPOINT_DIR, f"{config.MODEL_NAME}_fold{fold}.tar")
-    for fold in range(config.FOLDS)
-]
-checkpoint_list = [
-    torch.load(checkpoint_path, map_location=device)
-    for checkpoint_path in checkpoint_path_list
-]
-model_list = [
-    models.ProbabilisticSegmentationNet(**config.MODEL_KWARGS_AB2C).to(device)
-    for _ in range(config.FOLDS)
-]
-for model, checkpoint in zip(model_list, checkpoint_list):
+model_list = []
+for fold in range(config.FOLDS):
+    checkpoint_path = os.path.join(
+        config.CHECKPOINT_DIR,
+        f"{config.MODEL_NAME}_fold{fold}.tar"
+    )
+    checkpoint = torch.load(checkpoint_path, map_location=device)
+    model = models.ProbabilisticSegmentationNet(
+        **config.MODEL_KWARGS_AB2C
+    ).to(device)
     model.load_state_dict(checkpoint["net_AB2C_state_dict"])
     model.eval()
+    model_list.append(model)
 
 discretize = monai.transforms.AsDiscrete(
     argmax=True,

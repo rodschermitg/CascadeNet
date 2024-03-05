@@ -19,28 +19,26 @@ num_workers = 4 if device.type == "cuda" else 0
 pin_memory = True if device.type == "cuda" else False
 print(f"Using {device} device")
 
-checkpoint_path_list = [
-    os.path.join(config.CHECKPOINT_DIR, f"{config.MODEL_NAME}_fold{fold}.tar")
-    for fold in range(config.FOLDS)
-]
-checkpoint_list = [
-    torch.load(checkpoint_path, map_location=device)
-    for checkpoint_path in checkpoint_path_list
-]
-net_AB2C_list = [
-    models.ProbabilisticSegmentationNet(**config.MODEL_KWARGS_AB2C).to(device)
-    for _ in range(config.FOLDS)
-]
-net_C2AB_list = [
-    models.ProbabilisticSegmentationNet(**config.MODEL_KWARGS_C2AB).to(device)
-    for _ in range(config.FOLDS)
-]
-for net_AB2C, checkpoint in zip(net_AB2C_list, checkpoint_list):
+net_AB2C_list = []
+net_C2AB_list = []
+for fold in range(config.FOLDS):
+    checkpoint_path = os.path.join(
+        config.CHECKPOINT_DIR,
+        f"{config.MODEL_NAME}_fold{fold}.tar"
+    )
+    checkpoint = torch.load(checkpoint_path, map_location=device)
+    net_AB2C = models.ProbabilisticSegmentationNet(
+        **config.MODEL_KWARGS_AB2C
+    ).to(device)
+    net_C2AB = models.ProbabilisticSegmentationNet(
+        **config.MODEL_KWARGS_C2AB
+    ).to(device)
     net_AB2C.load_state_dict(checkpoint["net_AB2C_state_dict"])
-    net_AB2C.eval()
-for net_C2AB, checkpoint in zip(net_C2AB_list, checkpoint_list):
     net_C2AB.load_state_dict(checkpoint["net_C2AB_state_dict"])
+    net_AB2C.eval()
     net_C2AB.eval()
+    net_AB2C_list.append(net_AB2C)
+    net_C2AB_list.append(net_C2AB)
 
 data_path = os.path.join(config.data_dir, config.DATA_FILENAME)
 with open(data_path, "r") as data_file:
