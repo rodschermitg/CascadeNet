@@ -16,12 +16,13 @@ num_workers = 4 if device.type == "cuda" else 0
 pin_memory = True if device.type == "cuda" else False
 print(f"Using {device} device")
 
-checkpoint_list = [
-    torch.load(
-        os.path.join(config.MODEL_DIR, f"{config.MODEL_NAME}_fold{fold}.tar"),
-        map_location=device
-    )
+checkpoint_path_list = [
+    os.path.join(config.CHECKPOINT_DIR, f"{config.MODEL_NAME}_fold{fold}.tar")
     for fold in range(config.FOLDS)
+]
+checkpoint_list = [
+    torch.load(checkpoint_path, map_location=device)
+    for checkpoint_path in checkpoint_path_list
 ]
 model_list = [
     models.ProbabilisticSegmentationNet(**config.MODEL_KWARGS_AB2C).to(device)

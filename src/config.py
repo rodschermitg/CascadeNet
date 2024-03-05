@@ -160,7 +160,7 @@ KL_WEIGHT = 1
 SAVE_MODEL_EACH_FOLD = True
 
 # output path
-MODEL_DIR = "models"
+CHECKPOINT_DIR = "checkpoints"
 MODEL_NAME = "cascade_net"
 LOGS_DIR = "logs"
 train_logs_path = os.path.join(LOGS_DIR, "train_logs.json")

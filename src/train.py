@@ -367,7 +367,10 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                         "fold": fold,
                         "epoch": epoch
                     },
-                    os.path.join(config.MODEL_DIR, f"{config.MODEL_NAME}.tar")
+                    os.path.join(
+                        config.CHECKPOINT_DIR,
+                        f"{config.MODEL_NAME}.tar"
+                    )
                 )
             else:
                 print(
@@ -433,7 +436,8 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                 "epoch": epoch
             },
             os.path.join(
-                config.MODEL_DIR, f"{config.MODEL_NAME}_fold{fold}.tar"
+                config.CHECKPOINT_DIR,
+                f"{config.MODEL_NAME}_fold{fold}.tar"
             )
         )
 

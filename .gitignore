@@ -167,6 +167,6 @@ data/**/*.npy
 data/**/*.nii.gz
 data/**/measured_volumes_in_mm3.json
 
-# models
-models/*
-!models/.gitkeep
+# checkpoints
+checkpoints/*
+!checkpoints/.gitkeep
