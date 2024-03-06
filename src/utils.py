@@ -125,7 +125,6 @@ def create_slice_plots(
 
             ax[row, col].imshow(
                 image_slice,
-                cmap="gray" if image_slice.shape[-1] == 1 else None,
                 vmin=0 if is_binary(image_slice) else vmin,
                 vmax=1 if is_binary(image_slice) else vmax
             )
