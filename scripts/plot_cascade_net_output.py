@@ -63,7 +63,7 @@ for batch in dataloader:
     real_AB = batch["images_AB"].to(device)
     real_C = batch["images_C"].to(device)
     label_C = batch["label_C"]
-    label_C = torch.argmax(label_C, dim=1)  # decode one-hot labels
+    label_C = torch.argmax(label_C, dim=1)
 
     with torch.no_grad():
         with torch.cuda.amp.autocast():

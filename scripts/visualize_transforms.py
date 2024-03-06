@@ -32,7 +32,7 @@ for batch in dataloader:
     images_AB = batch["images_AB"]
     images_C = batch["images_C"]
     label = batch["label_C"]
-    label = torch.argmax(label, dim=1)  # decode one-hot labels
+    label = torch.argmax(label, dim=1)
 
     images_AB_list = [
         images_AB[:, channel] for channel in range(2*config.num_sequences)

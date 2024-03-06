@@ -54,7 +54,7 @@ dataloader = monai.data.DataLoader(
 for batch in dataloader:
     images = batch["images_AB"].to(device)
     label = batch["label_C"].to(device)
-    label = torch.argmax(label, dim=1)  # decode one-hot labels
+    label = torch.argmax(label, dim=1)
 
     with torch.no_grad():
         with torch.cuda.amp.autocast():
