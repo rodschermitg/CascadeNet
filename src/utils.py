@@ -7,7 +7,7 @@ import torch
 try:
     import config_base_model as config
 except ModuleNotFoundError:
-    from src import config
+    from src import config_base_model as config
 
 
 def create_log_plots(

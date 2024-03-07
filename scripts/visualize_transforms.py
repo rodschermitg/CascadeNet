@@ -50,5 +50,5 @@ for batch in dataloader:
         images_AB_list + images_C_list,
         title=patient_name,
         slice_dim=0,
-        labels=config.sequence_keys_AB + config.sequence_keys_C + ["label"]
+        labels=config.sequence_keys_AB + config.sequence_keys_C
     )

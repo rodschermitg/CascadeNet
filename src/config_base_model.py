@@ -19,6 +19,7 @@ TEST_SIZE = 0.1
 PATCH_SIZE = (96, 96, 96)
 NUM_CLASSES = 2
 TIMESTEPS = ["A", "B", "C"]
+NUM_INPUT_TIMESTEPS = 2
 SEQUENCES = ["CT1", "FLAIR", "T1", "T2"]
 num_sequences = len(SEQUENCES)
 sequence_keys_AB = (
@@ -112,7 +113,7 @@ eval_transforms = monai.transforms.Compose([
 
 # model
 MODEL_KWARGS_AB2C = {
-    "in_channels": 2 * num_sequences,
+    "in_channels": NUM_INPUT_TIMESTEPS * num_sequences,
     "out_channels": NUM_CLASSES,
     "latent_size": 3,
     "temperature": 0.28,

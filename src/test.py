@@ -104,14 +104,12 @@ for batch in dataloader:
     recall_list.append(confusion_matrix_fn.aggregate()[1].item())
     confusion_matrix_fn.reset()
 
-    test_logs["individual"].update({patient_name: {}})
-    test_logs["individual"][patient_name].update(
-        {"dice": dice_fn.get_buffer()[-1].item()}
-    )
-    test_logs["individual"][patient_name].update(
-        {"precision": precision_list[-1]}
-    )
-    test_logs["individual"][patient_name].update({"recall": recall_list[-1]})
+    test_logs["individual"][patient_name] = {}
+    test_logs["individual"][patient_name][
+        "dice"
+    ] = dice_fn.get_buffer()[-1].item()
+    test_logs["individual"][patient_name]["precision"] = precision_list[-1]
+    test_logs["individual"][patient_name]["recall"] = recall_list[-1]
 
     print(f"{patient_name}:")
     print(f"\tdice: {dice_fn.get_buffer()[-1].item():.4f}")
@@ -125,12 +123,12 @@ std_dice = torch.std(dice_fn.get_buffer(), correction=0).item()
 std_precision = torch.std(torch.tensor(precision_list), correction=0).item()
 std_recall = torch.std(torch.tensor(recall_list), correction=0).item()
 
-test_logs["mean"].update({"dice": mean_dice})
-test_logs["mean"].update({"precision": mean_dice})
-test_logs["mean"].update({"recall": mean_dice})
-test_logs["std"].update({"dice": std_dice})
-test_logs["std"].update({"precision": std_precision})
-test_logs["std"].update({"recall": std_recall})
+test_logs["mean"]["dice"] = mean_dice
+test_logs["mean"]["precision"] = mean_dice
+test_logs["mean"]["recall"] = mean_dice
+test_logs["std"]["dice"] = std_dice
+test_logs["std"]["precision"] = std_precision
+test_logs["std"]["recall"] = std_recall
 
 print(f"\nmean dice: {mean_dice:.4f}, std dice: {std_dice:.4f}")
 print(
