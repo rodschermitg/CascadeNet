@@ -39,8 +39,8 @@ data_path = os.path.join(config.data_dir, config.DATA_FILENAME)
 with open(data_path, "r") as data_file:
     data = json.load(data_file)
 dataset = monai.data.CacheDataset(
-    data=data["train"],
-    transform=monai.transforms.Compose([
+    data["train"],
+    monai.transforms.Compose([
         config.base_transforms,
         config.eval_transforms
     ]),
@@ -79,20 +79,20 @@ for fold in range(config.FOLDS):
     train_indices = train_logs["fold_indices"][f"fold{fold}"]["train_indices"]
     train_data = torch.utils.data.Subset(dataset, train_indices)
     train_dataloader = monai.data.DataLoader(
-        dataset=train_data,
+        train_data,
         batch_size=1,
         num_workers=num_workers,
         pin_memory=pin_memory
     )
 
     for train_batch in train_dataloader:
-        train_images = train_batch["images_AB"].to(device)
-        train_label = train_batch["label_C"].to(device)
+        train_imgs = train_batch["imgs_AB"].to(device)
+        train_seg = train_batch["seg_C"].to(device)
 
         with torch.no_grad():
             with torch.cuda.amp.autocast():
                 train_pred = monai.inferers.sliding_window_inference(
-                    inputs=train_images,
+                    train_imgs,
                     roi_size=config.PATCH_SIZE,
                     sw_batch_size=config.BATCH_SIZE,
                     predictor=model_list[fold]
@@ -102,11 +102,11 @@ for fold in range(config.FOLDS):
         train_pred = [
             discretize(pred) for pred in monai.data.decollate_batch(train_pred)
         ]
-        train_label = monai.data.decollate_batch(train_label)
+        train_seg = monai.data.decollate_batch(train_seg)
 
         # metric results are stored internally
-        dice_fn(train_pred, train_label)
-        confusion_matrix_fn(train_pred, train_label)
+        dice_fn(train_pred, train_seg)
+        confusion_matrix_fn(train_pred, train_seg)
 
         # store precision and recall in separate lists for later calculations
         train_precision_list.append(confusion_matrix_fn.aggregate()[0].item())
@@ -154,20 +154,20 @@ for fold in range(config.FOLDS):
     val_indices = train_logs["fold_indices"][f"fold{fold}"]["val_indices"]
     val_data = torch.utils.data.Subset(dataset, val_indices)
     val_dataloader = monai.data.DataLoader(
-        dataset=val_data,
+        val_data,
         batch_size=1,
         num_workers=num_workers,
         pin_memory=pin_memory
     )
 
     for val_batch in val_dataloader:
-        val_images = val_batch["images_AB"].to(device)
-        val_label = val_batch["label_C"].to(device)
+        val_imgs = val_batch["imgs_AB"].to(device)
+        val_seg = val_batch["seg_C"].to(device)
 
         with torch.no_grad():
             with torch.cuda.amp.autocast():
                 val_pred = monai.inferers.sliding_window_inference(
-                    inputs=val_images,
+                    val_imgs,
                     roi_size=config.PATCH_SIZE,
                     sw_batch_size=config.BATCH_SIZE,
                     predictor=model_list[fold]
@@ -176,10 +176,10 @@ for fold in range(config.FOLDS):
         val_pred = [
             discretize(pred) for pred in monai.data.decollate_batch(val_pred)
         ]
-        val_label = monai.data.decollate_batch(val_label)
+        val_seg = monai.data.decollate_batch(val_seg)
 
-        dice_fn(val_pred, val_label)
-        confusion_matrix_fn(val_pred, val_label)
+        dice_fn(val_pred, val_seg)
+        confusion_matrix_fn(val_pred, val_seg)
 
         val_precision_list.append(confusion_matrix_fn.aggregate()[0].item())
         val_recall_list.append(confusion_matrix_fn.aggregate()[1].item())

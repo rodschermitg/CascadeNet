@@ -99,7 +99,7 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
     )
     scaler = torch.cuda.amp.GradScaler(enabled=False)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer=optimizer,
+        optimizer,
         verbose=True
     )
 
@@ -120,14 +120,14 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
     )
 
     train_dataloader = monai.data.DataLoader(
-        dataset=train_data,
+        train_data,
         shuffle=True,
         batch_size=config.BATCH_SIZE,
         num_workers=num_workers,
         pin_memory=pin_memory
     )
     val_dataloader = monai.data.DataLoader(
-        dataset=val_data,
+        val_data,
         batch_size=1,
         num_workers=num_workers,
         pin_memory=pin_memory
@@ -143,24 +143,24 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
         epoch_train_loss_kl_C2AB = 0
 
         for iter, train_batch in enumerate(train_dataloader):
-            train_real_AB = train_batch["images_AB"].to(device)
-            train_real_C = train_batch["images_C"].to(device)
-            train_label_C = train_batch["label_C"].to(device)
+            train_real_AB = train_batch["imgs_AB"].to(device)
+            train_real_C = train_batch["imgs_C"].to(device)
+            train_seg_C = train_batch["seg_C"].to(device)
 
             with torch.cuda.amp.autocast(enabled=False):
                 # net_AB2C
                 train_pred_C, train_loss_kl_AB2C = net_AB2C(
                     train_real_AB,
-                    train_label_C
+                    train_seg_C
                 )
-                train_loss_pred = loss_fn_pred(train_pred_C, train_label_C)
+                train_loss_pred = loss_fn_pred(train_pred_C, train_seg_C)
 
                 # if net_AB2C.unet.save_decoder_features:
                 #     decoder_features = net_AB2C.get_processed_decoder_features(
                 #         config.PATCH_SIZE
                 #     )
                 #     train_loss_ds = sum([
-                #         loss_fn_pred(feat, train_label_C) * (1/2)**d
+                #         loss_fn_pred(feat, train_seg_C) * (1/2)**d
                 #         for d, feat in enumerate(decoder_features, 1)
                 #     ])
 
@@ -201,11 +201,11 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                 discretize(pred)
                 for pred in monai.data.decollate_batch(train_pred_C)
             ]
-            train_label_C = monai.data.decollate_batch(train_label_C)
+            train_seg_C = monai.data.decollate_batch(train_seg_C)
 
             # metric results are stored internally
-            dice_fn(train_pred_C, train_label_C)
-            confusion_matrix_fn(train_pred_C, train_label_C)
+            dice_fn(train_pred_C, train_seg_C)
+            confusion_matrix_fn(train_pred_C, train_seg_C)
 
             if iter == 0:
                 print("")
@@ -272,21 +272,21 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
 
             with torch.no_grad():
                 for val_batch in val_dataloader:
-                    val_real_AB = val_batch["images_AB"].to(device)
-                    val_real_C = val_batch["images_C"].to(device)
-                    val_label_C = val_batch["label_C"].to(device)
+                    val_real_AB = val_batch["imgs_AB"].to(device)
+                    val_real_C = val_batch["imgs_C"].to(device)
+                    val_seg_C = val_batch["seg_C"].to(device)
 
                     with torch.cuda.amp.autocast():
                         # net_AB2C
                         val_pred_C = monai.inferers.sliding_window_inference(
-                            inputs=val_real_AB,
+                            val_real_AB,
                             roi_size=config.PATCH_SIZE,
                             sw_batch_size=config.BATCH_SIZE,
                             predictor=net_AB2C
                         )
                         epoch_val_loss_pred += loss_fn_pred(
                             val_pred_C,
-                            val_label_C
+                            val_seg_C
                         ).item()
 
                         # net_C2AB
@@ -298,7 +298,7 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                         std = val_pred_C.std(dim=(2, 3, 4), keepdim=True)
 
                         val_rec_AB = monai.inferers.sliding_window_inference(
-                            inputs=torch.cat(
+                            torch.cat(
                                 ((val_pred_C-mean)/std, val_real_C),
                                 dim=1
                             ),
@@ -316,10 +316,10 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                         discretize(pred)
                         for pred in monai.data.decollate_batch(val_pred_C)
                     ]
-                    val_label_C = monai.data.decollate_batch(val_label_C)
+                    val_seg_C = monai.data.decollate_batch(val_seg_C)
 
-                    dice_fn(val_pred_C, val_label_C)
-                    confusion_matrix_fn(val_pred_C, val_label_C)
+                    dice_fn(val_pred_C, val_seg_C)
+                    confusion_matrix_fn(val_pred_C, val_seg_C)
 
             mean_val_loss_pred = epoch_val_loss_pred / len(val_dataloader)
             mean_val_loss_cycle = epoch_val_loss_cycle / len(val_dataloader)
@@ -382,30 +382,31 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
             scheduler.step(mean_val_loss_pred)
 
             utils.create_log_plots(
-                train_logs=train_logs,
+                train_logs,
+                output_path=config.pred_loss_plot_path,
                 train_crit_keys=["mean_train_loss_pred"],
                 val_crit_keys=["mean_val_loss_pred"],
-                output_path=config.pred_loss_plot_path,
                 y_labels=["prediction loss"],
             )
             utils.create_log_plots(
-                train_logs=train_logs,
+                train_logs,
+                output_path=config.cycle_loss_plot_path,
                 train_crit_keys=["mean_train_loss_cycle"],
                 val_crit_keys=["mean_val_loss_cycle"],
-                output_path=config.cycle_loss_plot_path,
                 y_labels=["cycle loss"],
             )
             utils.create_log_plots(
-                train_logs=train_logs,
+                train_logs,
+                output_path=config.kl_loss_plot_path,
                 train_crit_keys=[
                     "mean_train_loss_kl_AB2C",
                     "mean_train_loss_kl_C2AB"
                 ],
-                output_path=config.kl_loss_plot_path,
                 y_labels=["KL loss (net_AB2C)", "KL loss (net_C2AB)"],
             )
             utils.create_log_plots(
-                train_logs=train_logs,
+                train_logs,
+                output_path=config.metric_plot_path,
                 train_crit_keys=[
                     "mean_train_dice",
                     "mean_train_precision",
@@ -416,7 +417,6 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                     "mean_val_precision",
                     "mean_val_recall"
                 ],
-                output_path=config.metric_plot_path,
                 y_labels=["dice", "precision", "recall"],
             )
 

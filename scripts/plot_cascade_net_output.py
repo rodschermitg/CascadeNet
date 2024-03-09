@@ -44,8 +44,8 @@ data_path = os.path.join(config.data_dir, config.DATA_FILENAME)
 with open(data_path, "r") as data_file:
     data = json.load(data_file)
 dataset = monai.data.Dataset(
-    data=data["train"],
-    transform=monai.transforms.Compose([
+    data["train"],
+    monai.transforms.Compose([
         config.base_transforms,
         config.eval_transforms
     ])
@@ -53,24 +53,24 @@ dataset = monai.data.Dataset(
 print(f"Using {len(dataset)} training samples")
 
 dataloader = monai.data.DataLoader(
-    dataset=dataset,
+    dataset,
     batch_size=1,
     num_workers=num_workers,
     pin_memory=pin_memory
 )
 
 for batch in dataloader:
-    real_AB = batch["images_AB"].to(device)
-    real_C = batch["images_C"].to(device)
-    label_C = batch["label_C"]
-    label_C = torch.argmax(label_C, dim=1)
+    real_AB = batch["imgs_AB"].to(device)
+    real_C = batch["imgs_C"].to(device)
+    seg_C = batch["seg_C"]
+    seg_C = torch.argmax(seg_C, dim=1)
 
     with torch.no_grad():
         with torch.cuda.amp.autocast():
             # net_AB2C
             preds_C = [
                 monai.inferers.sliding_window_inference(
-                    inputs=real_AB,
+                    real_AB,
                     roi_size=config.PATCH_SIZE,
                     sw_batch_size=config.BATCH_SIZE,
                     predictor=net_AB2C
@@ -90,7 +90,7 @@ for batch in dataloader:
 
             recs_AB = [
                 monai.inferers.sliding_window_inference(
-                    inputs=torch.cat(((pred_C-mean)/std, real_C), dim=1),
+                    torch.cat(((pred_C-mean)/std, real_C), dim=1),
                     roi_size=config.PATCH_SIZE,
                     sw_batch_size=config.BATCH_SIZE,
                     predictor=net_C2AB
@@ -112,11 +112,11 @@ for batch in dataloader:
     ]
 
     patient_name = utils.get_patient_name(
-        batch["label_C_meta_dict"]["filename_or_obj"][0]
+        batch["seg_C_meta_dict"]["filename_or_obj"][0]
     )
 
     utils.create_slice_plots(
-        rec_AB_list + pred_C_list + [label_C],
+        rec_AB_list + pred_C_list + [seg_C],
         title=patient_name,
-        labels=config.sequence_keys_AB + ["pred[0]", "pred[1]", "label"]
+        labels=config.sequence_keys_AB + ["pred[0]", "pred[1]", "seg"]
     )

@@ -6,11 +6,11 @@ import monai
 # configs
 CONFIG_NAME_DICT = {
     "base model": "config_base_model",
-    "base model with label_AB": "config_with_label_AB"
+    "base model with seg_AB": "config_with_seg_AB"
 }
-IMAGES_KEY_DICT = {
-    "base model": "images_AB",
-    "base model with label_AB": "input_AB"
+IMGS_KEY_DICT = {
+    "base model": "imgs_AB",
+    "base model with seg_AB": "input_AB"
 }
 
 # input path
@@ -33,53 +33,54 @@ sequence_keys_AB = (
     [f"{sequence}_{TIMESTEPS[0]}" for sequence in SEQUENCES] +
     [f"{sequence}_{TIMESTEPS[1]}" for sequence in SEQUENCES]
 )
-label_keys = [f"label_{timestep}" for timestep in TIMESTEPS]
+seg_keys = [f"seg_{timestep}" for timestep in TIMESTEPS]
 
 # transforms
 transforms = monai.transforms.Compose([
     monai.transforms.LoadImaged(
-        keys=sequence_keys_AB + label_keys,
+        keys=sequence_keys_AB + seg_keys,
         image_only=False,
         ensure_channel_first=True
     ),
     monai.transforms.ConcatItemsd(
         keys=sequence_keys_AB,
-        name="images_AB",
+        name="imgs_AB",
         dim=0
     ),
     monai.transforms.DeleteItemsd(keys=sequence_keys_AB),
     monai.transforms.ConcatItemsd(
-        keys=["label_A", "label_B"],
-        name="label_AB",
+        keys=["seg_A", "seg_B"],
+        name="seg_AB",
         dim=0
     ),
-    monai.transforms.DeleteItemsd(keys=["label_A", "label_B"]),
+    monai.transforms.DeleteItemsd(keys=["seg_A", "seg_B"]),
     monai.transforms.CropForegroundd(
-        keys=["images_AB", "label_AB", "label_C"],
-        source_key="images_AB",
+        keys=["imgs_AB", "seg_AB", "seg_C"],
+        source_key="imgs_AB",
     ),
     monai.transforms.Spacingd(
-        keys=["images_AB", "label_AB", "label_C"],
+        keys=["imgs_AB", "seg_AB", "seg_C"],
         pixdim=(1.0, 1.0, 1.0),
         mode=("bilinear", "nearest", "nearest"),
     ),
     monai.transforms.ThresholdIntensityd(
-        keys=["label_AB", "label_C"],
+        keys=["seg_AB", "seg_C"],
         threshold=1,
         above=False,
         cval=1
     ),
-    monai.transforms.AsDiscreted(keys="label_C", to_onehot=NUM_CLASSES),
+    monai.transforms.AsDiscreted(keys="seg_C", to_onehot=NUM_CLASSES),
     # monai.transforms.Orientationd(
-    #     keys=["images_AB", "label_AB", "label_C"],
+    #     keys=["imgs_AB", "seg_AB", "seg_C"],
     #     axcodes="IPL",
-    # ),
-    monai.transforms.NormalizeIntensityd(keys="images_AB", channel_wise=True),
+    # )
+    monai.transforms.NormalizeIntensityd(keys="imgs_AB", channel_wise=True),
     monai.transforms.ConcatItemsd(
-        keys=["images_AB", "label_AB"],
+        keys=["imgs_AB", "seg_AB"],
         name="input_AB",
         dim=0
-    )
+    ),
+    monai.transforms.DeleteItemsd(keys="seg_AB")
 ])
 
 # output path

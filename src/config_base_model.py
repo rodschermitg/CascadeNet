@@ -31,46 +31,46 @@ sequence_keys_C = [f"{sequence}_{TIMESTEPS[2]}" for sequence in SEQUENCES]
 # transforms
 base_transforms = monai.transforms.Compose([
     monai.transforms.LoadImaged(
-        keys=sequence_keys_AB + sequence_keys_C + ["label_C"],
+        keys=sequence_keys_AB + sequence_keys_C + ["seg_C"],
         image_only=False,
         ensure_channel_first=True
     ),
     monai.transforms.ConcatItemsd(
         keys=sequence_keys_AB,
-        name="images_AB",
+        name="imgs_AB",
         dim=0
     ),
     monai.transforms.DeleteItemsd(keys=sequence_keys_AB),
     monai.transforms.ConcatItemsd(
         keys=sequence_keys_C,
-        name="images_C",
+        name="imgs_C",
         dim=0
     ),
     monai.transforms.DeleteItemsd(keys=sequence_keys_C),
     monai.transforms.CropForegroundd(
-        keys=["images_AB", "images_C", "label_C"],
-        source_key="images_AB",
+        keys=["imgs_AB", "imgs_C", "seg_C"],
+        source_key="imgs_AB",
     ),
     monai.transforms.Spacingd(
-        keys=["images_AB", "images_C", "label_C"],
+        keys=["imgs_AB", "imgs_C", "seg_C"],
         pixdim=(1.0, 1.0, 1.0),
         mode=("bilinear", "bilinear", "nearest"),
     ),
     monai.transforms.ThresholdIntensityd(
-        keys="label_C",
+        keys="seg_C",
         threshold=1,
         above=False,
         cval=1
     ),
-    monai.transforms.AsDiscreted(keys="label_C", to_onehot=NUM_CLASSES),
+    monai.transforms.AsDiscreted(keys="seg_C", to_onehot=NUM_CLASSES),
     # monai.transforms.Orientationd(
-    #     keys=["images_AB", "images_C", "label_C"],
-    #     axcodes="SPL",
-    # ),
+    #     keys=["imgs_AB", "imgs_C", "seg_C"],
+    #     axcodes="IPL",
+    # )
 ])
 train_transforms = monai.transforms.Compose([
     monai.transforms.RandAffined(
-        keys=["images_AB", "images_C", "label_C"],
+        keys=["imgs_AB", "imgs_C", "seg_C"],
         prob=1.0,
         rotate_range=0.1,
         scale_range=0.1,
@@ -78,8 +78,8 @@ train_transforms = monai.transforms.Compose([
         padding_mode="zeros"
     ),
     monai.transforms.RandCropByPosNegLabeld(
-        keys=["images_AB", "images_C", "label_C"],
-        label_key="label_C",
+        keys=["imgs_AB", "imgs_C", "seg_C"],
+        label_key="seg_C",
         spatial_size=PATCH_SIZE,
         pos=1,
         neg=1,
@@ -88,25 +88,25 @@ train_transforms = monai.transforms.Compose([
     # images_AB and images_C have different number of channels, which leads to
     # an error when processed together by RandGaussianNoised
     monai.transforms.RandGaussianNoised(
-        keys="images_AB",
+        keys="imgs_AB",
         prob=1.0,
         mean=0,
         std=20
     ),
     monai.transforms.RandGaussianNoised(
-        keys="images_C",
+        keys="imgs_C",
         prob=1.0,
         mean=0,
         std=20
     ),
     monai.transforms.NormalizeIntensityd(
-        keys=["images_AB", "images_C"],
+        keys=["imgs_AB", "imgs_C"],
         channel_wise=True
     )
 ])
 eval_transforms = monai.transforms.Compose([
     monai.transforms.NormalizeIntensityd(
-        keys=["images_AB", "images_C"],
+        keys=["imgs_AB", "imgs_C"],
         channel_wise=True
     )
 ])

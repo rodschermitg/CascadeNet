@@ -43,33 +43,30 @@ for model_key in model_dict.keys():
 data_path = os.path.join(config_compare.data_dir, config_compare.DATA_FILENAME)
 with open(data_path, "r") as data_file:
     data = json.load(data_file)
-dataset = monai.data.Dataset(
-    data=data["test"],
-    transform=config_compare.transforms,
-)
+dataset = monai.data.Dataset(data["test"], config_compare.transforms)
 dataloader = monai.data.DataLoader(
-    dataset=dataset,
+    dataset,
     batch_size=1,
     num_workers=num_workers,
     pin_memory=pin_memory
 )
 print(f"Using {len(dataset)} test samples")
 
-images_dict = {model_key: None for model_key in model_dict.keys()}
+imgs_dict = {model_key: None for model_key in model_dict.keys()}
 pred_dict = {model_key: None for model_key in model_dict.keys()}
 
 for batch in dataloader:
-    label = batch["label_C"].to(device)
-    label = torch.argmax(label, dim=1)
+    seg = batch["seg_C"].to(device)
+    seg = torch.argmax(seg, dim=1)
 
     for model_key in model_dict.keys():
-        images = batch[config_compare.IMAGES_KEY_DICT[model_key]].to(device)
+        imgs = batch[config_compare.IMGS_KEY_DICT[model_key]].to(device)
 
         with torch.no_grad():
             with torch.cuda.amp.autocast():
                 preds = [
                     monai.inferers.sliding_window_inference(
-                        inputs=images,
+                        imgs,
                         roi_size=config_dict[model_key].PATCH_SIZE,
                         sw_batch_size=config_dict[model_key].BATCH_SIZE,
                         predictor=model
@@ -83,11 +80,11 @@ for batch in dataloader:
         pred_dict[model_key] = pred
 
     patient_name = utils.get_patient_name(
-        batch["label_C_meta_dict"]["filename_or_obj"][0]
+        batch["seg_C_meta_dict"]["filename_or_obj"][0]
     )
 
     utils.create_slice_plots(
-        [tensor.cpu() for tensor in [label] + list(pred_dict.values())],
+        [tensor.cpu() for tensor in [seg] + list(pred_dict.values())],
         title=patient_name,
-        labels=["label"] + list(pred_dict.keys())
+        labels=["seg"] + list(pred_dict.keys())
     )

@@ -36,8 +36,8 @@ data_path = os.path.join(config.data_dir, config.DATA_FILENAME)
 with open(data_path, "r") as data_file:
     data = json.load(data_file)
 dataset = monai.data.Dataset(
-    data=data["test"],
-    transform=monai.transforms.Compose([
+    data["test"],
+    monai.transforms.Compose([
         config.base_transforms,
         config.eval_transforms
     ])
@@ -45,22 +45,22 @@ dataset = monai.data.Dataset(
 print(f"Using {len(dataset)} test samples")
 
 dataloader = monai.data.DataLoader(
-    dataset=dataset,
+    dataset,
     batch_size=1,
     num_workers=num_workers,
     pin_memory=pin_memory
 )
 
 for batch in dataloader:
-    images = batch["images_AB"].to(device)
-    label = batch["label_C"].to(device)
-    label = torch.argmax(label, dim=1)
+    imgs = batch["imgs_AB"].to(device)
+    seg = batch["seg_C"].to(device)
+    seg = torch.argmax(seg, dim=1)
 
     with torch.no_grad():
         with torch.cuda.amp.autocast():
             preds = [
                 monai.inferers.sliding_window_inference(
-                    inputs=images,
+                    imgs,
                     roi_size=config.PATCH_SIZE,
                     sw_batch_size=config.BATCH_SIZE,
                     predictor=model
@@ -72,16 +72,16 @@ for batch in dataloader:
     pred = torch.mean(preds, dim=0, keepdim=True)
     pred = torch.argmax(pred, dim=1)
 
-    images_list = [
-        images[0, channel][None].cpu() for channel in range(images.shape[1])
+    imgs_list = [
+        imgs[0, channel][None].cpu() for channel in range(imgs.shape[1])
     ]
 
     patient_name = utils.get_patient_name(
-        batch["label_C_meta_dict"]["filename_or_obj"][0]
+        batch["seg_C_meta_dict"]["filename_or_obj"][0]
     )
 
     utils.create_slice_plots(
-        images_list + [label.cpu()] + [pred.cpu()],
+        imgs_list + [seg.cpu()] + [pred.cpu()],
         title=patient_name,
         labels=config.sequence_keys_AB + ["label", "pred"]
     )

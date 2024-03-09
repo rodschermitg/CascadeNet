@@ -4,7 +4,7 @@ import os
 import monai
 import torch
 
-import config_with_label_AB as config
+import config_with_seg_AB as config
 import models
 import utils
 
@@ -39,8 +39,8 @@ data_path = os.path.join(config.data_dir, config.DATA_FILENAME)
 with open(data_path, "r") as data_file:
     data = json.load(data_file)
 dataset = monai.data.Dataset(
-    data=data["test"],
-    transform=monai.transforms.Compose([
+    data["test"],
+    monai.transforms.Compose([
         config.base_transforms,
         config.eval_transforms
     ])
@@ -48,7 +48,7 @@ dataset = monai.data.Dataset(
 print(f"Using {len(dataset)} test samples\n")
 
 dataloader = monai.data.DataLoader(
-    dataset=dataset,
+    dataset,
     batch_size=1,
     num_workers=num_workers,
     pin_memory=pin_memory
@@ -69,19 +69,19 @@ test_logs = {
 }
 
 for batch in dataloader:
-    images_AB = batch["images_AB"].to(device)
-    label_AB = batch["label_AB"].to(device)
-    label_C = batch["label_C"].to(device)
+    imgs_AB = batch["imgs_AB"].to(device)
+    seg_AB = batch["seg_AB"].to(device)
+    seg_C = batch["seg_C"].to(device)
 
     patient_name = utils.get_patient_name(
-        batch["label_C_meta_dict"]["filename_or_obj"][0]
+        batch["seg_C_meta_dict"]["filename_or_obj"][0]
     )
 
     with torch.no_grad():
         with torch.cuda.amp.autocast():
             preds_C = [
                 monai.inferers.sliding_window_inference(
-                    inputs=torch.cat((images_AB, label_AB), dim=1),
+                    torch.cat((imgs_AB, seg_AB), dim=1),
                     roi_size=config.PATCH_SIZE,
                     sw_batch_size=config.BATCH_SIZE,
                     predictor=model
@@ -94,11 +94,11 @@ for batch in dataloader:
 
     # store discretized batches in lists for metric functions
     pred_C = [discretize(p) for p in monai.data.decollate_batch(pred_C)]
-    label_C = monai.data.decollate_batch(label_C)
+    seg_C = monai.data.decollate_batch(seg_C)
 
     # metric results are stored internally
-    dice_fn(pred_C, label_C)
-    confusion_matrix_fn(pred_C, label_C)
+    dice_fn(pred_C, seg_C)
+    confusion_matrix_fn(pred_C, seg_C)
 
     # store precision and recall in separate lists for later calculations
     precision_list.append(confusion_matrix_fn.aggregate()[0].item())

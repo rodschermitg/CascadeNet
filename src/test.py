@@ -39,8 +39,8 @@ data_path = os.path.join(config.data_dir, config.DATA_FILENAME)
 with open(data_path, "r") as data_file:
     data = json.load(data_file)
 dataset = monai.data.Dataset(
-    data=data["test"],
-    transform=monai.transforms.Compose([
+    data["test"],
+    monai.transforms.Compose([
         config.base_transforms,
         config.eval_transforms
     ])
@@ -48,7 +48,7 @@ dataset = monai.data.Dataset(
 print(f"Using {len(dataset)} test samples\n")
 
 dataloader = monai.data.DataLoader(
-    dataset=dataset,
+    dataset,
     batch_size=1,
     num_workers=num_workers,
     pin_memory=pin_memory
@@ -69,18 +69,18 @@ test_logs = {
 }
 
 for batch in dataloader:
-    images = batch["images_AB"].to(device)
-    label = batch["label_C"].to(device)
+    imgs = batch["imgs_AB"].to(device)
+    seg = batch["seg_C"].to(device)
 
     patient_name = utils.get_patient_name(
-        batch["label_C_meta_dict"]["filename_or_obj"][0]
+        batch["seg_C_meta_dict"]["filename_or_obj"][0]
     )
 
     with torch.no_grad():
         with torch.cuda.amp.autocast():
             preds = [
                 monai.inferers.sliding_window_inference(
-                    inputs=images,
+                    imgs,
                     roi_size=config.PATCH_SIZE,
                     sw_batch_size=config.BATCH_SIZE,
                     predictor=model
@@ -93,11 +93,11 @@ for batch in dataloader:
 
     # store discretized batches in lists for metric functions
     pred = [discretize(p) for p in monai.data.decollate_batch(pred)]
-    label = monai.data.decollate_batch(label)
+    seg = monai.data.decollate_batch(seg)
 
     # metric results are stored internally
-    dice_fn(pred, label)
-    confusion_matrix_fn(pred, label)
+    dice_fn(pred, seg)
+    confusion_matrix_fn(pred, seg)
 
     # store precision and recall in separate lists for later calculations
     precision_list.append(confusion_matrix_fn.aggregate()[0].item())
