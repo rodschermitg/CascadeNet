@@ -155,15 +155,6 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                 )
                 train_loss_pred = loss_fn_pred(train_pred_C, train_seg_C)
 
-                # if net_AB2C.unet.save_decoder_features:
-                #     decoder_features = net_AB2C.get_processed_decoder_features(
-                #         config.PATCH_SIZE
-                #     )
-                #     train_loss_ds = sum([
-                #         loss_fn_pred(feat, train_seg_C) * (1/2)**d
-                #         for d, feat in enumerate(decoder_features, 1)
-                #     ])
-
                 # net_C2AB
                 train_pred_C = torch.nn.functional.softmax(train_pred_C, dim=1)
                 mean = train_pred_C.mean(dim=(2, 3, 4), keepdim=True)
@@ -183,8 +174,6 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                 config.KL_WEIGHT*train_loss_kl_C2AB +
                 config.CYCLE_WEIGHT*train_loss_cycle
             )
-            # if net_AB2C.unet.save_decoder_features:
-            #     train_loss += train_loss_ds
 
             optimizer.zero_grad(set_to_none=True)
             scaler.scale(train_loss).backward()
