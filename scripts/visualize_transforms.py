@@ -6,26 +6,31 @@ import matplotlib
 import monai
 import torch
 
-from src import config_base_model as config
+from src import config
+from src import transforms
 from src import utils
 
 
 matplotlib.use("TkAgg")
 monai.utils.set_determinism(config.RANDOM_STATE)
 
+base_transforms = transforms.transforms_dict["base_model"]["base_transforms"]
+train_transforms = transforms.transforms_dict["base_model"]["train_transforms"]
 # set prob = 1.0 for all non-deterministic transforms to visualize
-for transform in config.train_transforms.transforms:
+for transform in train_transforms.transforms:
     if hasattr(transform, "prob"):
         transform.prob = 1.0
-transforms = monai.transforms.Compose([
-    config.base_transforms,
-    config.train_transforms
-])
 
 data_path = os.path.join(config.data_dir, config.DATA_FILENAME)
 with open(data_path, "r") as data_file:
     data = json.load(data_file)
-dataset = monai.data.Dataset(data["train"], transforms)
+dataset = monai.data.Dataset(
+    data["train"],
+    monai.transforms.Compose([
+        base_transforms,
+        train_transforms
+    ])
+)
 dataloader = monai.data.DataLoader(dataset, batch_size=1)
 
 for batch in dataloader:
@@ -50,5 +55,10 @@ for batch in dataloader:
         imgs_AB_list + imgs_C_list,
         title=patient_name,
         slice_dim=0,
-        labels=config.sequence_keys_AB + config.sequence_keys_C
+        labels=(
+            config.sequence_keys[0] +
+            config.sequence_keys[1] +
+            config.sequence_keys[2] +
+            [config.seg_keys[2]]
+        )
     )

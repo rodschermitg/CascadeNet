@@ -4,12 +4,14 @@ import os
 import monai
 import torch
 
-import config_base_model as config
+import config
 import models
+import transforms
 import utils
 
 
 monai.utils.set_determinism(config.RANDOM_STATE)
+print(f"Current task: {config.TASK}")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 num_workers = 4 if device.type == "cuda" else 0
@@ -24,7 +26,7 @@ for fold in range(config.FOLDS):
     )
     checkpoint = torch.load(checkpoint_path, map_location=device)
     model = models.ProbabilisticSegmentationNet(
-        **config.MODEL_KWARGS_AB2C
+        **config.NET_AB2C_KWARGS_DICT[config.TASK]
     ).to(device)
     model.load_state_dict(checkpoint["net_AB2C_state_dict"])
     model.eval()
@@ -41,8 +43,8 @@ with open(data_path, "r") as data_file:
 dataset = monai.data.Dataset(
     data["test"],
     monai.transforms.Compose([
-        config.base_transforms,
-        config.eval_transforms
+        transforms.transforms_dict[config.TASK]["base_transforms"],
+        transforms.transforms_dict[config.TASK]["eval_transforms"]
     ])
 )
 print(f"Using {len(dataset)} test samples\n")
@@ -72,6 +74,11 @@ for batch in dataloader:
     imgs = batch["imgs_AB"].to(device)
     seg = batch["seg_C"].to(device)
 
+    if config.TASK == "with_seg_AB":
+        input = torch.cat((imgs, batch["seg_AB"].to(device)), dim=1)
+    else:
+        input = imgs
+
     patient_name = utils.get_patient_name(
         batch["seg_C_meta_dict"]["filename_or_obj"][0]
     )
@@ -80,7 +87,7 @@ for batch in dataloader:
         with torch.cuda.amp.autocast():
             preds = [
                 monai.inferers.sliding_window_inference(
-                    imgs,
+                    input,
                     roi_size=config.PATCH_SIZE,
                     sw_batch_size=config.BATCH_SIZE,
                     predictor=model

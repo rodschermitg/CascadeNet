@@ -1,23 +1,19 @@
 """run from project root: python3 -m scripts.compare_test_scores"""
-import importlib
 import json
+import os
 
 import matplotlib
 import matplotlib.pyplot as plt
 
-from src import config_compare
+from src import config
 
-
-config_dict = {
-    model_key: importlib.import_module(f"src.{config_name}")
-    for model_key, config_name in config_compare.CONFIG_NAME_DICT.items()
-}
 
 matplotlib.use("TkAgg")
 plt.style.use("ggplot")
 
-for model_name, config in config_dict.items():
-    with open(config.test_logs_path, "r") as test_logs_file:
+for task_key in config.INPUT_DICT.keys():
+    test_logs_path = os.path.join("logs", task_key, "test_logs.json")
+    with open(test_logs_path, "r") as test_logs_file:
         test_logs = json.load(test_logs_file)
 
     patient_names = test_logs["individual"].keys()
@@ -31,7 +27,7 @@ for model_name, config in config_dict.items():
         scores,
         marker="_",
         linewidths=3,
-        label=model_name
+        label=config.LABEL_DICT[task_key]
     )
 
 plt.ylabel("Dice")

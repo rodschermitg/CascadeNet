@@ -7,12 +7,14 @@ import monai
 import sklearn.model_selection
 import torch
 
-import config_base_model as config
+import config
 import models
+import transforms
 import utils
 
 
 monai.utils.set_determinism(config.RANDOM_STATE)
+print(f"Current task: {config.TASK}")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 num_workers = 4 if device.type == "cuda" else 0
@@ -24,7 +26,7 @@ with open(data_path, "r") as data_file:
     data = json.load(data_file)
 dataset = monai.data.CacheDataset(
     data["train"],
-    config.base_transforms,
+    transforms.transforms_dict[config.TASK]["base_transforms"],
     num_workers=num_workers
 )
 
@@ -82,12 +84,12 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
     }
 
     net_AB2C = models.ProbabilisticSegmentationNet(
-        **config.MODEL_KWARGS_AB2C
+        **config.NET_AB2C_KWARGS_DICT[config.TASK]
     ).to(device)
     net_AB2C.init_weights(torch.nn.init.kaiming_uniform_, 0)
     net_AB2C.init_bias(torch.nn.init.constant_, 0)
     net_C2AB = models.ProbabilisticSegmentationNet(
-        **config.MODEL_KWARGS_C2AB
+        **config.NET_C2AB_KWARGS
     ).to(device)
     net_C2AB.init_weights(torch.nn.init.kaiming_uniform_, 0)
     net_C2AB.init_bias(torch.nn.init.constant_, 0)
@@ -108,13 +110,13 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
 
     train_data = monai.data.CacheDataset(
         train_data,
-        config.train_transforms,
+        transforms.transforms_dict[config.TASK]["train_transforms"],
         num_workers=num_workers,
         progress=False
     )
     val_data = monai.data.CacheDataset(
         val_data,
-        config.eval_transforms,
+        transforms.transforms_dict[config.TASK]["eval_transforms"],
         num_workers=num_workers,
         progress=False
     )
@@ -147,10 +149,18 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
             train_real_C = train_batch["imgs_C"].to(device)
             train_seg_C = train_batch["seg_C"].to(device)
 
+            if config.TASK == "with_seg_AB":
+                train_input_AB = torch.cat(
+                    (train_real_AB, train_batch["seg_AB"].to(device)),
+                    dim=1
+                )
+            else:
+                train_input_AB = train_real_AB
+
             with torch.cuda.amp.autocast(enabled=False):
                 # net_AB2C
                 train_pred_C, train_loss_kl_AB2C = net_AB2C(
-                    train_real_AB,
+                    train_input_AB,
                     train_seg_C
                 )
                 train_loss_pred = loss_fn_pred(train_pred_C, train_seg_C)
@@ -265,10 +275,18 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
                     val_real_C = val_batch["imgs_C"].to(device)
                     val_seg_C = val_batch["seg_C"].to(device)
 
+                    if config.TASK == "with_seg_AB":
+                        val_input_AB = torch.cat(
+                            (val_real_AB, val_batch["seg_AB"].to(device)),
+                            dim=1
+                        )
+                    else:
+                        val_input_AB = val_real_AB
+
                     with torch.cuda.amp.autocast():
                         # net_AB2C
                         val_pred_C = monai.inferers.sliding_window_inference(
-                            val_real_AB,
+                            val_input_AB,
                             roi_size=config.PATCH_SIZE,
                             sw_batch_size=config.BATCH_SIZE,
                             predictor=net_AB2C

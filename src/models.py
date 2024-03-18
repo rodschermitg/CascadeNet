@@ -389,7 +389,7 @@ class InjectionUNet(ConvModule):
         self.padding = (self.kernel_size + (self.kernel_size-1) * (self.dilation-1)) // 2
         self.num_1x1_at_end = num_1x1_at_end
         self.activation_op = activation_op
-        self.activation_kwargs = {} if activation_kwargs is None else activation_kwargs
+        self.activation_kwargs = {"inplace": True} if activation_kwargs is None else activation_kwargs
         self.pool_op = pool_op
         self.pool_kwargs = {"kernel_size": 2} if pool_kwargs is None else pool_kwargs
         self.dropout_op = dropout_op
@@ -561,12 +561,14 @@ class ProbabilisticSegmentationNet(ConvModule):
         self.default_prior_kwargs = {
             "in_channels": in_channels,
             "latent_size": latent_size,
-            "encoder_op": InjectionConvEncoder
+            "encoder_op": InjectionConvEncoder,
+            "encoder_kwargs": {"norm_depth": "full"}
         }
         self.default_posterior_kwargs = {
             "in_channels": in_channels+out_channels,
             "latent_size": latent_size,
-            "encoder_op": InjectionConvEncoder
+            "encoder_op": InjectionConvEncoder,
+            "encoder_kwargs": {"norm_depth": "full"}
         }
 
         self.task_op = task_op

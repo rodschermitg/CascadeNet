@@ -6,8 +6,9 @@ import matplotlib
 import monai
 import torch
 
-from src import config_base_model as config
+from src import config
 from src import models
+from src import transforms
 from src import utils
 
 
@@ -28,10 +29,10 @@ for fold in range(config.FOLDS):
     )
     checkpoint = torch.load(checkpoint_path, map_location=device)
     net_AB2C = models.ProbabilisticSegmentationNet(
-        **config.MODEL_KWARGS_AB2C
+        **config.NET_AB2C_KWARGS_DICT["base_model"]
     ).to(device)
     net_C2AB = models.ProbabilisticSegmentationNet(
-        **config.MODEL_KWARGS_C2AB
+        **config.NET_C2AB_KWARGS
     ).to(device)
     net_AB2C.load_state_dict(checkpoint["net_AB2C_state_dict"])
     net_C2AB.load_state_dict(checkpoint["net_C2AB_state_dict"])
@@ -46,8 +47,8 @@ with open(data_path, "r") as data_file:
 dataset = monai.data.Dataset(
     data["train"],
     monai.transforms.Compose([
-        config.base_transforms,
-        config.eval_transforms
+        transforms.transforms_dict["base_model"]["base_transforms"],
+        transforms.transforms_dict["base_model"]["eval_transforms"]
     ])
 )
 print(f"Using {len(dataset)} training samples")
@@ -118,5 +119,9 @@ for batch in dataloader:
     utils.create_slice_plots(
         rec_AB_list + pred_C_list + [seg_C],
         title=patient_name,
-        labels=config.sequence_keys_AB + ["pred[0]", "pred[1]", "seg"]
+        labels=(
+            config.sequence_keys[0] +
+            config.sequence_keys[1] +
+            ["pred[0]", "pred[1]", "seg"]
+        )
     )

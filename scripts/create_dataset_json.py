@@ -2,7 +2,7 @@
 import json
 import os
 
-from src import config_base_model as config
+from src import config
 
 
 base_keys = config.SEQUENCES + ["seg"]

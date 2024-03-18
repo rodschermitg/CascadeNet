@@ -5,11 +5,13 @@ import os
 import monai
 import torch
 
-from src import config_base_model as config
+from src import config
 from src import models
+from src import transforms
 
 
 monai.utils.set_determinism(config.RANDOM_STATE)
+print(f"Current task: {config.TASK}")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 num_workers = 4 if device.type == "cuda" else 0
@@ -24,7 +26,7 @@ for fold in range(config.FOLDS):
     )
     checkpoint = torch.load(checkpoint_path, map_location=device)
     model = models.ProbabilisticSegmentationNet(
-        **config.MODEL_KWARGS_AB2C
+        **config.NET_AB2C_KWARGS_DICT[config.TASK]
     ).to(device)
     model.load_state_dict(checkpoint["net_AB2C_state_dict"])
     model.eval()
@@ -41,8 +43,8 @@ with open(data_path, "r") as data_file:
 dataset = monai.data.CacheDataset(
     data["train"],
     monai.transforms.Compose([
-        config.base_transforms,
-        config.eval_transforms
+        transforms.transforms_dict[config.TASK]["base_transforms"],
+        transforms.transforms_dict[config.TASK]["eval_transforms"]
     ]),
     num_workers=num_workers
 )
@@ -89,10 +91,18 @@ for fold in range(config.FOLDS):
         train_imgs = train_batch["imgs_AB"].to(device)
         train_seg = train_batch["seg_C"].to(device)
 
+        if config.TASK == "with_seg_AB":
+            train_input = torch.cat(
+                (train_imgs, train_batch["seg_AB"].to(device)),
+                dim=1
+            )
+        else:
+            train_input = train_imgs
+
         with torch.no_grad():
             with torch.cuda.amp.autocast():
                 train_pred = monai.inferers.sliding_window_inference(
-                    train_imgs,
+                    train_input,
                     roi_size=config.PATCH_SIZE,
                     sw_batch_size=config.BATCH_SIZE,
                     predictor=model_list[fold]
@@ -164,10 +174,18 @@ for fold in range(config.FOLDS):
         val_imgs = val_batch["imgs_AB"].to(device)
         val_seg = val_batch["seg_C"].to(device)
 
+        if config.TASK == "with_seg_AB":
+            val_input = torch.cat(
+                (val_imgs, val_batch["seg_AB"].to(device)),
+                dim=1
+            )
+        else:
+            val_input = val_imgs
+
         with torch.no_grad():
             with torch.cuda.amp.autocast():
                 val_pred = monai.inferers.sliding_window_inference(
-                    val_imgs,
+                    val_input,
                     roi_size=config.PATCH_SIZE,
                     sw_batch_size=config.BATCH_SIZE,
                     predictor=model_list[fold]

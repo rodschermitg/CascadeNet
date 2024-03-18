@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 import torch
 
 try:
-    import config_base_model as config
+    import config
 except ModuleNotFoundError:
-    from src import config_base_model as config
+    from src import config
 
 
 def create_log_plots(
