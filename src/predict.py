@@ -54,14 +54,9 @@ dataloader = monai.data.DataLoader(
 )
 
 for batch in dataloader:
-    imgs = batch["imgs_AB"].to(device)
-    seg = batch["seg_C"].to(device)
+    input = batch[config.INPUT_DICT[config.TASK]].to(device)
+    seg = batch["seg_C"]
     seg = torch.argmax(seg, dim=1)
-
-    if config.TASK == "with_seg_AB":
-        input = torch.cat((imgs, batch["seg_AB"].to(device)), dim=1)
-    else:
-        input = imgs
 
     with torch.no_grad():
         with torch.cuda.amp.autocast():
@@ -77,10 +72,11 @@ for batch in dataloader:
     preds = [torch.nn.functional.softmax(pred, dim=1) for pred in preds]
     preds = torch.cat(preds, dim=0)
     pred = torch.mean(preds, dim=0, keepdim=True)
-    pred = torch.argmax(pred, dim=1)
+    pred = torch.argmax(pred, dim=1).cpu()
 
-    imgs_list = [
-        imgs[0, channel][None].cpu() for channel in range(imgs.shape[1])
+    img_list = [
+        input[:, channel_idx].cpu()
+        for channel_idx in range(config.NUM_INPUTS*config.num_sequences)
     ]
 
     patient_name = utils.get_patient_name(
@@ -88,11 +84,11 @@ for batch in dataloader:
     )
 
     utils.create_slice_plots(
-        imgs_list + [seg.cpu()] + [pred.cpu()],
+        img_list + [seg, pred],
         title=patient_name,
         labels=(
             config.sequence_keys[0] +
             config.sequence_keys[1] +
-            ["label", "pred"]
+            ["seg_C", "pred"]
         )
     )

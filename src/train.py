@@ -145,17 +145,12 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
         epoch_train_loss_kl_C2AB = 0
 
         for iter, train_batch in enumerate(train_dataloader):
-            train_real_AB = train_batch["imgs_AB"].to(device)
-            train_real_C = train_batch["imgs_C"].to(device)
+            train_input_AB = train_batch[
+                config.INPUT_DICT[config.TASK]
+            ].to(device)
+            train_real_AB = train_batch["img_AB"].to(device)
+            train_real_C = train_batch["img_C"].to(device)
             train_seg_C = train_batch["seg_C"].to(device)
-
-            if config.TASK == "with_seg_AB":
-                train_input_AB = torch.cat(
-                    (train_real_AB, train_batch["seg_AB"].to(device)),
-                    dim=1
-                )
-            else:
-                train_input_AB = train_real_AB
 
             with torch.cuda.amp.autocast(enabled=False):
                 # net_AB2C
@@ -271,17 +266,12 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
 
             with torch.no_grad():
                 for val_batch in val_dataloader:
-                    val_real_AB = val_batch["imgs_AB"].to(device)
-                    val_real_C = val_batch["imgs_C"].to(device)
+                    val_input_AB = val_batch[
+                        config.INPUT_DICT[config.TASK]
+                    ].to(device)
+                    val_real_AB = val_batch["img_AB"].to(device)
+                    val_real_C = val_batch["img_C"].to(device)
                     val_seg_C = val_batch["seg_C"].to(device)
-
-                    if config.TASK == "with_seg_AB":
-                        val_input_AB = torch.cat(
-                            (val_real_AB, val_batch["seg_AB"].to(device)),
-                            dim=1
-                        )
-                    else:
-                        val_input_AB = val_real_AB
 
                     with torch.cuda.amp.autocast():
                         # net_AB2C

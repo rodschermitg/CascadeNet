@@ -6,7 +6,7 @@ import torch
 # task
 TASK = "with_seg_AB"  # {"base_model", "with_seg_AB"}
 INPUT_DICT = {
-    "base_model": "imgs_AB",
+    "base_model": "img_AB",
     "with_seg_AB": "input_AB"
 }
 LABEL_DICT = {
@@ -29,7 +29,7 @@ TEST_SIZE = 0.1
 PATCH_SIZE = (96, 96, 96)
 NUM_CLASSES = 2
 TIMESTEPS = ["A", "B", "C"]
-NUM_INPUT_TIMESTEPS = 2
+NUM_INPUTS = 2
 SEQUENCES = ["CT1", "FLAIR", "T1", "T2"]
 num_sequences = len(SEQUENCES)
 sequence_keys = [
@@ -41,7 +41,7 @@ seg_keys = [f"seg_{timestep}" for timestep in TIMESTEPS]
 # model
 NET_AB2C_KWARGS_DICT = {
     "base_model": {
-        "in_channels": NUM_INPUT_TIMESTEPS * num_sequences,
+        "in_channels": NUM_INPUTS * num_sequences,
         "out_channels": NUM_CLASSES,
         "latent_size": 3,
         "temperature": 0.28,
@@ -54,7 +54,7 @@ NET_AB2C_KWARGS_DICT = {
     },
     "with_seg_AB": {
         "in_channels": (
-            NUM_INPUT_TIMESTEPS * num_sequences + NUM_INPUT_TIMESTEPS
+            NUM_INPUTS * num_sequences + NUM_INPUTS
         ),
         "out_channels": NUM_CLASSES,
         "latent_size": 3,
@@ -65,7 +65,7 @@ NET_AB2C_KWARGS_DICT = {
         "posterior_kwargs": {
             "n_components": 9
         }
-    },
+    }
 }
 NET_C2AB_KWARGS = {
     "in_channels": num_sequences + NUM_CLASSES,

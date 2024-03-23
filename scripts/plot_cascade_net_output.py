@@ -61,8 +61,8 @@ dataloader = monai.data.DataLoader(
 )
 
 for batch in dataloader:
-    real_AB = batch["imgs_AB"].to(device)
-    real_C = batch["imgs_C"].to(device)
+    real_AB = batch["img_AB"].to(device)
+    real_C = batch["img_C"].to(device)
     seg_C = batch["seg_C"]
     seg_C = torch.argmax(seg_C, dim=1)
 

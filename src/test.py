@@ -71,13 +71,8 @@ test_logs = {
 }
 
 for batch in dataloader:
-    imgs = batch["imgs_AB"].to(device)
+    input = batch[config.INPUT_DICT[config.TASK]].to(device)
     seg = batch["seg_C"].to(device)
-
-    if config.TASK == "with_seg_AB":
-        input = torch.cat((imgs, batch["seg_AB"].to(device)), dim=1)
-    else:
-        input = imgs
 
     patient_name = utils.get_patient_name(
         batch["seg_C_meta_dict"]["filename_or_obj"][0]

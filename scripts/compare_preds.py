@@ -54,7 +54,7 @@ print(f"Using {len(dataset)} test samples")
 pred_dict = {task_key: None for task_key in model_dict.keys()}
 
 for batch in dataloader:
-    seg = batch["seg_C"].to(device)
+    seg = batch["seg_C"]
     seg = torch.argmax(seg, dim=1)
 
     for task_key in model_dict.keys():
@@ -75,14 +75,14 @@ for batch in dataloader:
         preds = torch.cat(preds, dim=0)
         pred = torch.mean(preds, dim=0, keepdim=True)
         pred = torch.argmax(pred, dim=1)
-        pred_dict[task_key] = pred
+        pred_dict[task_key] = pred.cpu()
 
     patient_name = utils.get_patient_name(
         batch["seg_C_meta_dict"]["filename_or_obj"][0]
     )
 
     utils.create_slice_plots(
-        [tensor.cpu() for tensor in [seg] + list(pred_dict.values())],
+        [seg] + list(pred_dict.values()),
         title=patient_name,
         labels=["seg"] + list(pred_dict.keys())
     )

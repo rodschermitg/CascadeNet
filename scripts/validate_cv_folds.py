@@ -88,16 +88,8 @@ for fold in range(config.FOLDS):
     )
 
     for train_batch in train_dataloader:
-        train_imgs = train_batch["imgs_AB"].to(device)
+        train_input = train_batch[config.INPUT_DICT[config.TASK]].to(device)
         train_seg = train_batch["seg_C"].to(device)
-
-        if config.TASK == "with_seg_AB":
-            train_input = torch.cat(
-                (train_imgs, train_batch["seg_AB"].to(device)),
-                dim=1
-            )
-        else:
-            train_input = train_imgs
 
         with torch.no_grad():
             with torch.cuda.amp.autocast():
@@ -171,16 +163,8 @@ for fold in range(config.FOLDS):
     )
 
     for val_batch in val_dataloader:
-        val_imgs = val_batch["imgs_AB"].to(device)
+        val_input = val_batch[config.INPUT_DICT[config.TASK]].to(device)
         val_seg = val_batch["seg_C"].to(device)
-
-        if config.TASK == "with_seg_AB":
-            val_input = torch.cat(
-                (val_imgs, val_batch["seg_AB"].to(device)),
-                dim=1
-            )
-        else:
-            val_input = val_imgs
 
         with torch.no_grad():
             with torch.cuda.amp.autocast():

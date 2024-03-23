@@ -95,21 +95,21 @@ def create_log_plots(
 
 
 def create_slice_plots(
-    images,
+    imgs,
     slice_dim=0,
     title=None,
     labels=None,
     num_slices=10
 ):
-    total_slices = images[0].shape[slice_dim+1]
-    slice_stride = total_slices // num_slices
-    num_images = len(images)
+    num_imgs = len(imgs)
+    vmin, vmax = get_vmin_vmax(imgs)
 
-    vmin, vmax = get_vmin_vmax(images)
+    fig, ax = plt.subplots(num_slices, num_imgs)
+    for col, img in enumerate(imgs):
+        total_slices = img.shape[slice_dim+1]
+        slice_stride = total_slices // num_slices
 
-    fig, ax = plt.subplots(num_slices, num_images)
-    for col, image in enumerate(images):
-        image = image.permute(1, 2, 3, 0)
+        img = img.permute(1, 2, 3, 0)
         for row in range(num_slices):
             ax[row, col].axis("off")
 
@@ -117,16 +117,16 @@ def create_slice_plots(
             slice_idx = min(slice_idx, total_slices-1)  # avoid IndexError
 
             if slice_dim == 0:
-                image_slice = image[slice_idx, :, :, :]
+                img_slice = img[slice_idx, :, :, :]
             elif slice_dim == 1:
-                image_slice = image[:, slice_idx, :, :]
+                img_slice = img[:, slice_idx, :, :]
             elif slice_dim == 2:
-                image_slice = image[:, :, slice_idx, :]
+                img_slice = img[:, :, slice_idx, :]
 
             ax[row, col].imshow(
-                image_slice,
-                vmin=0 if is_binary(image_slice) else vmin,
-                vmax=1 if is_binary(image_slice) else vmax
+                img_slice,
+                vmin=0 if is_binary(img_slice) else vmin,
+                vmax=1 if is_binary(img_slice) else vmax
             )
 
             if row == 0 and labels is not None:
@@ -144,14 +144,14 @@ def get_patient_name(file_path):
     return patient_name
 
 
-def get_vmin_vmax(images):
+def get_vmin_vmax(imgs):
     vmin = float("inf")
     vmax = 0
-    for image in images:
-        if image.min() < vmin:
-            vmin = image.min()
-        if image.max() > vmax:
-            vmax = image.max()
+    for img in imgs:
+        if img.min() < vmin:
+            vmin = img.min()
+        if img.max() > vmax:
+            vmax = img.max()
     return (vmin, vmax)
 
 

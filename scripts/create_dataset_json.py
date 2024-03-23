@@ -19,17 +19,17 @@ for dataset_key in data_dict.keys():
         week_dirs = sorted(os.listdir(os.path.join(dataset_dir, patient_dir)))
 
         for timestep_idx, timestep in enumerate(config.TIMESTEPS):
-            imgs_dir = os.path.join(
+            img_dir = os.path.join(
                 dataset_dir,
                 patient_dir,
                 week_dirs[timestep_idx]
             )
             for base_key in base_keys:
                 if base_key == "seg":
-                    img_path = os.path.join(imgs_dir, "seg_mask.nii.gz")
+                    img_path = os.path.join(img_dir, "seg_mask.nii.gz")
                 else:
                     img_path = os.path.join(
-                        imgs_dir, f"{base_key.lower()}_skull_strip.nii.gz"
+                        img_dir, f"{base_key.lower()}_skull_strip.nii.gz"
                     )
                 patient_dict[f"{base_key}_{timestep}"] = img_path
 
