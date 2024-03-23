@@ -4,7 +4,7 @@ import torch
 
 
 # task
-TASK = "base_model"  # {"base_model", "with_seg_AB"}
+TASK = "with_seg_AB"  # {"base_model", "with_seg_AB"}
 INPUT_DICT = {
     "base_model": "imgs_AB",
     "with_seg_AB": "input_AB"
