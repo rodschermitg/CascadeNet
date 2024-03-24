@@ -15,7 +15,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-001/week-044/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-001/week-044/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-001/week-044/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-001/week-044/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-001/week-044/seg_mask.nii.gz",
+            "time_diff_AC": 0.17254901960784313,
+            "time_diff_BC": 0.17254901960784313
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-002/week-000/ct1_skull_strip.nii.gz",
@@ -32,7 +34,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-002/week-047/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-002/week-047/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-002/week-047/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-002/week-047/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-002/week-047/seg_mask.nii.gz",
+            "time_diff_AC": 0.1843137254901961,
+            "time_diff_BC": 0.027450980392156876
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-003/week-000-2/ct1_skull_strip.nii.gz",
@@ -49,7 +53,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-003/week-038/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-003/week-038/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-003/week-038/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-003/week-038/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-003/week-038/seg_mask.nii.gz",
+            "time_diff_AC": 0.14901960784313725,
+            "time_diff_BC": 0.043137254901960784
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-004/week-000-1/ct1_skull_strip.nii.gz",
@@ -66,7 +72,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-004/week-057/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-004/week-057/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-004/week-057/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-004/week-057/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-004/week-057/seg_mask.nii.gz",
+            "time_diff_AC": 0.2235294117647059,
+            "time_diff_BC": 0.06274509803921569
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-005/week-000-1/ct1_skull_strip.nii.gz",
@@ -83,7 +91,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-005/week-015/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-005/week-015/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-005/week-015/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-005/week-015/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-005/week-015/seg_mask.nii.gz",
+            "time_diff_AC": 0.058823529411764705,
+            "time_diff_BC": 0.058823529411764705
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-007/week-015/ct1_skull_strip.nii.gz",
@@ -100,7 +110,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-007/week-105/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-007/week-105/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-007/week-105/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-007/week-105/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-007/week-105/seg_mask.nii.gz",
+            "time_diff_AC": 0.3529411764705882,
+            "time_diff_BC": 0.06274509803921569
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-008/week-000/ct1_skull_strip.nii.gz",
@@ -117,7 +129,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-008/week-085/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-008/week-085/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-008/week-085/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-008/week-085/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-008/week-085/seg_mask.nii.gz",
+            "time_diff_AC": 0.3333333333333333,
+            "time_diff_BC": 0.07450980392156858
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-009/week-000-1/ct1_skull_strip.nii.gz",
@@ -134,7 +148,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-009/week-066/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-009/week-066/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-009/week-066/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-009/week-066/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-009/week-066/seg_mask.nii.gz",
+            "time_diff_AC": 0.25882352941176473,
+            "time_diff_BC": 0.1647058823529412
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-010/week-000/ct1_skull_strip.nii.gz",
@@ -151,7 +167,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-010/week-015/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-010/week-015/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-010/week-015/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-010/week-015/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-010/week-015/seg_mask.nii.gz",
+            "time_diff_AC": 0.058823529411764705,
+            "time_diff_BC": 0.054901960784313725
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-011/week-000/ct1_skull_strip.nii.gz",
@@ -168,7 +186,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-011/week-028/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-011/week-028/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-011/week-028/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-011/week-028/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-011/week-028/seg_mask.nii.gz",
+            "time_diff_AC": 0.10980392156862745,
+            "time_diff_BC": 0.01568627450980392
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-012/week-000-2/ct1_skull_strip.nii.gz",
@@ -185,7 +205,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-012/week-084/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-012/week-084/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-012/week-084/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-012/week-084/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-012/week-084/seg_mask.nii.gz",
+            "time_diff_AC": 0.32941176470588235,
+            "time_diff_BC": 0.0431372549019608
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-013/week-000/ct1_skull_strip.nii.gz",
@@ -202,7 +224,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-013/week-017/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-013/week-017/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-013/week-017/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-013/week-017/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-013/week-017/seg_mask.nii.gz",
+            "time_diff_AC": 0.06666666666666667,
+            "time_diff_BC": 0.06274509803921569
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-014/week-000/ct1_skull_strip.nii.gz",
@@ -219,7 +243,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-014/week-012/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-014/week-012/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-014/week-012/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-014/week-012/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-014/week-012/seg_mask.nii.gz",
+            "time_diff_AC": 0.047058823529411764,
+            "time_diff_BC": 0.043137254901960784
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-015/week-021/ct1_skull_strip.nii.gz",
@@ -236,7 +262,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-015/week-146/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-015/week-146/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-015/week-146/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-015/week-146/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-015/week-146/seg_mask.nii.gz",
+            "time_diff_AC": 0.49019607843137253,
+            "time_diff_BC": 0.0039215686274509665
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-017/week-000/ct1_skull_strip.nii.gz",
@@ -253,7 +281,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-017/week-035/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-017/week-035/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-017/week-035/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-017/week-035/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-017/week-035/seg_mask.nii.gz",
+            "time_diff_AC": 0.13725490196078433,
+            "time_diff_BC": 0.07450980392156864
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-018/week-000/ct1_skull_strip.nii.gz",
@@ -270,7 +300,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-018/week-063/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-018/week-063/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-018/week-063/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-018/week-063/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-018/week-063/seg_mask.nii.gz",
+            "time_diff_AC": 0.24705882352941178,
+            "time_diff_BC": 0.11372549019607844
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-019/week-005/ct1_skull_strip.nii.gz",
@@ -287,7 +319,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-019/week-150/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-019/week-150/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-019/week-150/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-019/week-150/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-019/week-150/seg_mask.nii.gz",
+            "time_diff_AC": 0.5686274509803921,
+            "time_diff_BC": 0.03529411764705881
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-021/week-000-1/ct1_skull_strip.nii.gz",
@@ -304,7 +338,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-021/week-035/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-021/week-035/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-021/week-035/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-021/week-035/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-021/week-035/seg_mask.nii.gz",
+            "time_diff_AC": 0.13725490196078433,
+            "time_diff_BC": 0.05098039215686276
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-022/week-000/ct1_skull_strip.nii.gz",
@@ -321,7 +357,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-022/week-053/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-022/week-053/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-022/week-053/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-022/week-053/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-022/week-053/seg_mask.nii.gz",
+            "time_diff_AC": 0.20784313725490197,
+            "time_diff_BC": 0.03137254901960784
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-023/week-000/ct1_skull_strip.nii.gz",
@@ -338,7 +376,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-023/week-127/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-023/week-127/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-023/week-127/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-023/week-127/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-023/week-127/seg_mask.nii.gz",
+            "time_diff_AC": 0.4980392156862745,
+            "time_diff_BC": 0.047058823529411764
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-024/week-001/ct1_skull_strip.nii.gz",
@@ -355,7 +395,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-024/week-060/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-024/week-060/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-024/week-060/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-024/week-060/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-024/week-060/seg_mask.nii.gz",
+            "time_diff_AC": 0.23137254901960785,
+            "time_diff_BC": 0.054901960784313725
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-025/week-000/ct1_skull_strip.nii.gz",
@@ -372,7 +414,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-025/week-070/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-025/week-070/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-025/week-070/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-025/week-070/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-025/week-070/seg_mask.nii.gz",
+            "time_diff_AC": 0.27450980392156865,
+            "time_diff_BC": 0.0431372549019608
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-027/week-000-1/ct1_skull_strip.nii.gz",
@@ -389,7 +433,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-027/week-014/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-027/week-014/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-027/week-014/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-027/week-014/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-027/week-014/seg_mask.nii.gz",
+            "time_diff_AC": 0.054901960784313725,
+            "time_diff_BC": 0.054901960784313725
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-028/week-000-2/ct1_skull_strip.nii.gz",
@@ -406,7 +452,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-028/week-038/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-028/week-038/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-028/week-038/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-028/week-038/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-028/week-038/seg_mask.nii.gz",
+            "time_diff_AC": 0.14901960784313725,
+            "time_diff_BC": 0.011764705882352927
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-029/week-010/ct1_skull_strip.nii.gz",
@@ -423,7 +471,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-029/week-255/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-029/week-255/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-029/week-255/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-029/week-255/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-029/week-255/seg_mask.nii.gz",
+            "time_diff_AC": 0.9607843137254902,
+            "time_diff_BC": 0.12549019607843137
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-030/week-025/ct1_skull_strip.nii.gz",
@@ -440,7 +490,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-030/week-085/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-030/week-085/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-030/week-085/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-030/week-085/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-030/week-085/seg_mask.nii.gz",
+            "time_diff_AC": 0.23529411764705882,
+            "time_diff_BC": 0.07058823529411762
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-031/week-000/ct1_skull_strip.nii.gz",
@@ -457,7 +509,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-031/week-190/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-031/week-190/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-031/week-190/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-031/week-190/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-031/week-190/seg_mask.nii.gz",
+            "time_diff_AC": 0.7450980392156863,
+            "time_diff_BC": 0.02352941176470591
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-032/week-013/ct1_skull_strip.nii.gz",
@@ -474,7 +528,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-032/week-096/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-032/week-096/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-032/week-096/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-032/week-096/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-032/week-096/seg_mask.nii.gz",
+            "time_diff_AC": 0.3254901960784314,
+            "time_diff_BC": 0.0431372549019608
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-033/week-000/ct1_skull_strip.nii.gz",
@@ -491,7 +547,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-033/week-104/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-033/week-104/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-033/week-104/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-033/week-104/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-033/week-104/seg_mask.nii.gz",
+            "time_diff_AC": 0.40784313725490196,
+            "time_diff_BC": 0.03529411764705881
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-034/week-000-1/ct1_skull_strip.nii.gz",
@@ -508,7 +566,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-034/week-058/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-034/week-058/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-034/week-058/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-034/week-058/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-034/week-058/seg_mask.nii.gz",
+            "time_diff_AC": 0.22745098039215686,
+            "time_diff_BC": 0.054901960784313725
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-035/week-000-2/ct1_skull_strip.nii.gz",
@@ -525,7 +585,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-035/week-050/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-035/week-050/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-035/week-050/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-035/week-050/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-035/week-050/seg_mask.nii.gz",
+            "time_diff_AC": 0.19607843137254902,
+            "time_diff_BC": 0.054901960784313725
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-036/week-000/ct1_skull_strip.nii.gz",
@@ -542,7 +604,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-036/week-005/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-036/week-005/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-036/week-005/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-036/week-005/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-036/week-005/seg_mask.nii.gz",
+            "time_diff_AC": 0.0196078431372549,
+            "time_diff_BC": 0.011764705882352941
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-037/week-000-1/ct1_skull_strip.nii.gz",
@@ -559,7 +623,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-037/week-037/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-037/week-037/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-037/week-037/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-037/week-037/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-037/week-037/seg_mask.nii.gz",
+            "time_diff_AC": 0.1450980392156863,
+            "time_diff_BC": 0.03137254901960786
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-039/week-000-2/ct1_skull_strip.nii.gz",
@@ -576,7 +642,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-039/week-044/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-039/week-044/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-039/week-044/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-039/week-044/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-039/week-044/seg_mask.nii.gz",
+            "time_diff_AC": 0.17254901960784313,
+            "time_diff_BC": 0.10588235294117647
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-040/week-001/ct1_skull_strip.nii.gz",
@@ -593,7 +661,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-040/week-028/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-040/week-028/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-040/week-028/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-040/week-028/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-040/week-028/seg_mask.nii.gz",
+            "time_diff_AC": 0.10588235294117647,
+            "time_diff_BC": 0.050980392156862744
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-041/week-000/ct1_skull_strip.nii.gz",
@@ -610,7 +680,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-041/week-038/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-041/week-038/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-041/week-038/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-041/week-038/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-041/week-038/seg_mask.nii.gz",
+            "time_diff_AC": 0.14901960784313725,
+            "time_diff_BC": 0.07058823529411765
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-042/week-000-1/ct1_skull_strip.nii.gz",
@@ -627,7 +699,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-042/week-082/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-042/week-082/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-042/week-082/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-042/week-082/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-042/week-082/seg_mask.nii.gz",
+            "time_diff_AC": 0.3215686274509804,
+            "time_diff_BC": 0.003921568627451022
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-043/week-000/ct1_skull_strip.nii.gz",
@@ -644,7 +718,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-043/week-116/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-043/week-116/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-043/week-116/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-043/week-116/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-043/week-116/seg_mask.nii.gz",
+            "time_diff_AC": 0.4549019607843137,
+            "time_diff_BC": 0.039215686274509776
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-045/week-000-1/ct1_skull_strip.nii.gz",
@@ -661,7 +737,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-045/week-028/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-045/week-028/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-045/week-028/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-045/week-028/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-045/week-028/seg_mask.nii.gz",
+            "time_diff_AC": 0.10980392156862745,
+            "time_diff_BC": 0.043137254901960784
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-046/week-001/ct1_skull_strip.nii.gz",
@@ -678,7 +756,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-046/week-064/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-046/week-064/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-046/week-064/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-046/week-064/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-046/week-064/seg_mask.nii.gz",
+            "time_diff_AC": 0.24705882352941178,
+            "time_diff_BC": 0.18823529411764706
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-049/week-000/ct1_skull_strip.nii.gz",
@@ -695,7 +775,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-049/week-046/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-049/week-046/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-049/week-046/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-049/week-046/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-049/week-046/seg_mask.nii.gz",
+            "time_diff_AC": 0.1803921568627451,
+            "time_diff_BC": 0.06666666666666667
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-051/week-012/ct1_skull_strip.nii.gz",
@@ -712,7 +794,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-051/week-103/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-051/week-103/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-051/week-103/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-051/week-103/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-051/week-103/seg_mask.nii.gz",
+            "time_diff_AC": 0.3568627450980392,
+            "time_diff_BC": 0.05490196078431375
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-052/week-000/ct1_skull_strip.nii.gz",
@@ -729,7 +813,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-052/week-168/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-052/week-168/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-052/week-168/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-052/week-168/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-052/week-168/seg_mask.nii.gz",
+            "time_diff_AC": 0.6588235294117647,
+            "time_diff_BC": 0.07843137254901955
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-055/week-054/ct1_skull_strip.nii.gz",
@@ -746,7 +832,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-055/week-118/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-055/week-118/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-055/week-118/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-055/week-118/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-055/week-118/seg_mask.nii.gz",
+            "time_diff_AC": 0.25098039215686274,
+            "time_diff_BC": 0.07450980392156864
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-058/week-015/ct1_skull_strip.nii.gz",
@@ -763,7 +851,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-058/week-036/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-058/week-036/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-058/week-036/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-058/week-036/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-058/week-036/seg_mask.nii.gz",
+            "time_diff_AC": 0.08235294117647059,
+            "time_diff_BC": 0.03529411764705882
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-059/week-000/ct1_skull_strip.nii.gz",
@@ -780,7 +870,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-059/week-136/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-059/week-136/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-059/week-136/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-059/week-136/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-059/week-136/seg_mask.nii.gz",
+            "time_diff_AC": 0.5333333333333333,
+            "time_diff_BC": 0.0784313725490196
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-060/week-000/ct1_skull_strip.nii.gz",
@@ -797,7 +889,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-060/week-088/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-060/week-088/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-060/week-088/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-060/week-088/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-060/week-088/seg_mask.nii.gz",
+            "time_diff_AC": 0.34509803921568627,
+            "time_diff_BC": 0.07058823529411762
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-061/week-000-1/ct1_skull_strip.nii.gz",
@@ -814,7 +908,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-061/week-054/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-061/week-054/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-061/week-054/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-061/week-054/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-061/week-054/seg_mask.nii.gz",
+            "time_diff_AC": 0.21176470588235294,
+            "time_diff_BC": 0.03137254901960784
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-062/week-015/ct1_skull_strip.nii.gz",
@@ -831,7 +927,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-062/week-064/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-062/week-064/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-062/week-064/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-062/week-064/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-062/week-064/seg_mask.nii.gz",
+            "time_diff_AC": 0.19215686274509802,
+            "time_diff_BC": 0.02745098039215685
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-063/week-002/ct1_skull_strip.nii.gz",
@@ -848,7 +946,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-063/week-168/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-063/week-168/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-063/week-168/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-063/week-168/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-063/week-168/seg_mask.nii.gz",
+            "time_diff_AC": 0.6509803921568628,
+            "time_diff_BC": 0.14901960784313728
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-065/week-000-2/ct1_skull_strip.nii.gz",
@@ -865,7 +965,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-065/week-102/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-065/week-102/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-065/week-102/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-065/week-102/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-065/week-102/seg_mask.nii.gz",
+            "time_diff_AC": 0.4,
+            "time_diff_BC": 0.09019607843137256
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-066/week-031/ct1_skull_strip.nii.gz",
@@ -882,7 +984,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-066/week-101/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-066/week-101/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-066/week-101/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-066/week-101/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-066/week-101/seg_mask.nii.gz",
+            "time_diff_AC": 0.2745098039215686,
+            "time_diff_BC": 0.06666666666666665
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-067/week-000-1/ct1_skull_strip.nii.gz",
@@ -899,7 +1003,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-067/week-167/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-067/week-167/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-067/week-167/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-067/week-167/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-067/week-167/seg_mask.nii.gz",
+            "time_diff_AC": 0.6549019607843137,
+            "time_diff_BC": 0.039215686274509776
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-068/week-000-2/ct1_skull_strip.nii.gz",
@@ -916,7 +1022,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-068/week-047/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-068/week-047/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-068/week-047/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-068/week-047/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-068/week-047/seg_mask.nii.gz",
+            "time_diff_AC": 0.1843137254901961,
+            "time_diff_BC": 0.047058823529411764
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-070/week-005/ct1_skull_strip.nii.gz",
@@ -933,7 +1041,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-070/week-061/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-070/week-061/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-070/week-061/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-070/week-061/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-070/week-061/seg_mask.nii.gz",
+            "time_diff_AC": 0.2196078431372549,
+            "time_diff_BC": 0.06666666666666668
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-071/week-000-1/ct1_skull_strip.nii.gz",
@@ -950,7 +1060,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-071/week-062/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-071/week-062/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-071/week-062/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-071/week-062/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-071/week-062/seg_mask.nii.gz",
+            "time_diff_AC": 0.24313725490196078,
+            "time_diff_BC": 0.01568627450980392
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-072/week-000-1/ct1_skull_strip.nii.gz",
@@ -967,7 +1079,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-072/week-120/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-072/week-120/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-072/week-120/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-072/week-120/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-072/week-120/seg_mask.nii.gz",
+            "time_diff_AC": 0.47058823529411764,
+            "time_diff_BC": 0.05882352941176472
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-073/week-015/ct1_skull_strip.nii.gz",
@@ -984,7 +1098,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-073/week-242/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-073/week-242/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-073/week-242/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-073/week-242/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-073/week-242/seg_mask.nii.gz",
+            "time_diff_AC": 0.8901960784313725,
+            "time_diff_BC": 0.05490196078431364
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-074/week-000-2/ct1_skull_strip.nii.gz",
@@ -1001,7 +1117,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-074/week-039/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-074/week-039/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-074/week-039/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-074/week-039/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-074/week-039/seg_mask.nii.gz",
+            "time_diff_AC": 0.15294117647058825,
+            "time_diff_BC": 0.05098039215686276
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-077/week-000/ct1_skull_strip.nii.gz",
@@ -1018,7 +1136,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-077/week-083/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-077/week-083/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-077/week-083/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-077/week-083/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-077/week-083/seg_mask.nii.gz",
+            "time_diff_AC": 0.3254901960784314,
+            "time_diff_BC": 0.05098039215686273
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-080/week-000/ct1_skull_strip.nii.gz",
@@ -1035,7 +1155,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-080/week-018/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-080/week-018/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-080/week-018/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-080/week-018/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-080/week-018/seg_mask.nii.gz",
+            "time_diff_AC": 0.07058823529411765,
+            "time_diff_BC": 0.06666666666666667
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-081/week-000-1/ct1_skull_strip.nii.gz",
@@ -1052,7 +1174,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-081/week-006/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-081/week-006/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-081/week-006/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-081/week-006/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-081/week-006/seg_mask.nii.gz",
+            "time_diff_AC": 0.023529411764705882,
+            "time_diff_BC": 0.023529411764705882
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-082/week-000-1/ct1_skull_strip.nii.gz",
@@ -1069,7 +1193,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-082/week-003/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-082/week-003/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-082/week-003/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-082/week-003/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-082/week-003/seg_mask.nii.gz",
+            "time_diff_AC": 0.011764705882352941,
+            "time_diff_BC": 0.011764705882352941
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-085/week-000-2/ct1_skull_strip.nii.gz",
@@ -1086,7 +1212,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-085/week-050/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-085/week-050/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-085/week-050/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-085/week-050/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-085/week-050/seg_mask.nii.gz",
+            "time_diff_AC": 0.19607843137254902,
+            "time_diff_BC": 0.03137254901960784
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-086/week-000/ct1_skull_strip.nii.gz",
@@ -1103,7 +1231,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-086/week-173-2/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-086/week-173-2/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-086/week-173-2/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-086/week-173-2/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-086/week-173-2/seg_mask.nii.gz",
+            "time_diff_AC": 0.6784313725490196,
+            "time_diff_BC": 0.0
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-087/week-000-1/ct1_skull_strip.nii.gz",
@@ -1120,7 +1250,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-087/week-024/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-087/week-024/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-087/week-024/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-087/week-024/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-087/week-024/seg_mask.nii.gz",
+            "time_diff_AC": 0.09411764705882353,
+            "time_diff_BC": 0.09411764705882353
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-089/week-045/ct1_skull_strip.nii.gz",
@@ -1137,7 +1269,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-089/week-064/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-089/week-064/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-089/week-064/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-089/week-064/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-089/week-064/seg_mask.nii.gz",
+            "time_diff_AC": 0.07450980392156861,
+            "time_diff_BC": 0.07058823529411765
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-090/week-000-1/ct1_skull_strip.nii.gz",
@@ -1154,7 +1288,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-090/week-029/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-090/week-029/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-090/week-029/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-090/week-029/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-090/week-029/seg_mask.nii.gz",
+            "time_diff_AC": 0.11372549019607843,
+            "time_diff_BC": 0.11372549019607843
         },
         {
             "CT1_A": "data/processed/patients/train/Patient-091/week-001/ct1_skull_strip.nii.gz",
@@ -1171,7 +1307,9 @@
             "FLAIR_C": "data/processed/patients/train/Patient-091/week-043/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/train/Patient-091/week-043/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/train/Patient-091/week-043/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/train/Patient-091/week-043/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/train/Patient-091/week-043/seg_mask.nii.gz",
+            "time_diff_AC": 0.1647058823529412,
+            "time_diff_BC": 0.06666666666666668
         }
     ],
     "test": [
@@ -1190,7 +1328,9 @@
             "FLAIR_C": "data/processed/patients/test/Patient-006/week-135/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/test/Patient-006/week-135/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/test/Patient-006/week-135/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/test/Patient-006/week-135/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/test/Patient-006/week-135/seg_mask.nii.gz",
+            "time_diff_AC": 0.5294117647058824,
+            "time_diff_BC": 0.015686274509803977
         },
         {
             "CT1_A": "data/processed/patients/test/Patient-038/week-000/ct1_skull_strip.nii.gz",
@@ -1207,7 +1347,9 @@
             "FLAIR_C": "data/processed/patients/test/Patient-038/week-023/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/test/Patient-038/week-023/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/test/Patient-038/week-023/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/test/Patient-038/week-023/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/test/Patient-038/week-023/seg_mask.nii.gz",
+            "time_diff_AC": 0.09019607843137255,
+            "time_diff_BC": 0.08235294117647059
         },
         {
             "CT1_A": "data/processed/patients/test/Patient-048/week-000-2/ct1_skull_strip.nii.gz",
@@ -1224,7 +1366,9 @@
             "FLAIR_C": "data/processed/patients/test/Patient-048/week-049/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/test/Patient-048/week-049/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/test/Patient-048/week-049/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/test/Patient-048/week-049/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/test/Patient-048/week-049/seg_mask.nii.gz",
+            "time_diff_AC": 0.19215686274509805,
+            "time_diff_BC": 0.01568627450980392
         },
         {
             "CT1_A": "data/processed/patients/test/Patient-050/week-001/ct1_skull_strip.nii.gz",
@@ -1241,7 +1385,9 @@
             "FLAIR_C": "data/processed/patients/test/Patient-050/week-061/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/test/Patient-050/week-061/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/test/Patient-050/week-061/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/test/Patient-050/week-061/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/test/Patient-050/week-061/seg_mask.nii.gz",
+            "time_diff_AC": 0.23529411764705882,
+            "time_diff_BC": 0.0392156862745098
         },
         {
             "CT1_A": "data/processed/patients/test/Patient-054/week-002/ct1_skull_strip.nii.gz",
@@ -1258,7 +1404,9 @@
             "FLAIR_C": "data/processed/patients/test/Patient-054/week-077/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/test/Patient-054/week-077/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/test/Patient-054/week-077/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/test/Patient-054/week-077/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/test/Patient-054/week-077/seg_mask.nii.gz",
+            "time_diff_AC": 0.2941176470588235,
+            "time_diff_BC": 0.04313725490196074
         },
         {
             "CT1_A": "data/processed/patients/test/Patient-064/week-020/ct1_skull_strip.nii.gz",
@@ -1275,7 +1423,9 @@
             "FLAIR_C": "data/processed/patients/test/Patient-064/week-062/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/test/Patient-064/week-062/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/test/Patient-064/week-062/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/test/Patient-064/week-062/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/test/Patient-064/week-062/seg_mask.nii.gz",
+            "time_diff_AC": 0.16470588235294117,
+            "time_diff_BC": 0.05098039215686273
         },
         {
             "CT1_A": "data/processed/patients/test/Patient-075/week-000/ct1_skull_strip.nii.gz",
@@ -1292,7 +1442,9 @@
             "FLAIR_C": "data/processed/patients/test/Patient-075/week-044/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/test/Patient-075/week-044/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/test/Patient-075/week-044/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/test/Patient-075/week-044/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/test/Patient-075/week-044/seg_mask.nii.gz",
+            "time_diff_AC": 0.17254901960784313,
+            "time_diff_BC": 0.047058823529411764
         },
         {
             "CT1_A": "data/processed/patients/test/Patient-078/week-000/ct1_skull_strip.nii.gz",
@@ -1309,7 +1461,9 @@
             "FLAIR_C": "data/processed/patients/test/Patient-078/week-119/flair_skull_strip.nii.gz",
             "T1_C": "data/processed/patients/test/Patient-078/week-119/t1_skull_strip.nii.gz",
             "T2_C": "data/processed/patients/test/Patient-078/week-119/t2_skull_strip.nii.gz",
-            "seg_C": "data/processed/patients/test/Patient-078/week-119/seg_mask.nii.gz"
+            "seg_C": "data/processed/patients/test/Patient-078/week-119/seg_mask.nii.gz",
+            "time_diff_AC": 0.4666666666666667,
+            "time_diff_BC": 0.011764705882352955
         }
     ]
 }

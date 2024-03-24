@@ -4,14 +4,18 @@ import torch
 
 
 # task
-TASK = "with_seg_AB"  # {"base_model", "with_seg_AB"}
+# TASK = "base_model"
+TASK = "with_seg_AB"
+# TASK = "with_time_diff"
 INPUT_DICT = {
     "base_model": "img_AB",
-    "with_seg_AB": "input_AB"
+    "with_seg_AB": "img_seg_AB",
+    "with_time_diff": "img_time_diff_AB"
 }
 LABEL_DICT = {
     "base_model": "base model",
-    "with_seg_AB": "base model with seg_AB"
+    "with_seg_AB": "base model with seg_AB",
+    "with_time_diff": "base model with time information"
 }
 
 # input path
@@ -53,6 +57,20 @@ NET_AB2C_KWARGS_DICT = {
         }
     },
     "with_seg_AB": {
+        "in_channels": (
+            NUM_INPUTS * num_sequences + NUM_INPUTS
+        ),
+        "out_channels": NUM_CLASSES,
+        "latent_size": 3,
+        "temperature": 0.28,
+        "prior_kwargs": {
+            "n_components": 9
+        },
+        "posterior_kwargs": {
+            "n_components": 9
+        }
+    },
+    "with_time_diff": {
         "in_channels": (
             NUM_INPUTS * num_sequences + NUM_INPUTS
         ),
