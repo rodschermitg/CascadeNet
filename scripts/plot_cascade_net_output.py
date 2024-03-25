@@ -47,8 +47,8 @@ with open(data_path, "r") as data_file:
 dataset = monai.data.Dataset(
     data["train"],
     monai.transforms.Compose([
-        transforms.transforms_dict["base_model"]["base_transforms"],
-        transforms.transforms_dict["base_model"]["eval_transforms"]
+        *transforms.transforms_dict["base_model"]["base_transforms"].transforms,
+        *transforms.transforms_dict["base_model"]["eval_transforms"].transforms
     ])
 )
 print(f"Using {len(dataset)} training samples")

@@ -43,8 +43,8 @@ with open(data_path, "r") as data_file:
 dataset = monai.data.CacheDataset(
     data["train"],
     monai.transforms.Compose([
-        transforms.transforms_dict[config.TASK]["base_transforms"],
-        transforms.transforms_dict[config.TASK]["eval_transforms"]
+        *transforms.transforms_dict[config.TASK]["base_transforms"].transforms,
+        *transforms.transforms_dict[config.TASK]["eval_transforms"].transforms
     ]),
     num_workers=num_workers
 )

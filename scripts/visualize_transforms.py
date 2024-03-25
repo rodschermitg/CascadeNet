@@ -27,8 +27,8 @@ with open(data_path, "r") as data_file:
 dataset = monai.data.Dataset(
     data["train"],
     monai.transforms.Compose([
-        base_transforms,
-        train_transforms
+        *base_transforms.transforms,
+        *train_transforms.transforms
     ])
 )
 dataloader = monai.data.DataLoader(dataset, batch_size=1)
