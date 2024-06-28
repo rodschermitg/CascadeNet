@@ -625,8 +625,7 @@ class ProbabilisticSegmentationNet(ConvModule):
             self.encode_posterior(input_, seg)
             sample = self.posterior.rsample()
         else:
-            # sample = self.prior.loc
-            sample = self.prior.rsample()
+            sample = self.prior.mean
         reconstruction = self.task_net(input_, sample, store_activations=not self.training)
 
         if self.training:
