@@ -106,14 +106,21 @@ for batch in dataloader:
     recall_list.append(confusion_matrix_fn.aggregate()[1].item())
     confusion_matrix_fn.reset()
 
-    test_logs["individual"][patient_name] = {}
-    test_logs["individual"][patient_name][
-        "dice"
-    ] = dice_fn.get_buffer()[-1].item()
-    test_logs["individual"][patient_name]["precision"] = precision_list[-1]
-    test_logs["individual"][patient_name]["recall"] = recall_list[-1]
+    if patient_name not in test_logs["individual"]:
+        test_logs["individual"][patient_name] = {
+            "dice": [], "precision": [], "recall": []
+        }
 
-    print(f"{patient_name}:")
+    test_logs["individual"][patient_name]["dice"].append(
+        dice_fn.get_buffer()[-1].item()
+    )
+    test_logs["individual"][patient_name]["precision"].append(
+        precision_list[-1]
+    )
+    test_logs["individual"][patient_name]["recall"].append(recall_list[-1])
+
+    num_scores = len(test_logs['individual'][patient_name]['dice'])
+    print(f"{patient_name} ({num_scores}):")
     print(f"\tdice: {dice_fn.get_buffer()[-1].item():.4f}")
     print(f"\tprecision: {precision_list[-1]:.4f}")
     print(f"\trecall: {recall_list[-1]:.4f}")

@@ -4,7 +4,6 @@ import os
 import time
 
 import monai
-import sklearn.model_selection
 import torch
 
 import config
@@ -24,11 +23,15 @@ print(f"Using {device} device")
 data_path = os.path.join(config.data_dir, config.DATA_FILENAME)
 with open(data_path, "r") as data_file:
     data = json.load(data_file)
-dataset = monai.data.CacheDataset(
-    data["train"],
-    transforms.transforms_dict[config.TASK]["base_transforms"],
-    num_workers=num_workers
-)
+
+train_transforms = monai.transforms.Compose([
+    *transforms.transforms_dict[config.TASK]["base_transforms"].transforms,
+    *transforms.transforms_dict[config.TASK]["train_transforms"].transforms
+])
+val_transforms = monai.transforms.Compose([
+    *transforms.transforms_dict[config.TASK]["base_transforms"].transforms,
+    *transforms.transforms_dict[config.TASK]["eval_transforms"].transforms
+])
 
 discretize = monai.transforms.AsDiscrete(
     argmax=True,
@@ -47,16 +50,8 @@ confusion_matrix_fn = monai.metrics.ConfusionMatrixMetric(
     metric_name=("precision", "recall")
 )
 
-k_fold = sklearn.model_selection.KFold(
-    n_splits=config.FOLDS,
-    shuffle=True,
-    random_state=config.RANDOM_STATE
-)
-fold_indices = k_fold.split(dataset)
-
 train_logs = {
     "total_train_time": None,
-    "fold_indices": {f"fold{i}": {} for i in range(config.FOLDS)},
     "mean_train_loss_pred": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_train_loss_kl_AB2C": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_train_loss_cycle": {f"fold{i}": [] for i in range(config.FOLDS)},
@@ -77,12 +72,7 @@ train_logs = {
 print("Training network")
 train_start_time = time.perf_counter()
 
-for fold, (train_indices, val_indices) in enumerate(fold_indices):
-    train_logs["fold_indices"][f"fold{fold}"] = {
-        "train_indices": train_indices.tolist(),
-        "val_indices": val_indices.tolist()
-    }
-
+for fold in range(config.FOLDS):
     net_AB2C = models.ProbabilisticSegmentationNet(
         **config.NET_AB2C_KWARGS_DICT[config.TASK]
     ).to(device)
@@ -105,20 +95,13 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
         verbose=True
     )
 
-    train_data = torch.utils.data.Subset(dataset, train_indices)
-    val_data = torch.utils.data.Subset(dataset, val_indices)
-
-    train_data = monai.data.CacheDataset(
-        train_data,
-        transforms.transforms_dict[config.TASK]["train_transforms"],
-        num_workers=num_workers,
-        progress=False
+    train_data = monai.data.Dataset(
+        data["train"][f"fold{fold}"],
+        train_transforms
     )
-    val_data = monai.data.CacheDataset(
-        val_data,
-        transforms.transforms_dict[config.TASK]["eval_transforms"],
-        num_workers=num_workers,
-        progress=False
+    val_data = monai.data.Dataset(
+        data["val"][f"fold{fold}"],
+        val_transforms
     )
 
     train_dataloader = monai.data.DataLoader(
@@ -206,8 +189,8 @@ for fold, (train_indices, val_indices) in enumerate(fold_indices):
             if (iter + 1) % config.DISPLAY_INTERVAL == 0:
                 print(
                     f"Fold [{fold+1:1}/{config.FOLDS}], "
-                    f"Epoch [{epoch+1:3}/{config.EPOCHS}], "
-                    f"Iter [{iter+1:2}/{len(train_dataloader)}], "
+                    f"Epoch [{epoch+1:2}/{config.EPOCHS}], "
+                    f"Iter [{iter+1:3}/{len(train_dataloader)}], "
                     f"Prediction loss: {train_loss_pred.item():.4f}, "
                     f"KL loss (net_AB2C): {train_loss_kl_AB2C.item():.4f}, "
                     f"Cycle loss: {train_loss_cycle.item():.4f}, "

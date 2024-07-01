@@ -40,14 +40,15 @@ discretize = monai.transforms.AsDiscrete(
 data_path = os.path.join(config.data_dir, config.DATA_FILENAME)
 with open(data_path, "r") as data_file:
     data = json.load(data_file)
-dataset = monai.data.CacheDataset(
-    data["train"],
-    monai.transforms.Compose([
-        *transforms.transforms_dict[config.TASK]["base_transforms"].transforms,
-        *transforms.transforms_dict[config.TASK]["eval_transforms"].transforms
-    ]),
-    num_workers=num_workers
-)
+
+train_transforms = monai.transforms.Compose([
+    *transforms.transforms_dict[config.TASK]["base_transforms"].transforms,
+    *transforms.transforms_dict[config.TASK]["train_transforms"].transforms
+])
+val_transforms = monai.transforms.Compose([
+    *transforms.transforms_dict[config.TASK]["base_transforms"].transforms,
+    *transforms.transforms_dict[config.TASK]["eval_transforms"].transforms
+])
 
 with open(config.train_logs_path, "r") as train_logs_file:
     train_logs = json.load(train_logs_file)
@@ -78,8 +79,10 @@ cv_fold_logs = {
 }
 
 for fold in range(config.FOLDS):
-    train_indices = train_logs["fold_indices"][f"fold{fold}"]["train_indices"]
-    train_data = torch.utils.data.Subset(dataset, train_indices)
+    train_data = monai.data.Dataset(
+        data["train"][f"fold{fold}"],
+        train_transforms
+    )
     train_dataloader = monai.data.DataLoader(
         train_data,
         batch_size=1,
@@ -153,8 +156,10 @@ for fold in range(config.FOLDS):
         f"std train recall: {std_train_recall:.4f}"
     )
 
-    val_indices = train_logs["fold_indices"][f"fold{fold}"]["val_indices"]
-    val_data = torch.utils.data.Subset(dataset, val_indices)
+    val_data = monai.data.Dataset(
+        data["val"][f"fold{fold}"],
+        val_transforms
+    )
     val_dataloader = monai.data.DataLoader(
         val_data,
         batch_size=1,
