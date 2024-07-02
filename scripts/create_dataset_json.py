@@ -40,17 +40,14 @@ def get_tumor_volume(week_path):
 def create_patient_dict(week_paths, max_week_num):
     patient_dict = {}
     for timestep_idx, timestep in enumerate(config.TIMESTEPS):
-        for image_key in config.SEQUENCES + ["seg"]:
-            if image_key == "seg":
-                img_path = os.path.join(
-                    week_paths[timestep_idx],
-                    "seg_mask.nii.gz"
-                )
+        for image_key in config.SEQUENCES + ["tissue_seg", "seg"]:
+            if image_key == "tissue_seg":
+                img_filename = "tissue_seg.nii.gz"
+            elif image_key == "seg":
+                img_filename = "seg_mask.nii.gz"
             else:
-                img_path = os.path.join(
-                    week_paths[timestep_idx],
-                    f"{image_key.lower()}_skull_strip.nii.gz"
-                )
+                img_filename = f"{image_key.lower()}_skull_strip.nii.gz"
+            img_path = os.path.join(week_paths[timestep_idx], img_filename)
             patient_dict[f"{image_key}_{timestep}"] = img_path
 
     week_num_A = get_week_num(week_paths[0])

@@ -4,21 +4,28 @@ import torch
 
 
 # task
+# TASK = "lower_bound"
 # TASK = "base_model"
+# TASK = "with_tissue_seg"
 # TASK = "with_seg_AB"
 # TASK = "with_time_diff"
-TASK = "with_seg_AB_and_time_diff"
+# TASK = "with_seg_AB_and_time_diff"
+TASK = "with_tissue_seg_seg_time_diff_AB"
 INPUT_DICT = {
+    "lower_bound": "img_B",
     "base_model": "img_AB",
     "with_seg_AB": "img_seg_AB",
     "with_time_diff": "img_time_diff_AB",
-    "with_seg_AB_and_time_diff": "img_seg_time_diff_AB"
+    "with_seg_AB_and_time_diff": "img_seg_time_diff_AB",
+    "with_tissue_seg_seg_time_diff_AB": "img_tissue_seg_seg_time_diff_AB"
 }
 LABEL_DICT = {
+    "lower_bound": "lower bound model",
     "base_model": "base model",
     "with_seg_AB": "base model with seg_AB",
     "with_time_diff": "base model with time information",
-    "with_seg_AB_and_time_diff": "base model with seg_AB and time information"
+    "with_seg_AB_and_time_diff": "base model with seg_AB and time information",
+    "with_tissue_seg_seg_time_diff_AB": "with tissue seg, seg_AB and time diff"
 }
 
 # input path
@@ -43,6 +50,7 @@ sequence_keys = [
     [f"{sequence}_{timestep}" for sequence in SEQUENCES]
     for timestep in TIMESTEPS
 ]
+tissue_seg_keys = [f"tissue_seg_{timestep}" for timestep in TIMESTEPS]
 seg_keys = [f"seg_{timestep}" for timestep in TIMESTEPS]
 
 # model
@@ -90,6 +98,20 @@ NET_AB2C_KWARGS_DICT = {
     "with_seg_AB_and_time_diff": {
         "in_channels": (
             NUM_INPUTS * num_sequences + 2 * NUM_INPUTS
+        ),
+        "out_channels": NUM_CLASSES,
+        "latent_size": 3,
+        "temperature": 0.28,
+        "prior_kwargs": {
+            "n_components": 9
+        },
+        "posterior_kwargs": {
+            "n_components": 9
+        }
+    },
+    "with_tissue_seg_seg_time_diff_AB": {
+        "in_channels": (
+            NUM_INPUTS * num_sequences + 3 * NUM_INPUTS
         ),
         "out_channels": NUM_CLASSES,
         "latent_size": 3,
