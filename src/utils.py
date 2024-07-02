@@ -15,7 +15,8 @@ def create_log_plots(
     output_path,
     train_crit_keys=[],
     val_crit_keys=[],
-    y_labels=None
+    y_labels=None,
+    ylim=None
 ):
     if isinstance(train_crit_keys, str):
         train_crit_keys = [train_crit_keys]
@@ -57,11 +58,13 @@ def create_log_plots(
             if train_crit_keys:
                 train_y_values = train_logs[train_crit_keys[row]][
                     f"fold{fold}"
-                ]
+                ][:train_logs["best_epoch"][f"fold{fold}"]+1]
                 train_x_values = list(range(len(train_y_values)))
                 train_ax.plot(train_x_values, train_y_values)
             if val_crit_keys:
-                val_y_values = train_logs[val_crit_keys[row]][f"fold{fold}"]
+                val_y_values = train_logs[val_crit_keys[row]][
+                    f"fold{fold}"
+                ][:train_logs["best_epoch"][f"fold{fold}"]+1]
                 val_x_values = list(range(
                     0,
                     config.VAL_INTERVAL*len(val_y_values),
@@ -83,6 +86,11 @@ def create_log_plots(
                 train_ax.set_xlabel("epoch")
             if row == rows - 1 and val_crit_keys:
                 val_ax.set_xlabel("epoch")
+
+            if ylim and train_crit_keys:
+                train_ax.set_ylim(ylim)
+            if ylim and val_crit_keys:
+                val_ax.set_ylim(ylim)
 
             fig.legend(
                 [f"fold{fold}" for fold in range(config.FOLDS)],

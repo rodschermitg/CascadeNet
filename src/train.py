@@ -51,7 +51,6 @@ confusion_matrix_fn = monai.metrics.ConfusionMatrixMetric(
 )
 
 train_logs = {
-    "total_train_time": None,
     "mean_train_loss_pred": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_train_loss_kl_AB2C": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_train_loss_cycle": {f"fold{i}": [] for i in range(config.FOLDS)},
@@ -64,9 +63,8 @@ train_logs = {
     "mean_val_dice": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_precision": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_recall": {f"fold{i}": [] for i in range(config.FOLDS)},
-    "best_fold": None,
-    "best_epoch": None,
-    "best_dice": -1
+    "best_epoch": {f"fold{i}": 0 for i in range(config.FOLDS)},
+    "best_loss": {f"fold{i}": float("inf") for i in range(config.FOLDS)},
 }
 
 print("Training network")
@@ -92,6 +90,7 @@ for fold in range(config.FOLDS):
     scaler = torch.cuda.amp.GradScaler(enabled=False)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer,
+        patience=config.SCHEDULER_PATIENCE,
         verbose=True
     )
 
@@ -330,12 +329,11 @@ for fold in range(config.FOLDS):
             print(f"Mean val precision: {mean_val_precision:.4f}")
             print(f"Mean val recall: {mean_val_recall:.4f}")
 
-            if mean_val_dice > train_logs["best_dice"]:
-                print("New best dice, serializing model to disk")
+            if mean_val_loss_pred < train_logs["best_loss"][f"fold{fold}"]:
+                print("New best loss, serializing model to disk")
 
-                train_logs["best_fold"] = fold
-                train_logs["best_epoch"] = epoch
-                train_logs["best_dice"] = mean_val_dice
+                train_logs["best_epoch"][f"fold{fold}"] = epoch
+                train_logs["best_loss"][f"fold{fold}"] = mean_val_loss_pred
 
                 torch.save(
                     {
@@ -349,31 +347,32 @@ for fold in range(config.FOLDS):
                     },
                     os.path.join(
                         config.checkpoint_dir,
-                        f"{config.MODEL_NAME}.tar"
+                        f"{config.MODEL_NAME}_fold{fold}.tar"
                     )
                 )
+
+                current_patience = config.STOPPING_PATIENCE + 1
             else:
                 print(
-                    f"Current best dice: {train_logs['best_dice']:.4f} at fold"
-                    f" {train_logs['best_fold']+1}, epoch "
-                    f"{train_logs['best_epoch']+1}"
+                    f"Current best loss (fold {fold+1}): "
+                    f"{train_logs['best_loss'][f'fold{fold}']:.4f} at epoch "
+                    f"{train_logs['best_epoch'][f'fold{fold}']+1}"
                 )
-
-            scheduler.step(mean_val_loss_pred)
+                current_patience -= 1
 
             utils.create_log_plots(
                 train_logs,
                 output_path=config.pred_loss_plot_path,
                 train_crit_keys=["mean_train_loss_pred"],
                 val_crit_keys=["mean_val_loss_pred"],
-                y_labels=["prediction loss"],
+                y_labels=["prediction loss"]
             )
             utils.create_log_plots(
                 train_logs,
                 output_path=config.cycle_loss_plot_path,
                 train_crit_keys=["mean_train_loss_cycle"],
                 val_crit_keys=["mean_val_loss_cycle"],
-                y_labels=["cycle loss"],
+                y_labels=["cycle loss"]
             )
             utils.create_log_plots(
                 train_logs,
@@ -382,7 +381,7 @@ for fold in range(config.FOLDS):
                     "mean_train_loss_kl_AB2C",
                     "mean_train_loss_kl_C2AB"
                 ],
-                y_labels=["KL loss (net_AB2C)", "KL loss (net_C2AB)"],
+                y_labels=["KL loss (net_AB2C)", "KL loss (net_C2AB)"]
             )
             utils.create_log_plots(
                 train_logs,
@@ -398,28 +397,20 @@ for fold in range(config.FOLDS):
                     "mean_val_recall"
                 ],
                 y_labels=["dice", "precision", "recall"],
+                ylim=[0, 1]
             )
 
             with open(config.train_logs_path, "w") as train_logs_file:
                 json.dump(train_logs, train_logs_file, indent=4)
 
-    if config.SAVE_MODEL_EACH_FOLD:
-        print(f"Fold {fold+1} completed, serializing model to disk")
-        torch.save(
-            {
-                "net_AB2C_state_dict": net_AB2C.state_dict(),
-                "net_C2AB_state_dict": net_C2AB.state_dict(),
-                "optimizer_state_dict": optimizer.state_dict(),
-                "scaler_state_dict": scaler.state_dict(),
-                "scheduler_state_dict": scheduler.state_dict(),
-                "fold": fold,
-                "epoch": epoch
-            },
-            os.path.join(
-                config.checkpoint_dir,
-                f"{config.MODEL_NAME}_fold{fold}.tar"
-            )
-        )
+            if current_patience == 0:
+                print(
+                    f"Early stopping after {config.STOPPING_PATIENCE+1} "
+                    "validation rounds without improvements"
+                )
+                break
+            else:
+                scheduler.step(mean_val_loss_pred)
 
 train_end_time = time.perf_counter()
 total_train_time = train_end_time - train_start_time
