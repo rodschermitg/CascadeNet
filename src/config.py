@@ -2,29 +2,23 @@ import os
 
 
 # task
-# TASK = "lower_bound"
 TASK = "base_model"
 # TASK = "with_tissue_seg_AB"
 # TASK = "with_seg_AB"
 # TASK = "with_time_diff"
-# TASK = "with_seg_AB_and_time_diff"
 # TASK = "with_tissue_seg_seg_time_diff_AB"
 INPUT_DICT = {
-    "lower_bound": "img_B",
     "base_model": "img_AB",
     "with_tissue_seg_AB": "img_tissue_seg_AB",
     "with_seg_AB": "img_seg_AB",
     "with_time_diff": "img_time_diff_AB",
-    "with_seg_AB_and_time_diff": "img_seg_time_diff_AB",
     "with_tissue_seg_seg_time_diff_AB": "img_tissue_seg_seg_time_diff_AB"
 }
 LABEL_DICT = {
-    "lower_bound": "lower bound model",
     "base_model": "base model",
     "with_tissue_seg_AB": "base model with tissue_seg_AB",
     "with_seg_AB": "base model with seg_AB",
     "with_time_diff": "base model with time information",
-    "with_seg_AB_and_time_diff": "base model with seg_AB and time information",
     "with_tissue_seg_seg_time_diff_AB": "with tissue seg, seg_AB and time diff"
 }
 
@@ -98,20 +92,6 @@ NET_AB2C_KWARGS_DICT = {
     "with_time_diff": {
         "in_channels": (
             NUM_INPUTS * num_sequences + NUM_INPUTS
-        ),
-        "out_channels": NUM_CLASSES,
-        "latent_size": 3,
-        "temperature": 0.28,
-        "prior_kwargs": {
-            "n_components": 9
-        },
-        "posterior_kwargs": {
-            "n_components": 9
-        }
-    },
-    "with_seg_AB_and_time_diff": {
-        "in_channels": (
-            NUM_INPUTS * num_sequences + 2 * NUM_INPUTS
         ),
         "out_channels": NUM_CLASSES,
         "latent_size": 3,
