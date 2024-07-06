@@ -43,7 +43,7 @@ loss_fn_pred = monai.losses.DiceCELoss(
     softmax=True,
     reduction="mean"
 )
-loss_fn_cycle = torch.nn.MSELoss(reduction="mean")
+loss_fn_rec = torch.nn.MSELoss(reduction="mean")
 dice_fn = monai.metrics.DiceMetric(include_background=False)
 confusion_matrix_fn = monai.metrics.ConfusionMatrixMetric(
     include_background=False,
@@ -53,13 +53,13 @@ confusion_matrix_fn = monai.metrics.ConfusionMatrixMetric(
 train_logs = {
     "mean_train_loss_pred": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_train_loss_kl_AB2C": {f"fold{i}": [] for i in range(config.FOLDS)},
-    "mean_train_loss_cycle": {f"fold{i}": [] for i in range(config.FOLDS)},
+    "mean_train_loss_rec": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_train_loss_kl_C2AB": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_train_dice": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_train_precision": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_train_recall": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_loss_pred": {f"fold{i}": [] for i in range(config.FOLDS)},
-    "mean_val_loss_cycle": {f"fold{i}": [] for i in range(config.FOLDS)},
+    "mean_val_loss_rec": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_dice": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_precision": {f"fold{i}": [] for i in range(config.FOLDS)},
     "mean_val_recall": {f"fold{i}": [] for i in range(config.FOLDS)},
@@ -123,7 +123,7 @@ for fold in range(config.FOLDS):
 
         epoch_train_loss_pred = 0
         epoch_train_loss_kl_AB2C = 0
-        epoch_train_loss_cycle = 0
+        epoch_train_loss_rec = 0
         epoch_train_loss_kl_C2AB = 0
 
         for iter, train_batch in enumerate(train_dataloader):
@@ -151,13 +151,13 @@ for fold in range(config.FOLDS):
                 )
                 train_rec_AB = torch.nn.functional.softmax(train_rec_AB, dim=1)
 
-                train_loss_cycle = loss_fn_cycle(train_rec_AB, train_real_AB)
+                train_loss_rec = loss_fn_rec(train_rec_AB, train_real_AB)
 
             train_loss = (
                 train_loss_pred +
                 config.KL_WEIGHT*train_loss_kl_AB2C +
                 config.KL_WEIGHT*train_loss_kl_C2AB +
-                config.CYCLE_WEIGHT*train_loss_cycle
+                config.REC_WEIGHT*train_loss_rec
             )
 
             optimizer.zero_grad(set_to_none=True)
@@ -167,7 +167,7 @@ for fold in range(config.FOLDS):
 
             epoch_train_loss_pred += train_loss_pred.item()
             epoch_train_loss_kl_AB2C += train_loss_kl_AB2C.item()
-            epoch_train_loss_cycle += train_loss_cycle.item()
+            epoch_train_loss_rec += train_loss_rec.item()
             epoch_train_loss_kl_C2AB += train_loss_kl_C2AB.item()
 
             # store discretized batches in lists for metric functions
@@ -190,7 +190,7 @@ for fold in range(config.FOLDS):
                     f"Iter [{iter+1:3}/{len(train_dataloader)}], "
                     f"Prediction loss: {train_loss_pred.item():.4f}, "
                     f"KL loss (net_AB2C): {train_loss_kl_AB2C.item():.4f}, "
-                    f"Cycle loss: {train_loss_cycle.item():.4f}, "
+                    f"Reconstruction loss: {train_loss_rec.item():.4f}, "
                     f"KL loss (net_C2AB): {train_loss_kl_C2AB.item():.4f}"
                 )
 
@@ -198,7 +198,7 @@ for fold in range(config.FOLDS):
         mean_train_loss_kl_AB2C = (
             epoch_train_loss_kl_AB2C / len(train_dataloader)
         )
-        mean_train_loss_cycle = epoch_train_loss_cycle / len(train_dataloader)
+        mean_train_loss_rec = epoch_train_loss_rec / len(train_dataloader)
         mean_train_loss_kl_C2AB = (
             epoch_train_loss_kl_C2AB / len(train_dataloader)
         )
@@ -215,8 +215,8 @@ for fold in range(config.FOLDS):
         train_logs["mean_train_loss_kl_AB2C"][f"fold{fold}"].append(
             mean_train_loss_kl_AB2C
         )
-        train_logs["mean_train_loss_cycle"][f"fold{fold}"].append(
-            mean_train_loss_cycle
+        train_logs["mean_train_loss_rec"][f"fold{fold}"].append(
+            mean_train_loss_rec
         )
         train_logs["mean_train_loss_kl_C2AB"][f"fold{fold}"].append(
             mean_train_loss_kl_C2AB
@@ -231,7 +231,7 @@ for fold in range(config.FOLDS):
 
         print(f"Mean train prediction loss: {mean_train_loss_pred:.4f}")
         print(f"Mean train KL loss (net_AB2C): {mean_train_loss_kl_AB2C:.4f}")
-        print(f"Mean train cycle loss: {mean_train_loss_cycle:.4f}")
+        print(f"Mean train rec loss: {mean_train_loss_rec:.4f}")
         print(f"Mean train KL loss (net_C2AB): {mean_train_loss_kl_C2AB:.4f}")
         print(f"Mean train dice: {mean_train_dice:.4f}")
         print(f"Mean train precision: {mean_train_precision:.4f}")
@@ -242,7 +242,7 @@ for fold in range(config.FOLDS):
             net_C2AB.eval()
 
             epoch_val_loss_pred = 0
-            epoch_val_loss_cycle = 0
+            epoch_val_loss_rec = 0
 
             with torch.no_grad():
                 for val_batch in val_dataloader:
@@ -283,7 +283,7 @@ for fold in range(config.FOLDS):
                             dim=1
                         )
 
-                        epoch_val_loss_cycle += loss_fn_cycle(
+                        epoch_val_loss_rec += loss_fn_rec(
                             val_rec_AB,
                             val_real_AB
                         ).item()
@@ -298,7 +298,7 @@ for fold in range(config.FOLDS):
                     confusion_matrix_fn(val_pred_C, val_seg_C)
 
             mean_val_loss_pred = epoch_val_loss_pred / len(val_dataloader)
-            mean_val_loss_cycle = epoch_val_loss_cycle / len(val_dataloader)
+            mean_val_loss_rec = epoch_val_loss_rec / len(val_dataloader)
             mean_val_dice = dice_fn.aggregate().item()
             mean_val_precision = confusion_matrix_fn.aggregate()[0].item()
             mean_val_recall = confusion_matrix_fn.aggregate()[1].item()
@@ -309,8 +309,8 @@ for fold in range(config.FOLDS):
             train_logs["mean_val_loss_pred"][f"fold{fold}"].append(
                 mean_val_loss_pred
             )
-            train_logs["mean_val_loss_cycle"][f"fold{fold}"].append(
-                mean_val_loss_cycle
+            train_logs["mean_val_loss_rec"][f"fold{fold}"].append(
+                mean_val_loss_rec
             )
             train_logs["mean_val_dice"][f"fold{fold}"].append(mean_val_dice)
             train_logs["mean_val_precision"][f"fold{fold}"].append(
@@ -321,7 +321,7 @@ for fold in range(config.FOLDS):
             )
 
             print(f"Mean val prediction loss: {mean_val_loss_pred:.4f}")
-            print(f"Mean val cycle loss: {mean_val_loss_cycle:.4f}")
+            print(f"Mean val rec loss: {mean_val_loss_rec:.4f}")
             print(f"Mean val dice: {mean_val_dice:.4f}")
             print(f"Mean val precision: {mean_val_precision:.4f}")
             print(f"Mean val recall: {mean_val_recall:.4f}")
@@ -366,10 +366,10 @@ for fold in range(config.FOLDS):
             )
             utils.create_log_plots(
                 train_logs,
-                output_path=config.cycle_loss_plot_path,
-                train_crit_keys=["mean_train_loss_cycle"],
-                val_crit_keys=["mean_val_loss_cycle"],
-                y_labels=["cycle loss"]
+                output_path=config.rec_loss_plot_path,
+                train_crit_keys=["mean_train_loss_rec"],
+                val_crit_keys=["mean_val_loss_rec"],
+                y_labels=["rec loss"]
             )
             utils.create_log_plots(
                 train_logs,

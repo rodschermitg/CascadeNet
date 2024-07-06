@@ -141,7 +141,7 @@ EPOCHS = 20
 BATCH_SIZE = 2
 VAL_INTERVAL = 1
 DISPLAY_INTERVAL = 10
-CYCLE_WEIGHT = 1
+REC_WEIGHT = 1
 KL_WEIGHT = 1
 
 # output path
@@ -150,7 +150,7 @@ MODEL_NAME = "cascade_net"
 logs_dir = os.path.join("logs", TASK)
 train_logs_path = os.path.join(logs_dir, "train_logs.json")
 pred_loss_plot_path = os.path.join(logs_dir, "pred_loss_plot.png")
-cycle_loss_plot_path = os.path.join(logs_dir, "cycle_loss_plot.png")
+rec_loss_plot_path = os.path.join(logs_dir, "rec_loss_plot.png")
 kl_loss_plot_path = os.path.join(logs_dir, "kl_loss_plot.png")
 metric_plot_path = os.path.join(logs_dir, "metric_plot.png")
 cv_fold_logs_path = os.path.join(logs_dir, "cv_fold_logs.json")
