@@ -7,7 +7,7 @@ except ModuleNotFoundError:
     from src import config
 
 
-class ExpandToFullTensord(monai.transforms.MapTransform):
+class BroadcastToTensord(monai.transforms.MapTransform):
     def __init__(self, keys, source_key, allow_missing_keys=False):
         super().__init__(keys, allow_missing_keys)
         self.source_key = source_key
@@ -426,7 +426,7 @@ transforms_dict = {
                 keys=["img_AB", "img_C"],
                 channel_wise=True
             ),
-            ExpandToFullTensord(
+            BroadcastToTensord(
                 keys=["time_diff_AC", "time_diff_BC"],
                 source_key="seg_C"
             ),
@@ -444,7 +444,7 @@ transforms_dict = {
                 keys=["img_AB", "img_C"],
                 channel_wise=True
             ),
-            ExpandToFullTensord(
+            BroadcastToTensord(
                 keys=["time_diff_AC", "time_diff_BC"],
                 source_key="seg_C"
             ),
@@ -559,7 +559,7 @@ transforms_dict = {
                 keys=["img_AB", "img_C"],
                 channel_wise=True
             ),
-            ExpandToFullTensord(
+            BroadcastToTensord(
                 keys=["time_diff_AC", "time_diff_BC"],
                 source_key="seg_C"
             ),
@@ -588,7 +588,7 @@ transforms_dict = {
                 keys=["img_AB", "img_C"],
                 channel_wise=True
             ),
-            ExpandToFullTensord(
+            BroadcastToTensord(
                 keys=["time_diff_AC", "time_diff_BC"],
                 source_key="seg_C"
             ),
@@ -662,7 +662,7 @@ transforms_dict = {
             keys="img_AB",
             channel_wise=True
         ),
-        ExpandToFullTensord(
+        BroadcastToTensord(
             keys=["time_diff_AC", "time_diff_BC"],
             source_key="seg_C"
         ),
