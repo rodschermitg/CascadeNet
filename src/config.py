@@ -1,16 +1,14 @@
 import os
 
-import torch
-
 
 # task
 # TASK = "lower_bound"
-# TASK = "base_model"
+TASK = "base_model"
 # TASK = "with_tissue_seg_AB"
 # TASK = "with_seg_AB"
 # TASK = "with_time_diff"
 # TASK = "with_seg_AB_and_time_diff"
-TASK = "with_tissue_seg_seg_time_diff_AB"
+# TASK = "with_tissue_seg_seg_time_diff_AB"
 INPUT_DICT = {
     "lower_bound": "img_B",
     "base_model": "img_AB",
@@ -145,9 +143,6 @@ NET_C2AB_KWARGS = {
     "out_channels": 2 * num_sequences,
     "latent_size": 3,
     "temperature": 0.28,
-    "task_kwargs": {
-        "output_activation_op": torch.nn.Tanh,
-    },
     "prior_kwargs": {
         "n_components": 9
     },
@@ -163,7 +158,7 @@ SCHEDULER_PATIENCE = 1
 STOPPING_PATIENCE = 2
 FOLDS = 5
 EPOCHS = 20
-BATCH_SIZE = 4
+BATCH_SIZE = 2
 VAL_INTERVAL = 1
 DISPLAY_INTERVAL = 10
 CYCLE_WEIGHT = 1

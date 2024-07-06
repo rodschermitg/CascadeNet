@@ -43,7 +43,7 @@ loss_fn_pred = monai.losses.DiceCELoss(
     softmax=True,
     reduction="mean"
 )
-loss_fn_cycle = torch.nn.L1Loss(reduction="mean")
+loss_fn_cycle = torch.nn.MSELoss(reduction="mean")
 dice_fn = monai.metrics.DiceMetric(include_background=False)
 confusion_matrix_fn = monai.metrics.ConfusionMatrixMetric(
     include_background=False,
@@ -144,16 +144,14 @@ for fold in range(config.FOLDS):
 
                 # net_C2AB
                 train_pred_C = torch.nn.functional.softmax(train_pred_C, dim=1)
-                mean = train_pred_C.mean(dim=(2, 3, 4), keepdim=True)
-                std = train_pred_C.std(dim=(2, 3, 4), keepdim=True)
-                train_pred_C = (train_pred_C - mean) / std
 
                 train_rec_AB, train_loss_kl_C2AB = net_C2AB(
                     torch.cat((train_pred_C, train_real_C), dim=1),
                     train_real_AB
                 )
+                train_rec_AB = torch.nn.functional.softmax(train_rec_AB, dim=1)
 
-                train_loss_cycle = loss_fn_cycle(train_real_AB, train_rec_AB)
+                train_loss_cycle = loss_fn_cycle(train_rec_AB, train_real_AB)
 
             train_loss = (
                 train_loss_pred +
@@ -273,22 +271,21 @@ for fold in range(config.FOLDS):
                             val_pred_C,
                             dim=1
                         )
-                        mean = val_pred_C.mean(dim=(2, 3, 4), keepdim=True)
-                        std = val_pred_C.std(dim=(2, 3, 4), keepdim=True)
 
                         val_rec_AB = monai.inferers.sliding_window_inference(
-                            torch.cat(
-                                ((val_pred_C-mean)/std, val_real_C),
-                                dim=1
-                            ),
+                            torch.cat((val_pred_C, val_real_C), dim=1),
                             roi_size=config.PATCH_SIZE,
                             sw_batch_size=config.BATCH_SIZE,
                             predictor=net_C2AB
                         )
+                        val_rec_AB = torch.nn.functional.softmax(
+                            val_rec_AB,
+                            dim=1
+                        )
 
                         epoch_val_loss_cycle += loss_fn_cycle(
-                            val_real_AB,
-                            val_rec_AB
+                            val_rec_AB,
+                            val_real_AB
                         ).item()
 
                     val_pred_C = [
@@ -419,8 +416,3 @@ print(f"\nTraining finished after {total_train_time:.0f}s")
 
 with open(config.train_logs_path, "w") as train_logs_file:
     json.dump(train_logs, train_logs_file, indent=4)
-
-
-# TODO
-# - when passing pred from net_AB2C to net_C2AB, should net_AB2C have LogSoftmax or Softmax as head?
-# - compare rec range with image range -> substitute Tanh head with someting else?

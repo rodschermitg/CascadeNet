@@ -102,13 +102,13 @@ transforms_dict = {
                 mean=0,
                 std=20
             ),
-            monai.transforms.NormalizeIntensityd(
+            monai.transforms.ScaleIntensityd(
                 keys=["img_AB", "img_C"],
                 channel_wise=True
             )
         ]),
         "eval_transforms": monai.transforms.Compose([
-            monai.transforms.NormalizeIntensityd(
+            monai.transforms.ScaleIntensityd(
                 keys=["img_AB", "img_C"],
                 channel_wise=True
             )
@@ -204,7 +204,7 @@ transforms_dict = {
                 mean=0,
                 std=20
             ),
-            monai.transforms.NormalizeIntensityd(
+            monai.transforms.ScaleIntensityd(
                 keys=["img_AB", "img_C"],
                 channel_wise=True
             ),
@@ -218,7 +218,7 @@ transforms_dict = {
             )
         ]),
         "eval_transforms": monai.transforms.Compose([
-            monai.transforms.NormalizeIntensityd(
+            monai.transforms.ScaleIntensityd(
                 keys=["img_AB", "img_C"],
                 channel_wise=True
             ),
@@ -318,7 +318,7 @@ transforms_dict = {
                 mean=0,
                 std=20
             ),
-            monai.transforms.NormalizeIntensityd(
+            monai.transforms.ScaleIntensityd(
                 keys=["img_AB", "img_C"],
                 channel_wise=True
             ),
@@ -330,7 +330,7 @@ transforms_dict = {
             monai.transforms.DeleteItemsd(keys="seg_AB")
         ]),
         "eval_transforms": monai.transforms.Compose([
-            monai.transforms.NormalizeIntensityd(
+            monai.transforms.ScaleIntensityd(
                 keys=["img_AB", "img_C"],
                 channel_wise=True
             ),
@@ -422,7 +422,7 @@ transforms_dict = {
                 mean=0,
                 std=20
             ),
-            monai.transforms.NormalizeIntensityd(
+            monai.transforms.ScaleIntensityd(
                 keys=["img_AB", "img_C"],
                 channel_wise=True
             ),
@@ -440,7 +440,7 @@ transforms_dict = {
             )
         ]),
         "eval_transforms": monai.transforms.Compose([
-            monai.transforms.NormalizeIntensityd(
+            monai.transforms.ScaleIntensityd(
                 keys=["img_AB", "img_C"],
                 channel_wise=True
             ),
@@ -544,7 +544,7 @@ transforms_dict = {
                 mean=0,
                 std=20
             ),
-            monai.transforms.NormalizeIntensityd(
+            monai.transforms.ScaleIntensityd(
                 keys=["img_AB", "img_C"],
                 channel_wise=True
             ),
@@ -562,7 +562,7 @@ transforms_dict = {
             )
         ]),
         "eval_transforms": monai.transforms.Compose([
-            monai.transforms.NormalizeIntensityd(
+            monai.transforms.ScaleIntensityd(
                 keys=["img_AB", "img_C"],
                 channel_wise=True
             ),
@@ -677,7 +677,7 @@ transforms_dict = {
                 mean=0,
                 std=20
             ),
-            monai.transforms.NormalizeIntensityd(
+            monai.transforms.ScaleIntensityd(
                 keys=["img_AB", "img_C"],
                 channel_wise=True
             ),
@@ -706,7 +706,7 @@ transforms_dict = {
             )
         ]),
         "eval_transforms": monai.transforms.Compose([
-            monai.transforms.NormalizeIntensityd(
+            monai.transforms.ScaleIntensityd(
                 keys=["img_AB", "img_C"],
                 channel_wise=True
             ),
@@ -780,7 +780,7 @@ transforms_dict = {
             keys="seg_C",
             to_onehot=config.NUM_CLASSES
         ),
-        monai.transforms.NormalizeIntensityd(
+        monai.transforms.ScaleIntensityd(
             keys="img_AB",
             channel_wise=True
         ),
