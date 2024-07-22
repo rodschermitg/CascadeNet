@@ -29,10 +29,10 @@ for fold in range(config.FOLDS):
     )
     checkpoint = torch.load(checkpoint_path, map_location=device)
     net_AB2C = models.ProbabilisticSegmentationNet(
-        **config.NET_AB2C_KWARGS_DICT["base_model"]
+        **config.NET_AB2C_KWARGS_DICT[config.TASK]
     ).to(device)
     net_C2AB = models.ProbabilisticSegmentationNet(
-        **config.NET_C2AB_KWARGS
+        **config.NET_C2AB_KWARGS_DICT[config.TASK]
     ).to(device)
     net_AB2C.load_state_dict(checkpoint["net_AB2C_state_dict"])
     net_C2AB.load_state_dict(checkpoint["net_C2AB_state_dict"])
@@ -45,10 +45,10 @@ data_path = os.path.join(config.data_dir, config.DATA_FILENAME)
 with open(data_path, "r") as data_file:
     data = json.load(data_file)
 dataset = monai.data.Dataset(
-    data["train"],
+    data["test"],
     monai.transforms.Compose([
-        *transforms.transforms_dict["base_model"]["base_transforms"].transforms,
-        *transforms.transforms_dict["base_model"]["eval_transforms"].transforms
+        *transforms.transforms_dict[config.TASK]["base_transforms"].transforms,
+        *transforms.transforms_dict[config.TASK]["eval_transforms"].transforms
     ])
 )
 print(f"Using {len(dataset)} training samples")
@@ -61,8 +61,8 @@ dataloader = monai.data.DataLoader(
 )
 
 for batch in dataloader:
-    real_AB = batch["img_AB"].to(device)
-    real_C = batch["img_C"].to(device)
+    input_AB = batch[config.INPUT_DICT_AB[config.TASK]].to(device)
+    input_C = batch[config.INPUT_DICT_C[config.TASK]].to(device)
     seg_C = batch["seg_C"]
     seg_C = torch.argmax(seg_C, dim=1)
 
@@ -71,7 +71,7 @@ for batch in dataloader:
             # net_AB2C
             preds_C = [
                 monai.inferers.sliding_window_inference(
-                    real_AB,
+                    input_AB,
                     roi_size=config.PATCH_SIZE,
                     sw_batch_size=config.BATCH_SIZE,
                     predictor=net_AB2C
@@ -85,13 +85,9 @@ for batch in dataloader:
             preds_C = torch.cat(preds_C, dim=0)
             pred_C = torch.mean(preds_C, dim=0, keepdim=True)
 
-            # net_C2AB
-            mean = pred_C.mean(dim=(2, 3, 4), keepdim=True)
-            std = pred_C.std(dim=(2, 3, 4), keepdim=True)
-
             recs_AB = [
                 monai.inferers.sliding_window_inference(
-                    torch.cat(((pred_C-mean)/std, real_C), dim=1),
+                    torch.cat((pred_C, input_C), dim=1),
                     roi_size=config.PATCH_SIZE,
                     sw_batch_size=config.BATCH_SIZE,
                     predictor=net_C2AB

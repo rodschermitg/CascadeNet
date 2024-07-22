@@ -62,18 +62,20 @@ class MixtureOfGaussians(torch.distributions.MixtureSameFamily, torch.distributi
         for size1, size2 in zip(reversed(mdbs), reversed(cdbs)):
             if size1 != 1 and size2 != 1 and size1 != size2:
                 raise ValueError(
-                    "`mixture_distribution.batch_shape` ({0}) is not "
+                    f"`mixture_distribution.batch_shape` ({mdbs}) is not "
                     "compatible with `component_distribution'."
-                    "batch_shape`({1})".format(mdbs, cdbs)
+                    f"batch_shape`({cdbs})"
                 )
 
         # Check that the number of mixture component matches
         km = self._mixture_distribution.logits.shape[-1]
         kc = self._component_distribution.batch_shape[-1]
         if km is not None and kc is not None and km != kc:
-            raise ValueError("`mixture_distribution component` ({0}) does not"
-                             " equal `component_distribution.batch_shape[-1]`"
-                             " ({1})".format(km, kc))
+            raise ValueError(
+                f"`mixture_distribution component` ({km}) does not"
+                " equal `component_distribution.batch_shape[-1]`"
+                f" ({kc})"
+            )
         self._num_component = km
         event_shape = self._component_distribution.event_shape
         self._event_ndims = len(event_shape)
@@ -331,14 +333,14 @@ class InjectionConvEncoder(ConvModule):
                 if self.dropout_op is not None:
                     layers.append(self.dropout_op(**self.dropout_kwargs))
 
-            self.add_module("encode_{}".format(d), nn.Sequential(*layers))
+            self.add_module(f"encode_{d}", nn.Sequential(*layers))
 
         if self.global_pool_op is not None:
             self.add_module("global_pool", self.global_pool_op(1, **self.global_pool_kwargs))
 
     def forward(self, x):
         for d in range(self.depth):
-            x = self._modules["encode_{}".format(d)](x)
+            x = self._modules[f"encode_{d}"](x)
 
         if hasattr(self, "global_pool"):
             x = self.global_pool(x)
@@ -438,7 +440,7 @@ class InjectionUNet(ConvModule):
                     block.append(self.norm_op(out_size, **self.norm_kwargs))
                 block.append(self.activation_op(**self.activation_kwargs))
 
-            self.add_module("encode-{}".format(d), nn.Sequential(*block))
+            self.add_module(f"encode-{d}", nn.Sequential(*block))
 
         # BUILD DECODER
         for d in reversed(range(self.depth)):
@@ -481,7 +483,7 @@ class InjectionUNet(ConvModule):
                     **self.upconv_kwargs
                 ))
 
-            self.add_module("decode-{}".format(d), nn.Sequential(*block))
+            self.add_module(f"decode-{d}", nn.Sequential(*block))
 
         out_size += self.injection_channels
         in_size = out_size
@@ -490,9 +492,9 @@ class InjectionUNet(ConvModule):
                 out_size = self.out_channels
             current_conv_kwargs = self.conv_kwargs.copy()
             current_conv_kwargs["bias"] = True
-            self.add_module("reduce-{}".format(i), self.conv_op(in_size, out_size, 1, **current_conv_kwargs))
+            self.add_module(f"reduce-{i}", self.conv_op(in_size, out_size, 1, **current_conv_kwargs))
             if i != self.num_1x1_at_end - 1:
-                self.add_module("reduce-{}-nonlin".format(i), self.activation_op(**self.activation_kwargs))
+                self.add_module(f"reduce-{i}-nonlin", self.activation_op(**self.activation_kwargs))
         if self.output_activation_op is not None:
             self.add_module("output-activation", self.output_activation_op(**self.output_activation_kwargs))
 
@@ -510,13 +512,13 @@ class InjectionUNet(ConvModule):
             enc = [x]
 
             for i in range(self.depth - 1):
-                enc.append(self._modules["encode-{}".format(i)](enc[-1]))
+                enc.append(self._modules[f"encode-{i}"](enc[-1]))
 
-            bottom_rep = self._modules["encode-{}".format(self.depth - 1)](enc[-1])
-            x = self._modules["decode-{}".format(self.depth - 1)](bottom_rep)
+            bottom_rep = self._modules[f"encode-{self.depth - 1}"](enc[-1])
+            x = self._modules[f"decode-{self.depth - 1}"](bottom_rep)
 
             for i in reversed(range(self.depth - 1)):
-                x = self._modules["decode-{}".format(i)](torch.cat((enc[-(self.depth - 1 - i)], x), 1))
+                x = self._modules[f"decode-{i}"](torch.cat((enc[-(self.depth - 1 - i)], x), 1))
 
             if store_activations:
                 self.last_activations = x.detach()
@@ -529,7 +531,7 @@ class InjectionUNet(ConvModule):
             x = torch.cat((x, injection), 1)
 
         for i in range(self.num_1x1_at_end):
-            x = self._modules["reduce-{}".format(i)](x)
+            x = self._modules[f"reduce-{i}"](x)
         if self.output_activation_op is not None:
             x = self._modules["output-activation"](x)
 

@@ -71,7 +71,7 @@ test_logs = {
 }
 
 for batch in dataloader:
-    input = batch[config.INPUT_DICT[config.TASK]].to(device)
+    input = batch[config.INPUT_DICT_AB[config.TASK]].to(device)
     seg = batch["seg_C"].to(device)
 
     patient_name = utils.get_patient_name(
@@ -126,15 +126,15 @@ for batch in dataloader:
     print(f"\trecall: {recall_list[-1]:.4f}")
 
 mean_dice = torch.mean(dice_fn.get_buffer()).item()
-mean_precision = torch.mean(torch.tensor(precision_list))
-mean_recall = torch.mean(torch.tensor(recall_list))
+mean_precision = torch.mean(torch.tensor(precision_list)).item()
+mean_recall = torch.mean(torch.tensor(recall_list)).item()
 std_dice = torch.std(dice_fn.get_buffer(), correction=0).item()
 std_precision = torch.std(torch.tensor(precision_list), correction=0).item()
 std_recall = torch.std(torch.tensor(recall_list), correction=0).item()
 
 test_logs["mean"]["dice"] = mean_dice
-test_logs["mean"]["precision"] = mean_dice
-test_logs["mean"]["recall"] = mean_dice
+test_logs["mean"]["precision"] = mean_precision
+test_logs["mean"]["recall"] = mean_recall
 test_logs["std"]["dice"] = std_dice
 test_logs["std"]["precision"] = std_precision
 test_logs["std"]["recall"] = std_recall

@@ -2,7 +2,6 @@ import os
 
 import matplotlib
 import matplotlib.pyplot as plt
-import torch
 
 try:
     import config
@@ -110,7 +109,6 @@ def create_slice_plots(
     num_slices=10
 ):
     num_imgs = len(imgs)
-    vmin, vmax = get_vmin_vmax(imgs)
 
     fig, ax = plt.subplots(num_slices, num_imgs)
     for col, img in enumerate(imgs):
@@ -133,8 +131,8 @@ def create_slice_plots(
 
             ax[row, col].imshow(
                 img_slice,
-                vmin=0 if is_binary(img_slice) else vmin,
-                vmax=1 if is_binary(img_slice) else vmax
+                vmin=0 if len(img_slice.unique()) == 1 else None,
+                vmax=1 if len(img_slice.unique()) == 1 else None
             )
 
             if row == 0 and labels is not None:
@@ -150,18 +148,3 @@ def get_patient_name(file_path):
     patient_name = file_path[start_idx:end_idx]
 
     return patient_name
-
-
-def get_vmin_vmax(imgs):
-    vmin = float("inf")
-    vmax = 0
-    for img in imgs:
-        if img.min() < vmin:
-            vmin = img.min()
-        if img.max() > vmax:
-            vmax = img.max()
-    return (vmin, vmax)
-
-
-def is_binary(tensor):
-    return torch.all(torch.logical_or(tensor == 0, tensor == 1))

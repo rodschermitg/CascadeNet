@@ -54,7 +54,7 @@ dataloader = monai.data.DataLoader(
 )
 
 for batch in dataloader:
-    input = batch[config.INPUT_DICT[config.TASK]].to(device)
+    input = batch[config.INPUT_DICT_AB[config.TASK]].to(device)
     seg = batch["seg_C"]
     seg = torch.argmax(seg, dim=1)
 

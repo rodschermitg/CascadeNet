@@ -20,7 +20,7 @@ num_workers = 4 if device.type == "cuda" else 0
 pin_memory = True if device.type == "cuda" else False
 print(f"Using {device} device")
 
-model_dict = {task_key: [] for task_key in config.INPUT_DICT.keys()}
+model_dict = {task_key: [] for task_key in config.INPUT_DICT_AB.keys()}
 for task_key in model_dict.keys():
     for fold in range(config.FOLDS):
         checkpoint_path = os.path.join(
@@ -58,7 +58,7 @@ for batch in dataloader:
     seg = torch.argmax(seg, dim=1)
 
     for task_key in model_dict.keys():
-        input = batch[config.INPUT_DICT[task_key]].to(device)
+        input = batch[config.INPUT_DICT_AB[task_key]].to(device)
 
         with torch.no_grad():
             with torch.cuda.amp.autocast():
