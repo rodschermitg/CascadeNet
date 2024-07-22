@@ -114,18 +114,15 @@ transforms_dict = {
             )
         ])
     },
-    "with_tissue_seg_AB": {
+    "with_tissue_seg": {
         "base_transforms": monai.transforms.Compose([
             monai.transforms.LoadImaged(
                 keys=(
                     config.sequence_keys[0] +
                     config.sequence_keys[1] +
                     config.sequence_keys[2] +
-                    [
-                        config.tissue_seg_keys[0],
-                        config.tissue_seg_keys[1],
-                        config.seg_keys[2]
-                    ]
+                    config.tissue_seg_keys +
+                    [config.seg_keys[2]]
                 ),
                 image_only=False,
                 ensure_channel_first=True
@@ -145,22 +142,26 @@ transforms_dict = {
                 name="tissue_seg_AB",
                 dim=0
             ),
-            monai.transforms.DeleteItemsd(
-                keys=(
-                    config.sequence_keys[0] +
-                    config.sequence_keys[1] +
-                    config.sequence_keys[2] +
-                    [config.tissue_seg_keys[0], config.tissue_seg_keys[1]]
-                )
-            ),
             monai.transforms.CropForegroundd(
-                keys=["img_AB", "img_C", "tissue_seg_AB", "seg_C"],
+                keys=[
+                    "img_AB",
+                    "img_C",
+                    "tissue_seg_AB",
+                    "tissue_seg_C",
+                    "seg_C"
+                ],
                 source_key="img_AB",
             ),
             monai.transforms.Spacingd(
-                keys=["img_AB", "img_C", "tissue_seg_AB", "seg_C"],
+                keys=[
+                    "img_AB",
+                    "img_C",
+                    "tissue_seg_AB",
+                    "tissue_seg_C",
+                    "seg_C"
+                ],
                 pixdim=(1.0, 1.0, 1.0),
-                mode=("bilinear", "bilinear", "nearest", "nearest"),
+                mode=("bilinear", "bilinear", "nearest", "nearest", "nearest"),
             ),
             monai.transforms.ThresholdIntensityd(
                 keys="seg_C",
@@ -175,15 +176,27 @@ transforms_dict = {
         ]),
         "train_transforms": monai.transforms.Compose([
             monai.transforms.RandAffined(
-                keys=["img_AB", "img_C", "tissue_seg_AB", "seg_C"],
+                keys=[
+                    "img_AB",
+                    "img_C",
+                    "tissue_seg_AB",
+                    "tissue_seg_C",
+                    "seg_C"
+                ],
                 prob=1.0,
                 rotate_range=0.1,
                 scale_range=0.1,
-                mode=("bilinear", "bilinear", "nearest", "nearest"),
+                mode=("bilinear", "bilinear", "nearest", "nearest", "nearest"),
                 padding_mode="zeros"
             ),
             monai.transforms.RandCropByPosNegLabeld(
-                keys=["img_AB", "img_C", "tissue_seg_AB", "seg_C"],
+                keys=[
+                    "img_AB",
+                    "img_C",
+                    "tissue_seg_AB",
+                    "tissue_seg_C",
+                    "seg_C"
+                ],
                 label_key="seg_C",
                 spatial_size=config.PATCH_SIZE,
                 pos=1,
@@ -213,8 +226,19 @@ transforms_dict = {
                 name="img_tissue_seg_AB",
                 dim=0
             ),
+            monai.transforms.ConcatItemsd(
+                keys=["img_C", "tissue_seg_C",],
+                name="img_tissue_seg_C",
+                dim=0
+            ),
             monai.transforms.DeleteItemsd(
-                keys=["img_AB", "tissue_seg_AB"]
+                keys=(
+                    config.sequence_keys[0] +
+                    config.sequence_keys[1] +
+                    config.sequence_keys[2] +
+                    config.tissue_seg_keys +
+                    ["img_C", "tissue_seg_AB"]
+                )
             )
         ]),
         "eval_transforms": monai.transforms.Compose([
@@ -227,12 +251,23 @@ transforms_dict = {
                 name="img_tissue_seg_AB",
                 dim=0
             ),
+            monai.transforms.ConcatItemsd(
+                keys=["img_C", "tissue_seg_C",],
+                name="img_tissue_seg_C",
+                dim=0
+            ),
             monai.transforms.DeleteItemsd(
-                keys=["img_AB", "tissue_seg_AB"]
+                keys=(
+                    config.sequence_keys[0] +
+                    config.sequence_keys[1] +
+                    config.sequence_keys[2] +
+                    config.tissue_seg_keys +
+                    ["img_C", "tissue_seg_AB"]
+                )
             )
         ])
     },
-    "with_seg_AB": {
+    "with_tumor_seg": {
         "base_transforms": monai.transforms.Compose([
             monai.transforms.LoadImaged(
                 keys=(
@@ -259,14 +294,6 @@ transforms_dict = {
                 name="seg_AB",
                 dim=0
             ),
-            monai.transforms.DeleteItemsd(
-                keys=(
-                    config.sequence_keys[0] +
-                    config.sequence_keys[1] +
-                    config.sequence_keys[2] +
-                    [config.seg_keys[0], config.seg_keys[1]]
-                )
-            ),
             monai.transforms.CropForegroundd(
                 keys=["img_AB", "img_C", "seg_AB", "seg_C"],
                 source_key="img_AB",
@@ -282,6 +309,10 @@ transforms_dict = {
                 above=False,
                 cval=1
             ),
+            monai.transforms.CopyItemsd(
+                keys="seg_C",
+                names="seg_C_input"
+            ),
             monai.transforms.AsDiscreted(
                 keys="seg_C",
                 to_onehot=config.NUM_CLASSES
@@ -289,15 +320,15 @@ transforms_dict = {
         ]),
         "train_transforms": monai.transforms.Compose([
             monai.transforms.RandAffined(
-                keys=["img_AB", "img_C", "seg_AB", "seg_C"],
+                keys=["img_AB", "img_C", "seg_AB", "seg_C", "seg_C_input"],
                 prob=1.0,
                 rotate_range=0.1,
                 scale_range=0.1,
-                mode=("bilinear", "bilinear", "nearest", "nearest"),
+                mode=("bilinear", "bilinear", "nearest", "nearest", "nearest"),
                 padding_mode="zeros"
             ),
             monai.transforms.RandCropByPosNegLabeld(
-                keys=["img_AB", "img_C", "seg_AB", "seg_C"],
+                keys=["img_AB", "img_C", "seg_AB", "seg_C", "seg_C_input"],
                 label_key="seg_C",
                 spatial_size=config.PATCH_SIZE,
                 pos=1,
@@ -324,10 +355,28 @@ transforms_dict = {
             ),
             monai.transforms.ConcatItemsd(
                 keys=["img_AB", "seg_AB"],
-                name="img_seg_AB",
+                name="img_tumor_seg_AB",
                 dim=0
             ),
-            monai.transforms.DeleteItemsd(keys="seg_AB")
+            monai.transforms.ConcatItemsd(
+                keys=["img_C", "seg_C_input"],
+                name="img_tumor_seg_C",
+                dim=0
+            ),
+            monai.transforms.DeleteItemsd(
+                keys=(
+                    config.sequence_keys[0] +
+                    config.sequence_keys[1] +
+                    config.sequence_keys[2] +
+                    [
+                        "img_C",
+                        config.seg_keys[0],
+                        config.seg_keys[1],
+                        "seg_AB",
+                        "seg_C_input"
+                    ]
+                )
+            )
         ]),
         "eval_transforms": monai.transforms.Compose([
             monai.transforms.ScaleIntensityd(
@@ -336,10 +385,28 @@ transforms_dict = {
             ),
             monai.transforms.ConcatItemsd(
                 keys=["img_AB", "seg_AB"],
-                name="img_seg_AB",
+                name="img_tumor_seg_AB",
                 dim=0
             ),
-            monai.transforms.DeleteItemsd(keys="seg_AB")
+            monai.transforms.ConcatItemsd(
+                keys=["img_C", "seg_C_input"],
+                name="img_tumor_seg_C",
+                dim=0
+            ),
+            monai.transforms.DeleteItemsd(
+                keys=(
+                    config.sequence_keys[0] +
+                    config.sequence_keys[1] +
+                    config.sequence_keys[2] +
+                    [
+                        "img_C",
+                        config.seg_keys[0],
+                        config.seg_keys[1],
+                        "seg_AB",
+                        "seg_C_input"
+                    ]
+                )
+            )
         ])
     },
     "with_time_diff": {
@@ -364,13 +431,6 @@ transforms_dict = {
                 name="img_C",
                 dim=0
             ),
-            monai.transforms.DeleteItemsd(
-                keys=(
-                    config.sequence_keys[0] +
-                    config.sequence_keys[1] +
-                    config.sequence_keys[2]
-                )
-            ),
             monai.transforms.CropForegroundd(
                 keys=["img_AB", "img_C", "seg_C"],
                 source_key="img_AB",
@@ -435,8 +495,18 @@ transforms_dict = {
                 name="img_time_diff_AB",
                 dim=0
             ),
+            monai.transforms.ConcatItemsd(
+                keys=["img_C", "time_diff_AC", "time_diff_BC"],
+                name="img_time_diff_C",
+                dim=0
+            ),
             monai.transforms.DeleteItemsd(
-                keys=["time_diff_AC", "time_diff_BC"]
+                keys=(
+                    config.sequence_keys[0] +
+                    config.sequence_keys[1] +
+                    config.sequence_keys[2] +
+                    ["img_C", "time_diff_AC", "time_diff_BC"]
+                )
             )
         ]),
         "eval_transforms": monai.transforms.Compose([
@@ -453,19 +523,29 @@ transforms_dict = {
                 name="img_time_diff_AB",
                 dim=0
             ),
+            monai.transforms.ConcatItemsd(
+                keys=["img_C", "time_diff_AC", "time_diff_BC"],
+                name="img_time_diff_C",
+                dim=0
+            ),
             monai.transforms.DeleteItemsd(
-                keys=["time_diff_AC", "time_diff_BC"]
+                keys=(
+                    config.sequence_keys[0] +
+                    config.sequence_keys[1] +
+                    config.sequence_keys[2] +
+                    ["img_C", "time_diff_AC", "time_diff_BC"]
+                )
             )
         ])
     },
-    "with_tissue_seg_seg_time_diff_AB": {
+    "with_tissue_seg_tumor_seg_time_diff": {
         "base_transforms": monai.transforms.Compose([
             monai.transforms.LoadImaged(
                 keys=(
                     config.sequence_keys[0] +
                     config.sequence_keys[1] +
                     config.sequence_keys[2] +
-                    [config.tissue_seg_keys[0], config.tissue_seg_keys[1]] +
+                    config.tissue_seg_keys +
                     config.seg_keys
                 ),
                 image_only=False,
@@ -491,33 +571,45 @@ transforms_dict = {
                 name="seg_AB",
                 dim=0
             ),
-            monai.transforms.DeleteItemsd(
-                keys=(
-                    config.sequence_keys[0] +
-                    config.sequence_keys[1] +
-                    config.sequence_keys[2] +
-                    [
-                        config.tissue_seg_keys[0],
-                        config.tissue_seg_keys[1],
-                        config.seg_keys[0],
-                        config.seg_keys[1]
-                    ]
-                )
-            ),
             monai.transforms.CropForegroundd(
-                keys=["img_AB", "img_C", "tissue_seg_AB", "seg_AB", "seg_C"],
+                keys=[
+                    "img_AB",
+                    "img_C",
+                    "tissue_seg_AB",
+                    "tissue_seg_C",
+                    "seg_AB",
+                    "seg_C"
+                ],
                 source_key="img_AB",
             ),
             monai.transforms.Spacingd(
-                keys=["img_AB", "img_C", "tissue_seg_AB", "seg_AB", "seg_C"],
+                keys=[
+                    "img_AB",
+                    "img_C",
+                    "tissue_seg_AB",
+                    "tissue_seg_C",
+                    "seg_AB",
+                    "seg_C"
+                ],
                 pixdim=(1.0, 1.0, 1.0),
-                mode=("bilinear", "bilinear", "nearest", "nearest", "nearest"),
+                mode=(
+                    "bilinear",
+                    "bilinear",
+                    "nearest",
+                    "nearest",
+                    "nearest",
+                    "nearest"
+                ),
             ),
             monai.transforms.ThresholdIntensityd(
                 keys=["seg_AB", "seg_C"],
                 threshold=1,
                 above=False,
                 cval=1
+            ),
+            monai.transforms.CopyItemsd(
+                keys="seg_C",
+                names="seg_C_input"
             ),
             monai.transforms.AsDiscreted(
                 keys="seg_C",
@@ -526,15 +618,39 @@ transforms_dict = {
         ]),
         "train_transforms": monai.transforms.Compose([
             monai.transforms.RandAffined(
-                keys=["img_AB", "img_C", "tissue_seg_AB", "seg_AB", "seg_C"],
+                keys=[
+                    "img_AB",
+                    "img_C",
+                    "tissue_seg_AB",
+                    "tissue_seg_C",
+                    "seg_AB",
+                    "seg_C",
+                    "seg_C_input"
+                ],
                 prob=1.0,
                 rotate_range=0.1,
                 scale_range=0.1,
-                mode=("bilinear", "bilinear", "nearest", "nearest", "nearest"),
+                mode=(
+                    "bilinear",
+                    "bilinear",
+                    "nearest",
+                    "nearest",
+                    "nearest",
+                    "nearest",
+                    "nearest"
+                ),
                 padding_mode="zeros"
             ),
             monai.transforms.RandCropByPosNegLabeld(
-                keys=["img_AB", "img_C", "tissue_seg_AB", "seg_AB", "seg_C"],
+                keys=[
+                    "img_AB",
+                    "img_C",
+                    "tissue_seg_AB",
+                    "tissue_seg_C",
+                    "seg_AB",
+                    "seg_C",
+                    "seg_C_input"
+                ],
                 label_key="seg_C",
                 spatial_size=config.PATCH_SIZE,
                 pos=1,
@@ -571,16 +687,37 @@ transforms_dict = {
                     "time_diff_AC",
                     "time_diff_BC"
                 ],
-                name="img_tissue_seg_seg_time_diff_AB",
+                name="img_tissue_seg_tumor_seg_time_diff_AB",
+                dim=0
+            ),
+            monai.transforms.ConcatItemsd(
+                keys=[
+                    "img_C",
+                    "tissue_seg_C",
+                    "seg_C_input",
+                    "time_diff_AC",
+                    "time_diff_BC"
+                ],
+                name="img_tissue_seg_tumor_seg_time_diff_C",
                 dim=0
             ),
             monai.transforms.DeleteItemsd(
-                keys=[
-                    "tissue_seg_AB",
-                    "seg_AB",
-                    "time_diff_AC",
-                    "time_diff_BC"
-                ]
+                keys=(
+                    config.sequence_keys[0] +
+                    config.sequence_keys[1] +
+                    config.sequence_keys[2] +
+                    config.tissue_seg_keys +
+                    [
+                        "img_C",
+                        "tissue_seg_AB",
+                        config.seg_keys[0],
+                        config.seg_keys[1],
+                        "seg_AB",
+                        "seg_C_input",
+                        "time_diff_AC",
+                        "time_diff_BC"
+                    ]
+                )
             )
         ]),
         "eval_transforms": monai.transforms.Compose([
@@ -600,16 +737,37 @@ transforms_dict = {
                     "time_diff_AC",
                     "time_diff_BC"
                 ],
-                name="img_tissue_seg_seg_time_diff_AB",
+                name="img_tissue_seg_tumor_seg_time_diff_AB",
+                dim=0
+            ),
+            monai.transforms.ConcatItemsd(
+                keys=[
+                    "img_C",
+                    "tissue_seg_C",
+                    "seg_C_input",
+                    "time_diff_AC",
+                    "time_diff_BC"
+                ],
+                name="img_tissue_seg_tumor_seg_time_diff_C",
                 dim=0
             ),
             monai.transforms.DeleteItemsd(
-                keys=[
-                    "tissue_seg_AB",
-                    "seg_AB",
-                    "time_diff_AC",
-                    "time_diff_BC"
-                ]
+                keys=(
+                    config.sequence_keys[0] +
+                    config.sequence_keys[1] +
+                    config.sequence_keys[2] +
+                    config.tissue_seg_keys +
+                    [
+                        "img_C",
+                        "tissue_seg_AB",
+                        config.seg_keys[0],
+                        config.seg_keys[1],
+                        "seg_AB",
+                        "seg_C_input",
+                        "time_diff_AC",
+                        "time_diff_BC"
+                    ]
+                )
             )
         ])
     },
@@ -667,13 +825,13 @@ transforms_dict = {
             source_key="seg_C"
         ),
         monai.transforms.ConcatItemsd(
-            keys=["img_AB", "tissue_seg_AB",],
+            keys=["img_AB", "tissue_seg_AB"],
             name="img_tissue_seg_AB",
             dim=0
         ),
         monai.transforms.ConcatItemsd(
             keys=["img_AB", "seg_AB"],
-            name="img_seg_AB",
+            name="img_tumor_seg_AB",
             dim=0
         ),
         monai.transforms.ConcatItemsd(
@@ -689,7 +847,7 @@ transforms_dict = {
                 "time_diff_AC",
                 "time_diff_BC"
             ],
-            name="img_tissue_seg_seg_time_diff_AB",
+            name="img_tissue_seg_tumor_seg_time_diff_AB",
             dim=0
         ),
         monai.transforms.DeleteItemsd(

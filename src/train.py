@@ -77,7 +77,7 @@ for fold in range(config.FOLDS):
     net_AB2C.init_weights(torch.nn.init.kaiming_uniform_, 0)
     net_AB2C.init_bias(torch.nn.init.constant_, 0)
     net_C2AB = models.ProbabilisticSegmentationNet(
-        **config.NET_C2AB_KWARGS
+        **config.NET_C2AB_KWARGS_DICT[config.TASK]
     ).to(device)
     net_C2AB.init_weights(torch.nn.init.kaiming_uniform_, 0)
     net_C2AB.init_bias(torch.nn.init.constant_, 0)
@@ -128,10 +128,12 @@ for fold in range(config.FOLDS):
 
         for iter, train_batch in enumerate(train_dataloader):
             train_input_AB = train_batch[
-                config.INPUT_DICT[config.TASK]
+                config.INPUT_DICT_AB[config.TASK]
             ].to(device)
             train_real_AB = train_batch["img_AB"].to(device)
-            train_real_C = train_batch["img_C"].to(device)
+            train_input_C = train_batch[
+                config.INPUT_DICT_C[config.TASK]
+            ].to(device)
             train_seg_C = train_batch["seg_C"].to(device)
 
             with torch.cuda.amp.autocast(enabled=False):
@@ -146,7 +148,7 @@ for fold in range(config.FOLDS):
                 train_pred_C = torch.nn.functional.softmax(train_pred_C, dim=1)
 
                 train_rec_AB, train_loss_kl_C2AB = net_C2AB(
-                    torch.cat((train_pred_C, train_real_C), dim=1),
+                    torch.cat((train_pred_C, train_input_C), dim=1),
                     train_real_AB
                 )
                 train_rec_AB = torch.nn.functional.softmax(train_rec_AB, dim=1)
@@ -247,10 +249,12 @@ for fold in range(config.FOLDS):
             with torch.no_grad():
                 for val_batch in val_dataloader:
                     val_input_AB = val_batch[
-                        config.INPUT_DICT[config.TASK]
+                        config.INPUT_DICT_AB[config.TASK]
                     ].to(device)
                     val_real_AB = val_batch["img_AB"].to(device)
-                    val_real_C = val_batch["img_C"].to(device)
+                    val_input_C = val_batch[
+                        config.INPUT_DICT_C[config.TASK]
+                    ].to(device)
                     val_seg_C = val_batch["seg_C"].to(device)
 
                     with torch.cuda.amp.autocast():
@@ -273,7 +277,7 @@ for fold in range(config.FOLDS):
                         )
 
                         val_rec_AB = monai.inferers.sliding_window_inference(
-                            torch.cat((val_pred_C, val_real_C), dim=1),
+                            torch.cat((val_pred_C, val_input_C), dim=1),
                             roi_size=config.PATCH_SIZE,
                             sw_batch_size=config.BATCH_SIZE,
                             predictor=net_C2AB

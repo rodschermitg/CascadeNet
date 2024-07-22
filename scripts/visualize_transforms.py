@@ -34,18 +34,18 @@ dataset = monai.data.Dataset(
 dataloader = monai.data.DataLoader(dataset, batch_size=1)
 
 for batch in dataloader:
-    img_AB = batch[config.INPUT_DICT[config.TASK]]
-    img_C = batch["img_C"]
-    seg = batch["seg_C"]
-    seg = torch.argmax(seg, dim=1)
+    input_AB = batch[config.INPUT_DICT_AB[config.TASK]]
+    input_C = batch[config.INPUT_DICT_C[config.TASK]]
+    seg_C = batch["seg_C"]
+    seg_C = torch.argmax(seg_C, dim=1)
 
-    img_AB_list = [
-        img_AB[:, channel_idx]
-        for channel_idx in range(img_AB.shape[1])
+    input_AB_list = [
+        input_AB[:, channel_idx]
+        for channel_idx in range(input_AB.shape[1])
     ]
-    img_C_list = [
-        img_C[:, channel_idx]
-        for channel_idx in range(img_C.shape[1])
+    input_C_list = [
+        input_C[:, channel_idx]
+        for channel_idx in range(input_C.shape[1])
     ]
 
     patient_name = utils.get_patient_name(
@@ -53,7 +53,7 @@ for batch in dataloader:
     )
 
     utils.create_slice_plots(
-        img_AB_list + img_C_list,
+        input_AB_list + input_C_list + [seg_C],
         title=patient_name,
         slice_dim=0
     )
